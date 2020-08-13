@@ -1,0 +1,4 @@
+flask==1.1.2
+flask_oauthlib==0.9.5
+Werkzeug==0.16.1
+flask_sqlalchemy==2.4.4

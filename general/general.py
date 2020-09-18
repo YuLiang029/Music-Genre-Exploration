@@ -8,11 +8,16 @@ import os
 import time
 import uuid
 
+import six
+import base64
+import requests
+
 general_bp = Blueprint('general_bp', __name__,
                        template_folder='templates')
 
 oauth = OAuth(general_bp)
 keys = {"CLIENT_ID": "", "CLIENT_SECRET_ID": ""}
+
 try:
     keys = json.load(open('keys.json', 'r'))
 except Exception as e:
@@ -42,9 +47,22 @@ class User(db.Model):
     imageurl = db.Column(db.VARCHAR)
     userhash = db.Column(db.VARCHAR)
     consent_to_share = db.Column(db.Boolean)
+    top_artists = db.relationship('TopArtists')
 
     def __repr__(self):
         return '<User %r>' % self.id
+
+
+class TopArtists(db.Model):
+    __tablename__ = 'top_artists'
+    user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'), primary_key=True)
+    artist_id = db.Column(db.VARCHAR, primary_key=True)
+    time_period = db.Column(db.VARCHAR, primary_key=True)
+    genres = db.Column(db.VARCHAR)
+    timestamp = db.Column(db.FLOAT)
+
+    def __repr__(self):
+        return '<TopArtists %r-%r>' % (self.userid, self.artistid)
 
 
 @general_bp.route('/')
@@ -110,7 +128,7 @@ def authorized():
                                   "expires_at": int(time.time()) + resp['expires_in']}
         me = spotify.request('/v1/me/')
         if me.status != 200:
-            print 'HTTP Status Error: {0}'.format(resp.data)
+            print ('HTTP Status Error: {0}'.format(resp.data))
             return render_template("SpotifyConnectFailed.html")
         else:
             print(me.data)
@@ -139,6 +157,9 @@ def authorized():
                 db.session.commit()
 
             flash('You were signed in as %s' % display_name)
+            session["userid"] = user.id
+
+            scrape()
             print (next_url)
             return redirect(next_url)
     except Exception as e:
@@ -150,3 +171,111 @@ def authorized():
 def test_url():
     return render_template("test.html")
 
+
+@general_bp.route('/scrape')
+def scrape(limit=50):
+    """
+    Scrape user top artists
+    https://developer.spotify.com/console/get-current-user-top-artists-and-tracks/
+    authorization scopes: user-top-read
+    :param limit:
+    :return:
+    """
+
+    terms = ['short', 'medium', 'long']
+    # terms = ['short']
+    ts = time.time()
+
+    def check_token():
+        if "oauth_token" not in session:
+            print("authorizing")
+            session["redirecturl"] = url_for("scrape")
+            return spotify.authorize(url_for("authorized", _external=True))
+
+        if is_token_expired():
+            refresh_token = session["oauth_token"]["refresh_token"]
+            get_refresh_token(refresh_token)
+
+    for term in terms:
+        check_token()
+        url = '/v1/me/top/artists?limit=' + str(limit) + '&time_range=' + term + '_term'
+        print("url: " + url)
+        try:
+            top_artists_request = spotify.request(url)
+
+            if top_artists_request.status != 200:
+                return "top_artists_request status: " + str(top_artists_request.status), 400
+            else:
+                top_artists = top_artists_request.data["items"]
+                for artist in top_artists:
+                    entry = TopArtists.query.filter_by(user_id=session["userid"],
+                                                       artist_id=artist["id"],
+                                                       time_period=term).first()
+                    if entry:
+                        pass
+                    else:
+                        print (artist["id"])
+                        print (",".join(artist["genres"]))
+
+                        new_top_artist_obj = TopArtists(user_id=session["userid"],
+                                                        artist_id=artist["id"],
+                                                        time_period=term,
+                                                        genres=",".join(artist["genres"]),
+                                                        timestamp=ts)
+                        db.session.add(new_top_artist_obj)
+                        db.session.commit()
+        except Exception as e:
+            print(e.args)
+            return render_template("SpotifyConnectFailed.html")
+    return "done"
+
+
+def is_token_expired():
+    """
+    check if token is expired
+    :return: Boolean
+    """
+    if session["oauth_token"]["expires_at"] - int(time.time()) < 60:
+        return True
+    return False
+
+
+def make_refresh_token_headers(client_id, client_secret):
+    """
+    make refresh token headers
+    :param client_id:
+    :param client_secret:
+    :return: headers for requesting refresh tokens
+    """
+    auth_header = base64.b64encode(
+        six.text_type(client_id + ':' + client_secret).encode('ascii'))
+    headers = {'Authorization': 'Basic %s' % auth_header.decode('ascii')}
+    return headers
+
+
+def get_refresh_token(refresh_token):
+    """
+    get refresh token
+    :param refresh_token:
+    :return: update oauth_token
+    """
+    payload = {'refresh_token': refresh_token, 'grant_type': 'refresh_token'}
+
+    headers = make_refresh_token_headers(keys["CLIENT_ID"], keys["CLIENT_SECRET_ID"])
+    resp = requests.post(spotify.access_token_url, data=payload, headers=headers)
+
+    if resp.status_code != 200:
+        # if False:  # debugging code
+        print('debugging')
+        print('headers', headers)
+    else:
+        token_info = resp.json()
+        if 'refresh_token' not in token_info:
+            session['oauth_token'] = {"access_token": token_info['access_token'], "refresh_token": refresh_token,
+                                      "expires_in": token_info['expires_in'],
+                                      "expires_at": int(time.time()) + token_info['expires_in']}
+        else:
+            session['oauth_token'] = {"access_token": token_info['access_token'],
+                                      "refresh_token": token_info['refresh_token'],
+                                      "expires_in": token_info['expires_in'],
+                                      "expires_at": int(time.time()) + token_info['expires_in']}

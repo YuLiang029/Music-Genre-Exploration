@@ -80,7 +80,7 @@ class Artist(db.Model):
     def __repr__(self):
         return '<Artist %r>' % self.id
 
-    
+
 @general_bp.route('/')
 def index():
     return render_template('index.html')

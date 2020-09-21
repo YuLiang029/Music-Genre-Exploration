@@ -21,7 +21,7 @@ keys = {"CLIENT_ID": "", "CLIENT_SECRET_ID": ""}
 try:
     keys = json.load(open('keys.json', 'r'))
 except Exception as e:
-    print (e)
+    print(e)
 
 
 spotify = oauth.remote_app(
@@ -47,7 +47,7 @@ class User(db.Model):
     imageurl = db.Column(db.VARCHAR)
     userhash = db.Column(db.VARCHAR)
     consent_to_share = db.Column(db.Boolean)
-    top_artists = db.relationship('TopArtists')
+    top_artists = db.relationship('TopArtists', cascade='all')
 
     def __repr__(self):
         return '<User %r>' % self.id
@@ -56,15 +56,31 @@ class User(db.Model):
 class TopArtists(db.Model):
     __tablename__ = 'top_artists'
     user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'), primary_key=True)
-    artist_id = db.Column(db.VARCHAR, primary_key=True)
+    artist_id = db.Column(db.VARCHAR, db.ForeignKey('artist.id'), primary_key=True,)
     time_period = db.Column(db.VARCHAR, primary_key=True)
-    genres = db.Column(db.VARCHAR)
     timestamp = db.Column(db.FLOAT)
+    artist = db.relationship('Artist', cascade='save-update, merge')
 
     def __repr__(self):
         return '<TopArtists %r-%r>' % (self.userid, self.artistid)
 
 
+class Artist(db.Model):
+    __tablename__ = 'artist'
+    id = db.Column(db.VARCHAR, primary_key=True)
+    followers = db.Column(db.INTEGER)
+    genres = db.Column(db.VARCHAR)
+    image_middle = db.Column(db.VARCHAR)
+    name = db.Column(db.VARCHAR)
+    popularity = db.Column(db.INTEGER)
+    external_urls = db.Column(db.VARCHAR)
+    href = db.Column(db.VARCHAR)
+    uri = db.Column(db.VARCHAR)
+
+    def __repr__(self):
+        return '<Artist %r>' % self.id
+
+    
 @general_bp.route('/')
 def index():
     return render_template('index.html')
@@ -99,7 +115,7 @@ def login():
             next=url_for("general_bp.test_url"),
             _external=True
         )
-        print (callback)
+        print(callback)
         #   define authorization scope
         scope = "user-top-read playlist-modify-private"
         return spotify.authorize(callback=callback, scope=scope, show_dialog=True)
@@ -128,7 +144,7 @@ def authorized():
                                   "expires_at": int(time.time()) + resp['expires_in']}
         me = spotify.request('/v1/me/')
         if me.status != 200:
-            print ('HTTP Status Error: {0}'.format(resp.data))
+            print('HTTP Status Error: {0}'.format(resp.data))
             return render_template("SpotifyConnectFailed.html")
         else:
             print(me.data)
@@ -160,10 +176,10 @@ def authorized():
             session["userid"] = user.id
 
             scrape()
-            print (next_url)
+            print(next_url)
             return redirect(next_url)
     except Exception as e:
-        print (e)
+        print(e)
         return render_template("SpotifyConnectFailed.html")
 
 
@@ -207,23 +223,44 @@ def scrape(limit=50):
                 return "top_artists_request status: " + str(top_artists_request.status), 400
             else:
                 top_artists = top_artists_request.data["items"]
-                for artist in top_artists:
-                    entry = TopArtists.query.filter_by(user_id=session["userid"],
-                                                       artist_id=artist["id"],
-                                                       time_period=term).first()
-                    if entry:
-                        pass
-                    else:
-                        print (artist["id"])
-                        print (",".join(artist["genres"]))
+                for x in top_artists:
+                    artist = Artist.query.filter_by(id=x["id"]).first()
 
+                    if artist:
+                        entry = TopArtists.query.filter_by(user_id=session["userid"],
+                                                           artist_id=x["id"],
+                                                           time_period=term).first()
+                        if entry:
+                            pass
+                        else:
+                            new_top_artist_obj = TopArtists(user_id=session["userid"],
+                                                            artist_id=x["id"],
+                                                            time_period=term,
+                                                            timestamp=str(ts)
+                                                            )
+                            db.session.add(new_top_artist_obj)
+
+                    else:
+                        new_artist_obj = Artist(
+                            id=x["id"],
+                            followers=x["followers"]["total"],
+                            genres=",".join(x["genres"]),
+                            image_middle=None if len(x["images"]) == 0 else x["images"][1]["url"],
+                            name=x["name"],
+                            popularity=x["popularity"],
+                            external_urls=x["external_urls"]["spotify"],
+                            href=x["href"],
+                            uri=x["uri"]
+
+
+                        )
                         new_top_artist_obj = TopArtists(user_id=session["userid"],
-                                                        artist_id=artist["id"],
+                                                        artist_id=x["id"],
                                                         time_period=term,
-                                                        genres=",".join(artist["genres"]),
-                                                        timestamp=ts)
+                                                        timestamp=str(ts),
+                                                        artist=new_artist_obj)
                         db.session.add(new_top_artist_obj)
-                        db.session.commit()
+                db.session.commit()
         except Exception as e:
             print(e.args)
             return render_template("SpotifyConnectFailed.html")
@@ -279,3 +316,5 @@ def get_refresh_token(refresh_token):
                                       "refresh_token": token_info['refresh_token'],
                                       "expires_in": token_info['expires_in'],
                                       "expires_at": int(time.time()) + token_info['expires_in']}
+
+

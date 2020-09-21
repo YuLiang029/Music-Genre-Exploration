@@ -4,3 +4,4 @@ Werkzeug==0.16.1
 flask_sqlalchemy==2.4.4
 six==1.15.0
 requests==2.24.0
+tagme==0.1.3

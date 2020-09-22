@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, url_for, redirect, jsonify, request, flash
+from flask import Blueprint, render_template, url_for, redirect, request, flash
 from database import db
 from flask_oauthlib.client import OAuth
 from flask import session
@@ -11,11 +11,12 @@ import uuid
 import six
 import base64
 import requests
+from general import User, Artist, TopArtists
 
-general_bp = Blueprint('general_bp', __name__,
-                       template_folder='templates')
+spotify_basic_bp = Blueprint('spotify_basic_bp', __name__,
+                             template_folder='templates')
 
-oauth = OAuth(general_bp)
+oauth = OAuth(spotify_basic_bp)
 keys = {"CLIENT_ID": "", "CLIENT_SECRET_ID": ""}
 
 try:
@@ -40,53 +41,7 @@ def get_spotify_token():
     return session.get('oauth_token')
 
 
-class User(db.Model):
-    __tablename__ = 'user'
-    id = db.Column(db.VARCHAR, primary_key=True)
-    username = db.Column(db.VARCHAR)
-    imageurl = db.Column(db.VARCHAR)
-    userhash = db.Column(db.VARCHAR)
-    consent_to_share = db.Column(db.Boolean)
-    top_artists = db.relationship('TopArtists', cascade='all')
-
-    def __repr__(self):
-        return '<User %r>' % self.id
-
-
-class TopArtists(db.Model):
-    __tablename__ = 'top_artists'
-    user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'), primary_key=True)
-    artist_id = db.Column(db.VARCHAR, db.ForeignKey('artist.id'), primary_key=True,)
-    time_period = db.Column(db.VARCHAR, primary_key=True)
-    timestamp = db.Column(db.FLOAT)
-    artist = db.relationship('Artist', cascade='save-update, merge')
-
-    def __repr__(self):
-        return '<TopArtists %r-%r>' % (self.userid, self.artistid)
-
-
-class Artist(db.Model):
-    __tablename__ = 'artist'
-    id = db.Column(db.VARCHAR, primary_key=True)
-    followers = db.Column(db.INTEGER)
-    genres = db.Column(db.VARCHAR)
-    image_middle = db.Column(db.VARCHAR)
-    name = db.Column(db.VARCHAR)
-    popularity = db.Column(db.INTEGER)
-    external_urls = db.Column(db.VARCHAR)
-    href = db.Column(db.VARCHAR)
-    uri = db.Column(db.VARCHAR)
-
-    def __repr__(self):
-        return '<Artist %r>' % self.id
-
-
-@general_bp.route('/')
-def index():
-    return render_template('index.html')
-
-
-@general_bp.route('/login')
+@spotify_basic_bp.route('/login')
 def login():
     """
     Controller for login:
@@ -111,8 +66,8 @@ def login():
     if "oauth_token" not in session:
         print("DEBUG: NO TOKEN IN SESSION, REDIRECTING")
         callback = url_for(
-            'general_bp.authorized',
-            next=url_for("general_bp.test_url"),
+            'spotify_basic_bp.authorized',
+            next=url_for("spotify_basic_bp.test_url"),
             _external=True
         )
         print(callback)
@@ -127,17 +82,17 @@ def login():
         return redirect(redirect_url)
 
 
-@general_bp.route('/login/authorized')
+@spotify_basic_bp.route('/login/authorized')
 def authorized():
     #   retrieve basic user information
     print("Redirect from Spotify")
     try:
-        next_url = request.args.get('next') or url_for('general_bp.index')
+        next_url = request.args.get('next') or url_for('spotify_basic_bp.index')
 
         resp = spotify.authorized_response()
         if resp is None:
             flash(u'You denied the request to sign in with your Spotify account')
-            return redirect(url_for('general_bp.index'))
+            return redirect(url_for('spotify_basic_bp.index'))
 
         session['oauth_token'] = {"access_token": resp['access_token'], "refresh_token": resp['refresh_token'],
                                   "expires_in": resp['expires_in'],
@@ -183,12 +138,12 @@ def authorized():
         return render_template("SpotifyConnectFailed.html")
 
 
-@general_bp.route('/test_url')
+@spotify_basic_bp.route('/test_url')
 def test_url():
     return render_template("test.html")
 
 
-@general_bp.route('/scrape')
+@spotify_basic_bp.route('/scrape')
 def scrape(limit=50):
     """
     Scrape user top artists

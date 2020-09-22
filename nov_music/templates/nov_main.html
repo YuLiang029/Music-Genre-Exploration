@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+{% block title %}Homepage{% endblock %}
+{% block content %}
+
+    <h2>
+        November Music Explorer
+    </h2>
+
+    <p >
+        This app is designed to help you explore events on November Music and discover events that fit you most
+    </p>
+
+    <p>
+        You can choose from two options.
+        Click the button <b>Explore WITHOUT Spotify Login</b> (left) or <b>Explore WITH Spotify Login.</b>
+        The Spotify login will allow us to get your Spotify top listened tracks to personalize the
+        recommendations.
+
+    </p>
+
+    <p>
+        The information that we collect with this app is securely stored
+        and will only be used for scientific research, for which your data will be kept anonymous.
+        We can only access your Spotify data only when you are using this app
+    </p>
+
+    <br>
+    <div class="row">
+        <div class="text-left col-sm">
+            <a class="btn btn-outline-success" id="action_continue" href="/UNDEFINED">
+                Explore WITHOUT Spotify Login <i class="fas"></i>
+            </a>
+        </div>
+
+        <div class="text-right col-sm">
+            <a class="btn btn-outline-success" id="action_continue" href="/login">
+                Explore WITH Spotify Login<i class="fas"></i>
+            </a>
+        </div>
+
+    </div>
+
+
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+    $(function () {
+        var url = window.location.href;
+
+        if (url.includes("?subjectid=")){
+            var subjectid = url.substring(url.indexOf("=")+1, url.length);
+            console.log(subjectid);
+            $('#action_continue').attr('href', '/form_consent?subjectid=' + subjectid);
+        }
+
+    });
+
+    </script>
+{% endblock %}

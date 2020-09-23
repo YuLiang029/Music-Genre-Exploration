@@ -3,3 +3,4 @@ keys.json
 *.db
 .idea
 keys_tagme.json
+*.npy

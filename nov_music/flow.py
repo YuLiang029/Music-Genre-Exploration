@@ -1,15 +1,15 @@
-from general.basic import spotify_basic_bp
-from flask import Blueprint, render_template
+from flask import render_template, redirect, url_for
+from flask import Blueprint
 
-nov_bp = Blueprint('nov_bp', __name__,
-                   template_folder='templates')
+nov_bp = Blueprint('nov_bp', __name__, template_folder='templates')
 
 
 @nov_bp.route('/')
 def index():
-    return render_template('nov_main.html')
+    return render_template('main.html')
 
 
-@nov_bp.route('/spotify_login')
-def spotify_login():
-    spotify_basic_bp.route('/login')
+@nov_bp.route('/test_url')
+def test_url():
+    return render_template("test.html")
+

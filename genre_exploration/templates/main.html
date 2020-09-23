@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+
+    <h2>
+        Welcome to the app ‘Music genre exploration’ 🎅 🎄 🎄
+    </h2>
+
+    <h3 class="lead">Merry Christmas and happy new year! </h3>
+    <p>
+        This music genre exploration app is designed to help you
+        explore a new music genre that you are not familiar with.
+    </p>
+
+    <p>
+        To use this app, you are required to login with your active Spotify account.
+        This will allow us to get your Spotify top listened tracks to personalise the
+        recommendations and it allows you to store the list to your Spotify account
+        if you would like. The information that we collect with this app is securely stored
+        and will only be used for scientific research, for which your data will be kept anonymous.
+        We can only access your Spotify data only when you are using this app.
+    </p>
+
+    <p>
+        <b>Note:</b> If you are using a mobile phone or tablet, please switch to a computer or laptop.
+        Please use either Chrome or Microsoft Edge, as other browsers are not supported.
+    </p>
+
+    <p>
+        By clicking the <mark>continue</mark> button, you <mark>agree</mark> to login with your Spotify account:
+    </p>
+
+    <br>
+
+    <div class="text-right">
+        <a class="btn btn-success" id="action_continue" href="/login/genre_explore_bp.test_url">
+            Continue and login with my Spotify account<i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+
+    <!--<div class="text-right">
+        <a class="btn btn-primary" id="action_continue" href="/qr_login">
+            Continue <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>-->
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+    $(function () {
+        var url = window.location.href;
+
+        if (url.includes("?subjectid=")){
+            var subjectid = url.substring(url.indexOf("=")+1, url.length);
+            console.log(subjectid);
+            $('#action_continue').attr('href', '/form_consent?subjectid=' + subjectid);
+        }
+
+    });
+
+    </script>
+{% endblock %}

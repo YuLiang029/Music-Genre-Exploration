@@ -1,17 +1,16 @@
-from flask import Blueprint, render_template, url_for, redirect, request, flash
+from flask import url_for, redirect, flash, \
+    render_template, request, Blueprint, session
+from general import Artist, TopArtists, User, Track, TopTracks, SessionLog
 from database import db
-from flask_oauthlib.client import OAuth
-from flask import session
-
-import json
-import os
-import time
 import uuid
 
+from flask_oauthlib.client import OAuth
+import json
+import os
 import six
 import base64
 import requests
-from general import User, Artist, TopArtists
+import time
 
 spotify_basic_bp = Blueprint('spotify_basic_bp', __name__,
                              template_folder='templates')
@@ -41,8 +40,8 @@ def get_spotify_token():
     return session.get('oauth_token')
 
 
-@spotify_basic_bp.route('/login')
-def login():
+@spotify_basic_bp.route('/login/<next_url>')
+def login(next_url):
     """
     Controller for login:
     Set authorization scopes: https://developer.spotify.com/documentation/general/guides/scopes/
@@ -67,7 +66,7 @@ def login():
         print("DEBUG: NO TOKEN IN SESSION, REDIRECTING")
         callback = url_for(
             'spotify_basic_bp.authorized',
-            next=url_for("spotify_basic_bp.test_url"),
+            next=url_for(next_url),
             _external=True
         )
         print(callback)
@@ -132,15 +131,26 @@ def authorized():
 
             scrape()
             print(next_url)
+
+            ts = time.time()
+
+            if "subjectid" in session:
+                print(session["subjectid"])
+                subjectid = session["subjectid"]
+            else:
+                print("No subject id")
+                subjectid = "No subject id"
+
+            session['id'] = str(uuid.uuid4())
+            session_log = SessionLog(user_id=session["userid"], id=session['id'], timestamp=ts)
+
+            db.session.add(session_log)
+            db.session.commit()
+
             return redirect(next_url)
     except Exception as e:
         print(e)
         return render_template("SpotifyConnectFailed.html")
-
-
-@spotify_basic_bp.route('/test_url')
-def test_url():
-    return render_template("test.html")
 
 
 @spotify_basic_bp.route('/scrape')
@@ -219,6 +229,56 @@ def scrape(limit=50):
         except Exception as e:
             print(e.args)
             return render_template("SpotifyConnectFailed.html")
+
+    for term in terms:
+        check_token()
+        url = '/v1/me/top/tracks?limit=' + str(limit) + '&time_range=' + term + '_term'
+        print("url: " + url)
+        try:
+            top_track_request = spotify.request(url)
+
+            if top_track_request.status != 200:
+                return "top_track_request status: " + str(top_track_request.status), 400
+            else:
+                top_tracks = top_track_request.data["items"]
+                url = "https://api.spotify.com/v1/audio-features?ids=" + ",".join([x["id"] for x in top_tracks])
+                audio_feature_request = spotify.request(url)
+                audio_feature_data = audio_feature_request.data["audio_features"]
+                track_list = combine_track_features(top_tracks, audio_feature_data)
+                library_objects = tracklist2object(track_list)
+                for x in library_objects:
+                    track = Track.query.filter_by(id=x.id).first()
+                    if track:
+                        entry = TopTracks.query.filter_by(user_id=session["userid"],
+                                                          track_id=x.id,
+                                                          time_period=term).first()
+                        if entry:
+                            pass
+                        else:
+                            new_toptrack_obj = TopTracks(user_id=session["userid"],
+                                                         track_id=x.id,
+                                                         time_period=term,
+                                                         timestamp=str(ts),
+                                                         track=track)
+                            db.session.add(new_toptrack_obj)
+                    else:
+                        new_track_obj = Track(
+                            id=x.id, trackname=x.trackname, popularity=x.popularity, preview_url=x.preview_url,
+                            track_number=x.track_number, firstartist=x.firstartist, imageurl=x.imageurl,
+                            spotifyurl=x.spotifyurl, acousticness=x.acousticness, danceability=x.danceability,
+                            duration_ms=x.duration_ms, energy=x.energy, instrumentalness=x.instrumentalness,
+                            key=x.key, liveness=x.liveness, loudness=x.loudness,
+                            speechiness=x.speechiness, tempo=x.tempo, time_signature=x.time_signature,
+                            valence=x.valence
+                        )
+                        new_toptrack_obj = TopTracks(user_id=session["userid"],
+                                                     track_id=x.id, time_period=term,
+                                                     timestamp=str(ts), track=new_track_obj)
+                        db.session.add(new_toptrack_obj)
+                db.session.commit()
+        except Exception as e:
+            print(e.args)
+            return "error", 400
     return "done"
 
 
@@ -273,3 +333,106 @@ def get_refresh_token(refresh_token):
                                       "expires_at": int(time.time()) + token_info['expires_in']}
 
 
+def combine_track_features(track_recommendations, feature_data):
+    """
+    combine track features: basic track feature + audio features
+    :param track_recommendations:
+    :param feature_data:
+    :return:
+    """
+    tracks = {}
+    for item in feature_data + track_recommendations:
+        if item is not None and "id" in item:
+            if item["id"] in tracks:
+                tracks[item["id"]].update(item)
+            else:
+                tracks[item["id"]] = item
+    track_list = [val for (_, val) in tracks.items()]
+    return track_list
+
+
+def tracklist2object(track_list):
+    """
+    tracklist to track object
+    :param track_list: a list if tracks
+    :return: Track object
+    """
+    library_objects = []
+    for track in track_list:
+        try:
+            library_objects.append(
+                Track(
+                    trackname=track["name"],
+                    popularity=track["popularity"],
+                    preview_url=track["preview_url"],
+                    track_number=track["track_number"],
+                    id=track["id"],
+                    firstartist=track["artists"][0]["name"],
+                    imageurl=None if len(track["album"]["images"]) == 0 else track["album"]["images"][1]["url"],
+                    spotifyurl=track["external_urls"]["spotify"],
+                    acousticness=track["acousticness"],
+                    danceability=track["danceability"],
+                    duration_ms=track["duration_ms"],
+                    energy=track["energy"],
+                    instrumentalness=track["instrumentalness"],
+                    key=track["key"],
+                    liveness=track["liveness"],
+                    loudness=track["loudness"],
+                    speechiness=track["speechiness"],
+                    tempo=track["tempo"],
+                    time_signature=track["time_signature"],
+                    valence=track["valence"]
+                )
+            )
+        except Exception as e:
+            print(e)
+            pass
+    return library_objects
+
+
+def generate_playlist(name="demo", description="for demo use", public=False):
+    """
+    generate a playlist to spotify
+    :param name: string, default: "demo"
+    :param description: string, default: "for demo use"
+    :param public: Boolean, default: False
+    :return: playlist_id: string, playlist_url: string
+    """
+    url = '/v1/users/' + session["userid"] + '/playlists'
+    data = {"name": name, "description": description, "public": public}
+    try:
+        playlist = spotify.post(url, data=data, format='json')
+        if playlist.status == 200 or playlist.status == 201:
+            playlist_id = playlist.data['id']
+            playlist_url = playlist.data['external_urls']['spotify']
+            return playlist_id, playlist_url
+        else:
+            return 'failure in creating new playlist on spotify, error ' + str(playlist.status), 400
+    except Exception as e:
+        print(e.args)
+        return "error", 400
+
+
+def save_tracks_to_playlist(playlist_id, playlist_url, track_list):
+    """
+    save a list of tracks to playlist
+    :param playlist_id: string
+    :param playlist_url: string
+    :param track_list: a list of track ids to be added
+    :return: playlist_url: string
+    """
+    url = '/v1/users/' + session["userid"] + '/playlists/' + playlist_id + '/tracks?position=0'
+    prefix = "spotify:track:"
+    new_track_list = []
+
+    for track in track_list:
+        new_track_list.append(prefix + track)
+    data = {"uris": new_track_list}
+    try:
+        new_playlist = spotify.post(url, data=data, format='json')
+        if new_playlist.status == 201:
+            return playlist_url
+        else:
+            return 'failure in saving tracks to the new playlist, error ' + str(new_playlist.status), 400
+    except Exception as e:
+        print(e.args)

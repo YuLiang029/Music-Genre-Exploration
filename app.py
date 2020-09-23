@@ -1,8 +1,9 @@
 from flask import Flask
 from general.basic import spotify_basic_bp
-from text_analyze.spotify_tagme import spotify_tagme_bp
-from database import db
+from recommendation.recommendation import recommendation_bp
 from nov_music.flow import nov_bp
+from database import db
+from genre_exploration.flow import genre_explore_bp
 
 import os
 
@@ -10,8 +11,9 @@ app = Flask(__name__)
 app.config.from_object('config')
 db.init_app(app)
 app.register_blueprint(spotify_basic_bp)
-app.register_blueprint(nov_bp)
-# app.register_blueprint(spotify_tagme_bp)
+app.register_blueprint(recommendation_bp)
+#app.register_blueprint(nov_bp)
+app.register_blueprint(genre_explore_bp)
 
 with app.app_context():
     db.create_all()

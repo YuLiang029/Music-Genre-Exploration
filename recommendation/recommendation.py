@@ -1,4 +1,4 @@
-from flask import session, jsonify, Blueprint
+from flask import session, jsonify, Blueprint, request
 import time
 import uuid
 from general import TopTracks, User
@@ -22,8 +22,8 @@ def genre_recommendation_exp():
     """
     ts = time.time()
     session['recuid'] = str(uuid.uuid4())
-    genre_name = "blues"
-    weight = 0.5
+    genre_name = request.args.get('genre')
+    weight = float(request.args.get('weight'))
     print(weight)
 
     print('selected genre is {}'.format(genre_name))
@@ -32,7 +32,7 @@ def genre_recommendation_exp():
     current_phase = 0
 
     recommendation_log = RecommendationLog(user_id=session["userid"], genre_name=genre_name, current_phase=current_phase,
-                                           start_ts=ts, session_id=str(uuid.uuid4()), id=session['recuid'])
+                                           start_ts=ts, session_id=session['id'], id=session['recuid'])
 
     db.session.add(recommendation_log)
     db.session.commit()
@@ -93,19 +93,23 @@ def get_genre_recommendation_by_popularity(genre_name):
     return genre_df[:300]
 
 
-def get_genre_recommendation_by_preference(genre_name, by_preference=True):
+def get_genre_recommendation_by_preference(genre_name=None, track_df=None, by_preference=True):
     """
     get recommendation by preference within a certain genre: function
-    :param genre_name:
-    :param th_filter: default = True
+    :param genre_name
+    :param track_df
+    :param by_preference
     :return: th_genre_df if th_filter else genre_df
     """
     audio_features = ['danceability', 'valence', 'energy', 'liveness', 'speechiness', 'acousticness']
     track_features = ['id', 'trackname', 'preview_url', 'popularity', 'firstartist', 'imageurl', 'spotifyurl'] + audio_features
 
-    genre_df_folder = os.path.join(os.path.dirname(recommendation_bp.root_path), 'genre_baseline')
-    genre_csv_path = os.path.join(genre_df_folder, genre_name + ".csv")
-    genre_df = pd.read_csv(genre_csv_path)[track_features].drop_duplicates(keep='first')
+    if genre_name is not None:
+        genre_df_folder = os.path.join(os.path.dirname(recommendation_bp.root_path), 'genre_baseline')
+        genre_csv_path = os.path.join(genre_df_folder, genre_name + ".csv")
+        genre_df = pd.read_csv(genre_csv_path)[track_features].drop_duplicates(keep='first')
+    else:
+        genre_df = track_df[track_features].drop_duplicates(subset=['id'], keep='first')
 
     """Gaussian filter function"""
     ls = np.linspace(0, 1, 1000)
@@ -123,9 +127,13 @@ def get_genre_recommendation_by_preference(genre_name, by_preference=True):
     def get_sum_rank(v_danceability_crank, v_valence_crank, v_energy_crank, v_liveness_crank, v_speechiness_crank,
                      v_acousticness_crank, len_genre_df):
 
+        # sum_rank = len_genre_df + 1 - (v_danceability_crank + v_valence_crank +
+        #                                v_energy_crank + v_liveness_crank +
+        #                                v_speechiness_crank + v_acousticness_crank)/6.0
+
         sum_rank = len_genre_df + 1 - (v_danceability_crank + v_valence_crank +
-                                       v_energy_crank + v_liveness_crank +
-                                       v_speechiness_crank + v_acousticness_crank)/6.0
+                                       v_energy_crank) / 3.0
+
         return sum_rank
 
     """Check if user profile has already modeled"""

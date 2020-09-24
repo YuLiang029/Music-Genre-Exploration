@@ -1,6 +1,6 @@
 from flask import url_for, redirect, flash, \
     render_template, request, Blueprint, session
-from general import Artist, TopArtists, User, Track, TopTracks, SessionLog
+from general import Artist, TopArtists, User, Track, TopTracks, SessionLog, ArtistTracks
 from database import db
 import uuid
 
@@ -436,3 +436,40 @@ def save_tracks_to_playlist(playlist_id, playlist_url, track_list):
             return 'failure in saving tracks to the new playlist, error ' + str(new_playlist.status), 400
     except Exception as e:
         print(e.args)
+
+
+def scrape_artist_tracks(artist_id):
+    url = '/v1/artists/' + str(artist_id) + '/top-tracks?country=NL'
+
+    artist_track_request = spotify.request(url)
+
+    if artist_track_request.status != 200:
+        return "artist_track_request status: " + str(artist_track_request.status), 400
+    else:
+        artist_tracks = artist_track_request.data["tracks"]
+        url = "https://api.spotify.com/v1/audio-features?ids=" + ",".join([x["id"] for x in artist_tracks])
+        audio_feature_request = spotify.request(url)
+        audio_feature_data = audio_feature_request.data["audio_features"]
+        track_list = combine_track_features(artist_tracks, audio_feature_data)
+        library_objects = tracklist2object(track_list)
+        for x in library_objects:
+            track = Track.query.filter_by(id=x.id).first()
+            if track:
+                    new_artist_track_obj = ArtistTracks(artist_id=artist_id,
+                                                        track_id=x.id)
+                    db.session.add(new_artist_track_obj)
+            else:
+                new_track_obj = Track(
+                    id=x.id, trackname=x.trackname, popularity=x.popularity, preview_url=x.preview_url,
+                    track_number=x.track_number, firstartist=x.firstartist, imageurl=x.imageurl,
+                    spotifyurl=x.spotifyurl, acousticness=x.acousticness, danceability=x.danceability,
+                    duration_ms=x.duration_ms, energy=x.energy, instrumentalness=x.instrumentalness,
+                    key=x.key, liveness=x.liveness, loudness=x.loudness,
+                    speechiness=x.speechiness, tempo=x.tempo, time_signature=x.time_signature,
+                    valence=x.valence
+                )
+
+                new_artist_track_obj = ArtistTracks(artist_id=artist_id,
+                                                    track_id=x.id, track=new_track_obj)
+                db.session.add(new_artist_track_obj)
+        db.session.commit()

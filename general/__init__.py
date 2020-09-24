@@ -129,3 +129,14 @@ class SessionLog(db.Model):
 
     def __repr__(self):
         return '<SessionLog %r-%r>' % (self.user_id, self.session_id)
+
+
+class ArtistTracks(db.Model):
+    __tablename__ = 'artist_tracks'
+    artist_id = db.Column(db.VARCHAR, db.ForeignKey('artist.id'), primary_key=True)
+    track_id = db.Column(db.VARCHAR, db.ForeignKey('track.id'), primary_key=True)
+    track = db.relationship('Track', cascade='save-update, merge')
+
+    def __repr__(self):
+        return '<ArtistTracks %r-%r>' % (self.artist_id, self.track_id)
+

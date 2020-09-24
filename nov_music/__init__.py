@@ -28,6 +28,9 @@ class EventArtists(db.Model):
     def __repr__(self):
         return '<EventArtists %r-%r>' % (self.event_id, self.artist_id)
 
+    def get_artist_id_only(self):
+        return self.artist_id
+
 
 class EventTracks(db.Model):
     __tablename__ = 'event_tracks'

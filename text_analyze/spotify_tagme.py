@@ -48,21 +48,6 @@ except Exception as e:
 tagme.GCUBE_TOKEN = str(keys_tagme["token"])
 
 
-@spotify_tagme_bp.route('/load_event')
-def load_artist():
-    path = '/Users/yuliang/Desktop/text_for_novmusic/event.json'
-
-    with open(path) as json_file:
-        events = json.load(json_file)['events']
-
-    for event in events:
-        event_obj = Event(name=event["name"], info=event["info"], url=event["url"])
-        db.session.add(event_obj)
-    db.session.commit()
-
-    return render_template("test.html")
-
-
 @spotify_tagme_bp.route('/annote_event')
 def annote_event():
     events = db.session.query(Event).all()

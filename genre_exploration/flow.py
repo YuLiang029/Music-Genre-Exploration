@@ -36,13 +36,6 @@ def explore_genre():
                            control=control, vis=vis)
 
 
-@genre_explore_bp.route('/user_top_tracks')
-def user_top_tracks():
-    user_id = session["userid"]
-    top_tracks = TopTracks.query.filter_by(user_id=user_id).all()
-    return jsonify([x.track.to_json() for x in top_tracks])
-
-
 @genre_explore_bp.route('/genre_top_tracks')
 def genre_top_tracks():
     """

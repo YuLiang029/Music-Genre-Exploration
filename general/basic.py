@@ -1,5 +1,5 @@
 from flask import url_for, redirect, flash, \
-    render_template, request, Blueprint, session
+    render_template, request, Blueprint, session, jsonify
 from general import Artist, TopArtists, User, Track, TopTracks, SessionLog, ArtistTracks
 from database import db
 import uuid
@@ -282,6 +282,13 @@ def scrape(limit=50):
     return "done"
 
 
+@spotify_basic_bp.route('/user_top_tracks')
+def user_top_tracks():
+    user_id = session["userid"]
+    top_tracks = TopTracks.query.filter_by(user_id=user_id).all()
+    return jsonify([x.track.to_json() for x in top_tracks])
+
+
 def is_token_expired():
     """
     check if token is expired
@@ -473,3 +480,4 @@ def scrape_artist_tracks(artist_id):
                                                     track_id=x.id, track=new_track_obj)
                 db.session.add(new_artist_track_obj)
         db.session.commit()
+

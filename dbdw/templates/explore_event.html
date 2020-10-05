@@ -695,12 +695,11 @@
     Promise.all([
         d3.json("/event_recommendation"),
         d3.json("/user_top_tracks"),
-        d3.json("/event_recommendation")
     ]).then(function(data) {
         // Extract data from promises
         let recommendations = data[0],
             user_top_tracks = data[1],
-            genre_top_tracks = data[2];
+            genre_top_tracks = data[0];
 
         // Set global variables based on data
         all_recommendations = recommendations;

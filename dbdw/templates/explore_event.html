@@ -25,49 +25,7 @@
     <div class="row">
         <div class="{% if vis %}col-sm-7 order-sm-2{% else %}col-12 col-sm-8 offset-sm-2 make-sticky-later{% endif %}">
             <div class="mb-3 make-sticky-later">
-                {% if control %}
-                    <div class="sliders show-on-success" id="moodControl"
-                         data-intro="With these sliders, you can adapt the recommendations to your current mood.
-                         You are able to control how exciting and positive the songs are that are generated in the list.
-                         The  outlines around the sliders show for each feature the range of energy and valence that
-                         occurs in the {{ genre }} genre." data-step='2'>
-                        <span class="help" data-toggle="tooltip" data-placement="top"
-                              title="With these sliders, you can adapt the recommendations to your current mood.
-                         You are able to control how exciting and positive the songs are that are generated in the list.
-                         The  outlines around the sliders show for each feature the range of energy and valence that
-                         occurs in the {{ genre }} genre.">
-                            <i class="fas fa-question-circle text-info"></i>
-                        </span>
 
-                        <span class="slider-msg">Use the sliders to adapt the recommendations to your current mood.</span>
-                        <div class="slider-container">
-                            <span class="slider-tag">Calming</span>
-                            <span class="slider-container-inner">
-                                <input type="range"
-                                       class="slider"
-                                       id="energySlider"
-                                       min="0"
-                                       max="1"
-                                       step="0.01">
-                                <span class="sliderBounds" id="energySliderBounds"></span>
-                            </span>
-                            <span class="slider-tag">Exciting</span>
-                        </div>
-                        <div class="slider-container">
-                            <span class="slider-tag">Negative</span>
-                            <span class="slider-container-inner">
-                        <input type="range"
-                               class="slider"
-                               id="valenceSlider"
-                               min="0"
-                               max="1"
-                               step="0.01">
-                        <span class="sliderBounds" id="valenceSliderBounds"></span>
-                    </span>
-                            <span class="slider-tag">Positive</span>
-                        </div>
-                    </div>
-                {% endif %}
 
                 {% if vis %}
                     <div id="contour_viz" class="show-on-success" data-intro="In this graph, you can see how the
@@ -130,16 +88,6 @@
     let contour_plot;
     let user_mean_energy;
     let user_mean_valence;
-
-    let $eSlider;
-    let $vSlider;
-    let $eBounds;
-    let $vBounds;
-
-    let maxE;
-    let minE;
-    let maxV;
-    let minV;
 
     const number_of_tracks = 10;
     const colors = {
@@ -237,126 +185,8 @@
             let track_id = $(this).children(".trackid").attr("value");
             $(".rec_scatter [data-track-id=" + track_id + "]").removeClass("circle--highlighted");
         });
-
-        // Set slider colors based on the synchronised color settings
-        $("#energySliderBounds").css("background-color", colors.energy);
-        $("#valenceSliderBounds").css("background-color", colors.valence);
-
-        // eventListeners for the sliders
-        $("#energySlider").on('change', function(e) {slidersChanged(e.currentTarget, minE, maxE);});
-        $("#valenceSlider").on('change', function(e) {slidersChanged(e.currentTarget, minV, maxV);});
     });
 
-    /* Slider functions ----------------------------------------------------------------------------------------------*/
-    // @TODO: implement this function on first load, so ranking does not change between conditions and depending on whether sliders are used
-    function slidersChanged(slider, min, max) {
-        if (slider.value > max) slider.value = max;
-        if (slider.value < min) slider.value = min;
-
-        logSliderInteraction(slider);
-        calculateScore();
-    }
-
-    function logSliderInteraction(slider) {
-        $.ajax({
-            type: "POST",
-            url: "/log_slider_interact",
-            data: {
-                'sliderid': slider.id,
-                'sliderval': slider.value
-            }
-        });
-    }
-
-    // Calculate new score for each recommendation with distance
-    function calculateScore() {
-        let eVal = $eSlider.val();
-        let vVal = $vSlider.val();
-        let w = 0.5;
-
-        for (let i = 0; i < all_recommendations.length; i++) {
-            let eData = all_recommendations[i]["energy"];
-            let vData = all_recommendations[i]["valence"];
-
-            let distance = Math.sqrt(Math.pow(eVal - eData, 2) + Math.pow(vVal - vData, 2)); // Euclidean distance
-            all_recommendations[i]["distance_based_score"] = distance;
-        }
-
-        all_recommendations.sort(function(a, b) {
-           return a.distance_based_score - b.distance_based_score;
-        });
-
-        for (let i = 0; i < all_recommendations.length; i++) {
-            all_recommendations[i]['combined_ranking'] = w * (301 - i) + (1 - w) * (301 - all_recommendations[i]['yu_ranking']);
-        }
-
-        all_recommendations.sort(function(a, b) {
-            return b.combined_ranking - a.combined_ranking;
-        });
-
-        let $playlist = $("#playlist");
-        if ($playlist.children().length !== 0) {
-            $playlist.empty();
-        }
-
-        visible_recommendations = all_recommendations.slice(0, number_of_tracks);
-        fillPlaylist();
-        contour_plot.update_contour_plot(visible_recommendations);
-    }
-
-    function setSliders() {
-        $eSlider = $("#energySlider");
-        $vSlider = $("#valenceSlider");
-        $eBounds = $("#energySliderBounds");
-        $vBounds = $("#valenceSliderBounds");
-
-        maxE = getMax(all_recommendations, "energy");
-        minE = getMin(all_recommendations, "energy");
-        maxV = getMax(all_recommendations, "valence");
-        minV = getMin(all_recommendations, "valence");
-
-        // Hack to fix the slider reporting a width of 0
-        setTimeout(function(){
-            width = $eSlider.width();
-            fillElements(width);
-        }, 0);
-
-        function fillElements(w) {
-            let eLeft = minE * w + "px";
-            let vLeft = minV * w + "px";
-
-            let eWidth = (maxE - minE) * w + "px";
-            let vWidth = (maxV - minV) * w + "px";
-
-            $eBounds.css({"left": eLeft, "width": eWidth});
-            $vBounds.css({"left": vLeft, "width": vWidth});
-        }
-
-        function getMax(data, prop) {
-            let max = data[0][prop];
-            for (let i = 0; i < data.length; i++) {
-                if (data[i][prop] > max) {
-                    max = data[i][prop];
-                }
-            }
-            return max;
-        }
-
-        function getMin(data, prop) {
-            let min = data[0][prop];
-            for (let i = 0; i < data.length; i++) {
-                if (data[i][prop] < min) {
-                    min = data[i][prop];
-                }
-            }
-            return min;
-        }
-
-        $(window).resize(function() {
-            let width = $("#energySlider").width();
-            fillElements(width);
-        });
-    }
 
     /* Contour plot visualisation ------------------------------------------------------------------------------------*/
     function ContourPlot(recommendations, user_top_tracks, genre_top_tracks) {
@@ -719,9 +549,8 @@
             return sum/tracks.length;
         }
 
-        // Initialise playlist, sliders, and visualisation
+        // Initialise playlist and visualisation
         fillPlaylist();
-        setSliders();
         contour_plot = new ContourPlot(visible_recommendations, user_top_tracks, genre_top_tracks);
 
         // Hide loading indicator and show results

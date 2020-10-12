@@ -22,9 +22,8 @@ class RecommendationLog(db.Model):
 class RecTracks(db.Model):
     __tablename__ = 'rec_tracks'
     rec_id = db.Column(db.VARCHAR, db.ForeignKey('recommendation_log.id'), primary_key=True)
-    track_id = db.Column(db.VARCHAR, db.ForeignKey('track.id'), primary_key=True)
+    track_id = db.Column(db.VARCHAR, primary_key=True)
     rank = db.Column(db.Integer)
-    track = db.relationship(Track)
 
     def __repr__(self):
         return '<RecTracks %r-%r>' % (self.rec_id, self.track_id)

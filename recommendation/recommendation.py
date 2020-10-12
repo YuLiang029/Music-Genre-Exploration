@@ -13,6 +13,9 @@ from recommendation import RecommendationLog, RecTracks
 recommendation_bp = Blueprint('recommendation_bp', __name__,
                               template_folder='templates')
 
+audio_features = ['danceability', 'valence', 'energy', 'liveness', 'speechiness', 'acousticness']
+track_features = ['id', 'trackname'] + audio_features
+
 
 @recommendation_bp.route('/genre_recommendation_exp')
 def genre_recommendation_exp():
@@ -61,7 +64,7 @@ def genre_recommendation_exp():
             by=['ranking_score', 'trackname'], ascending=[False, True]).reset_index(drop=True)
         print('mix genre dataframe length is {}'.format(len(genre_df)))
 
-        return genre_df[:300]
+        return genre_df
 
     genre_df1 = get_genre_recommendation_by_mix(weight=weight)
 
@@ -88,8 +91,9 @@ def get_genre_recommendation_by_popularity(genre_name):
     genre_csv_path = os.path.join(genre_basline_folder, genre_name + ".csv")
     genre_df = pd.read_csv(genre_csv_path)
 
-    print ('popularity return dataframe length is {}'.format(len(genre_df)))
+    print('popularity return dataframe length is {}'.format(len(genre_df)))
 
+    # return top 300 recommendations
     return genre_df[:300]
 
 
@@ -101,8 +105,6 @@ def get_genre_recommendation_by_preference(genre_name=None, track_df=None, by_pr
     :param by_preference
     :return: th_genre_df if th_filter else genre_df
     """
-    audio_features = ['danceability', 'valence', 'energy', 'liveness', 'speechiness', 'acousticness']
-    track_features = ['id', 'trackname', 'preview_url', 'popularity', 'firstartist', 'imageurl', 'spotifyurl'] + audio_features
 
     if genre_name is not None:
         genre_df_folder = os.path.join(os.path.dirname(recommendation_bp.root_path), 'genre_baseline')
@@ -194,14 +196,12 @@ def get_genre_recommendation_by_preference(genre_name=None, track_df=None, by_pr
     print('preference-based genre dataframe length is {}'.format(len(genre_df)))
 
     if by_preference:
-        return genre_df[:300]
+        return genre_df[track_features + ['sum_rank']]
     else:
         return genre_df
 
 
 def check_user_model():
-    audio_features = ['danceability', 'valence', 'energy', 'liveness', 'speechiness', 'acousticness']
-    track_features = ['id', 'trackname', 'preview_url', 'popularity', 'firstartist', 'imageurl', 'spotifyurl'] + audio_features
     userid = session["userid"]
 
     user_obj = TopTracks.query.filter_by(user_id=userid).all()
@@ -241,7 +241,7 @@ def check_user_model():
                 np.save(os.path.join(user_folder_path, current_user + "_" + audio_feature), p1)
             return "successfully build the model"
         except Exception as e:
-            print (e)
+            print(e)
             return "error"
 
 

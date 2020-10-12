@@ -6,18 +6,35 @@ from recommendation import RecommendationLog
 from database import db
 from recommendation.recommendation import get_genre_recommendation_by_preference
 from recommendation import RecTracks
-
+from dbdw import UserCondition
 
 dbdw_bp = Blueprint('dbdw_bp', __name__, template_folder='templates')
 
 
-@dbdw_bp.route('/')
-def index():
-    return render_template('main.html')
+@dbdw_bp.route('/home')
+def home():
+    return render_template("main.html")
 
 
 @dbdw_bp.route('/test_url')
 def test_url():
+    user_condition = UserCondition.query.filter_by(user_id=session["userid"]).first()
+    if not user_condition:
+        #get the last condition
+        last_user_condition = UserCondition.query.order_by(UserCondition.timestamp.asc()).first()
+
+        if last_user_condition:
+            user_condition_new = UserCondition(user_id=session["userid"],
+                                               timestamp=time.time(),
+                                               condition=(last_user_condition.condition+1) % 3)
+            db.session.add(user_condition_new)
+        else:
+            user_condition_new = UserCondition(user_id=session["userid"],
+                                               timestamp=time.time(),
+                                               condition=0)
+            db.session.add(user_condition_new)
+        db.session.commit()
+
     return render_template("form_consent.html")
 
 
@@ -25,7 +42,10 @@ def test_url():
 def event_explore():
     control = 1
     vis = 1
-    return render_template("explore_event.html", control=control, vis=vis)
+    user_condition = UserCondition.query.filter_by(user_id=session["userid"]).first()
+
+    print(user_condition.condition)
+    return render_template("explore_event.html", control=control, vis=vis, condition=user_condition.condition)
 
 
 @dbdw_bp.route('/event_recommendation')

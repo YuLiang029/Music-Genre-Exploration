@@ -86,12 +86,12 @@ def authorized():
     #   retrieve basic user information
     print("Redirect from Spotify")
     try:
-        next_url = request.args.get('next') or url_for('spotify_basic_bp.index')
+        next_url = request.args.get('next') or url_for('index')
 
         resp = spotify.authorized_response()
         if resp is None:
             flash(u'You denied the request to sign in with your Spotify account')
-            return redirect(url_for('spotify_basic_bp.index'))
+            return redirect(url_for('index'))
 
         session['oauth_token'] = {"access_token": resp['access_token'], "refresh_token": resp['refresh_token'],
                                   "expires_in": resp['expires_in'],

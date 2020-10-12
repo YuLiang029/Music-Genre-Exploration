@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template, redirect, url_for
 from general.basic import spotify_basic_bp
 from recommendation.recommendation import recommendation_bp
 from nov_music.flow import nov_bp
@@ -22,6 +22,11 @@ with app.app_context():
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5001)), debug=True)
+
+
+@app.route('/')
+def index():
+    return redirect(url_for("dbdw_bp.home"))
 
 
 @app.after_request

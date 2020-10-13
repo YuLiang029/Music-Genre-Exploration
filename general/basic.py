@@ -129,7 +129,7 @@ def authorized():
             flash('You were signed in as %s' % display_name)
             session["userid"] = user.id
 
-            scrape()
+            scrape(limit=50, type="tracks")
             print(next_url)
 
             ts = time.time()
@@ -154,7 +154,7 @@ def authorized():
 
 
 @spotify_basic_bp.route('/scrape')
-def scrape(limit=50):
+def scrape(limit=50, type="tracks"):
     """
     Scrape user top artists
     https://developer.spotify.com/console/get-current-user-top-artists-and-tracks/
@@ -163,19 +163,19 @@ def scrape(limit=50):
     :return:
     """
 
-    terms = ['short', 'medium', 'long']
-    # terms = ['short']
+    if type == "tracks":
+        track_scrape(limit=limit)
+    elif type == "artists":
+        artist_scrape(limit=limit)
+    else:
+        track_scrape(limit=limit)
+        artist_scrape(limit=limit)
+    return "done"
+
+
+def artist_scrape(limit=50):
     ts = time.time()
-
-    def check_token():
-        if "oauth_token" not in session:
-            print("authorizing")
-            session["redirecturl"] = url_for("scrape")
-            return spotify.authorize(url_for("authorized", _external=True))
-
-        if is_token_expired():
-            refresh_token = session["oauth_token"]["refresh_token"]
-            get_refresh_token(refresh_token)
+    terms = ['short', 'medium', 'long']
 
     for term in terms:
         check_token()
@@ -217,7 +217,6 @@ def scrape(limit=50):
                             href=x["href"],
                             uri=x["uri"]
 
-
                         )
                         new_top_artist_obj = TopArtists(user_id=session["userid"],
                                                         artist_id=x["id"],
@@ -228,7 +227,10 @@ def scrape(limit=50):
                 db.session.commit()
         except Exception as e:
             print(e.args)
-            return render_template("SpotifyConnectFailed.html")
+
+
+def track_scrape(limit=50):
+    terms = ['short', 'medium', 'long']
 
     for term in terms:
         check_token()
@@ -278,8 +280,17 @@ def scrape(limit=50):
                 db.session.commit()
         except Exception as e:
             print(e.args)
-            return "error", 400
-    return "done"
+
+
+def check_token():
+    if "oauth_token" not in session:
+        print("authorizing")
+        session["redirecturl"] = url_for("scrape")
+        return spotify.authorize(url_for("authorized", _external=True))
+
+    if is_token_expired():
+        refresh_token = session["oauth_token"]["refresh_token"]
+        get_refresh_token(refresh_token)
 
 
 @spotify_basic_bp.route('/user_top_tracks')

@@ -1,6 +1,6 @@
 from flask import url_for, redirect, flash, \
     render_template, request, Blueprint, session, jsonify
-from general import Artist, TopArtists, User, Track, TopTracks, SessionLog, ArtistTracks
+from general import Artist, TopArtists, User, Track, TopTracks, SessionLog, ArtistTracks, MsiResponse
 from database import db
 import uuid
 
@@ -11,6 +11,7 @@ import six
 import base64
 import requests
 import time
+import re
 
 spotify_basic_bp = Blueprint('spotify_basic_bp', __name__,
                              template_folder='templates')
@@ -230,6 +231,7 @@ def artist_scrape(limit=50):
 
 
 def track_scrape(limit=50):
+    ts = time.time()
     terms = ['short', 'medium', 'long']
 
     for term in terms:
@@ -491,4 +493,161 @@ def scrape_artist_tracks(artist_id):
                                                     track_id=x.id, track=new_track_obj)
                 db.session.add(new_artist_track_obj)
         db.session.commit()
+
+
+@spotify_basic_bp.route('/msi_survey', methods=["GET", "POST"])
+def msi_survey():
+    if request.method == "GET":
+        responses = User.query.filter_by(id=session["userid"]).first().msi_response
+        surveydata = {}
+
+        for responseitem in responses:
+            m = re.match(r"^([^\[]*)\[([0-9]+)\]$", responseitem.item_id)
+            if m:
+                print(responseitem.item_id + " " + m.group(1))
+                print(m.group(1))
+                if m.group(1) in surveydata:
+                    surveydata[m.group(1)][m.group(2)] = responseitem.value
+                else:
+                    surveydata[m.group(1)] = {}
+                    surveydata[m.group(1)][m.group(2)] = responseitem.value
+            else:
+                surveydata[responseitem.item_id] = responseitem.value
+        survey = {
+            "showProgressBar": "top",
+            "pages": [{
+                "questions": [{
+                    "name": "email",
+                    "type": "text",
+                    "inputType": "email",
+                    "title": "Your contact email:",
+                    "isRequired": "true",
+                    "validators": [{
+                        "type": "email"
+                    }]
+                }, {
+                    "name": "age",
+                    "type": "text",
+                    "title": "Your age (years):",
+                    "isRequired": "true"
+                }, {
+                    "name": "gender",
+                    "type": "dropdown",
+                    "title": "Your gender:",
+                    "isRequired": "true",
+                    "colCount": 0,
+                    "choices": [
+                        "male",
+                        "female",
+                        "other"
+                    ]
+                }]
+            }, {
+                "questions": [{
+                    "type": "matrix",
+                    "name": "Active Engagement",
+                    "title": "Below some questions how you relate to music. "
+                             "Please indicate to what extent you agree or disagree with each statement.",
+                    "isAllRowRequired": "true",
+                    "columns": [
+                        {"value": 1, "text": "Completely Disagree"},
+                        {"value": 2, "text": "Strongly Disagree"},
+                        {"value": 3, "text": "Disagree"},
+                        {"value": 4, "text": "Neither Agree nor Disagree"},
+                        {"value": 5, "text": "Agree"},
+                        {"value": 6, "text": "Strongly Agree"},
+                        {"value": 7, "text": "Completely Agree"}
+                    ],
+                    "rows": [
+                        {"value": "1", "text": "I spend a lot of my free time doing music-related activities."},
+                        {"value": "2", "text": "I enjoy writing about music, for example on blogs and forums."},
+                        {"value": "3", "text": "I'm intrigued by musical styles I'm not familiar with and want "
+                                               "to find out more."},
+                        {"value": "4", "text": "I often read or search the internet for things related to music."},
+                        {"value": "5", "text": "I don't spend much of my disposable income on music."},
+                        {"value": "6", "text": "Music is kind of an addiction for me - I couldn't live without it."},
+                        {"value": "7", "text": "I keep track of new of music that I come across (e.g. new artists "
+                                               "or recordings)."}
+                    ]
+                }, {
+                    "type": "dropdown",
+                    "name": "8",
+                    "title": "I have attended _ live music events as an audience member in the past twelve months.",
+                    "isRequired": "true",
+                    "colCount": 0,
+                    "choices": [
+                        "0",
+                        "1",
+                        "2",
+                        "3",
+                        "4-6",
+                        "7-10",
+                        "11 or more"
+                    ]
+                }, {
+                    "type": "dropdown",
+                    "name": "9",
+                    "title": "I listen attentively to music for __ per day.",
+                    "isRequired": "true",
+                    "colCount": 0,
+                    "choices": [
+                        "0-15 minutes",
+                        "15-30 minutes",
+                        "30-60 minutes",
+                        "60-90 minutes",
+                        "2 hours",
+                        "2-3 hours",
+                        "4 hours or more"
+                    ]
+                }]
+            }, {
+                "questions": [{
+                    "type": "matrix",
+                    "name": "Emotions",
+                    "title": "Please indicate to what extent you agree or disagree with the following statements",
+                    "isAllRowRequired": "true",
+                    "columns": [
+                        {"value": 1, "text": "Completely Disagree"},
+                        {"value": 2, "text": "Strongly Disagree"},
+                        {"value": 3, "text": "Disagree"},
+                        {"value": 4, "text": "Neither Agree nor Disagree"},
+                        {"value": 5, "text": "Agree"},
+                        {"value": 6, "text": "Strongly Agree"},
+                        {"value": 7, "text": "Completely Agree"}
+                    ],
+                    "rows": [
+                        {"value": "10",
+                         "text": "I sometimes choose music that can trigger shivers down my spine."},
+                        {"value": "11", "text": "Pieces of music rarely evoke emotions for me."},
+                        {"value": "12", "text": "I often pick certain music to motivate or excite me."},
+                        {"value": "13",
+                         "text": "I am able to identify what is special about a given musical piece."},
+                        {"value": "14",
+                         "text": "I am able to talk about the emotions that a piece of music evokes for me."},
+                        {"value": "15", "text": "Music can evoke my memories of past people and places."}
+                    ]
+                }]
+            }],
+            "completedHtml": "Redirecting to the next page..."
+        }
+
+        survey_config = {
+            'title': 'Musical sophistication survey',
+            'description': 'The music sophistication survey makes us know your music expertise better.',
+            'next_url': url_for('msi_next')
+        }
+
+        print(surveydata)
+        return render_template('survey.html', survey=survey, surveydata=surveydata, survey_config=survey_config)
+
+    if request.method == "POST":
+        stop_ts = time.time()
+
+        user = User.query.filter_by(id=session["userid"]).first()
+        user.msi_response[:] = [
+            MsiResponse(user_id=user.id, user=user,
+                        item_id=item, value=request.form[item], stop_ts=stop_ts) for item in
+            request.form]
+        db.session.commit()
+        return "done"
 

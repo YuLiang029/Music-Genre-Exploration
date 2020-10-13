@@ -64,7 +64,6 @@ def event_recommendation():
     db.session.commit()
 
     recommendations = get_genre_recommendation_by_preference(track_df=track_df, by_preference=True)
-
     for index, row in recommendations.iterrows():
         rec_tracks = RecTracks(rec_id=session['rec_id'], track_id=row["id"], rank=index)
         db.session.add(rec_tracks)

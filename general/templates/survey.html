@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+{% block title %}{{ survey_config.title }}{% endblock %}
+{% block content %}
+    <h2>{{ survey_config.title }}</h2>
+    <p>{{ survey_config.description }}</p>
+
+    <div id="surveyElement"></div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        var post_url = "{{ request.url }}";
+        var next_url = "{{ survey_config.next_url }}";
+
+
+        window.survey = new Survey.Model({{ survey| tojson | safe }});
+
+        survey
+            .onComplete
+            .add(function (result) {
+                $.ajax({
+                    type: "POST",
+                    url: post_url,
+                    data: result.data,
+                }).done(function () {
+                    window.location.href = next_url;
+                });
+            });
+
+
+        survey.data = {{ surveydata | tojson | safe }};
+        console.log(survey.data);
+
+        $("#surveyElement").Survey({ model: survey });
+    </script>
+{% endblock %}

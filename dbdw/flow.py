@@ -6,7 +6,7 @@ from recommendation import RecommendationLog
 from database import db
 from recommendation.recommendation import get_genre_recommendation_by_preference
 from recommendation import RecTracks
-from dbdw import UserCondition
+from dbdw import UserCondition, RecEvent
 
 dbdw_bp = Blueprint('dbdw_bp', __name__, template_folder='templates')
 
@@ -100,7 +100,7 @@ def event_recommendation():
         dict_event["tracks"] = tracks[tracks["event"] == event].to_dict('records')
 
         # attach availability attributes
-        dict_event["availability"] = "true"
+        dict_event["availability"] = True
 
         # attach recommendation score
         dict_event["rec_scores"] = sorted_dict_event_score[event]
@@ -110,9 +110,17 @@ def event_recommendation():
         dict_event["event_energy"] = dict_event_energy[event]
 
         dict_return[event] = dict_event
+        db.session.add(RecEvent(rec_id=session['rec_id'],
+                                event_id=event,
+                                availability=dict_event["availability"],
+                                rec_scores=dict_event["rec_scores"],
+                                event_valence=dict_event_valence[event],
+                                event_energy=dict_event_energy[event],
+                                session_id=session['id'],
+                                user_id=session['userid'],
+                                timestamp=time.time()
+                                ))
+    db.session.commit()
 
     print(dict_return)
     return jsonify(tracks.to_dict('records'))
-
-
-

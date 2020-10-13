@@ -22,3 +22,20 @@ class UserCondition(db.Model):
 
     def __repr__(self):
         return '<UserCondition %r>' % self.user_id
+
+
+class RecEvent(db.Model):
+    __tablename__ = 'rec_event'
+    rec_id = db.Column(db.VARCHAR, db.ForeignKey('recommendation_log.id'), primary_key=True)
+    event_id = db.Column(db.VARCHAR, primary_key=True)
+    availability = db.Column(db.Boolean)
+    rec_scores = db.Column(db.FLOAT)
+    event_valence = db.Column(db.FLOAT)
+    event_energy = db.Column(db.FLOAT)
+    session_id = db.Column(db.VARCHAR, db.ForeignKey('session_log.id'))
+    user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'))
+    timestamp = db.Column(db.FLOAT)
+
+    def __repr__(self):
+        return '<RecEvent %r-%r>' % (self.id, self.user_id)
+

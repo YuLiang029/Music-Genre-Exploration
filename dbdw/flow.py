@@ -6,7 +6,7 @@ from recommendation import RecommendationLog
 from database import db
 from recommendation.recommendation import get_genre_recommendation_by_preference
 from recommendation import RecTracks
-from dbdw import UserCondition, RecEvent
+from dbdw import UserCondition, RecEvent, RegisterEvent
 
 dbdw_bp = Blueprint('dbdw_bp', __name__, template_folder='templates')
 
@@ -20,7 +20,7 @@ def home():
 def test_url():
     user_condition = UserCondition.query.filter_by(user_id=session["userid"]).first()
     if not user_condition:
-        #get the last condition
+        # get the last condition
         last_user_condition = UserCondition.query.order_by(UserCondition.timestamp.asc()).first()
 
         if last_user_condition:
@@ -99,7 +99,8 @@ def event_recommendation():
         dict_event["tracks"] = tracks[tracks["event"] == event].to_dict('records')
 
         # attach availability attributes
-        dict_event["availability"] = True
+        dict_event["session1_availability"] = True
+        dict_event["session2_availability"] = True
 
         # attach recommendation score
         dict_event["rec_scores"] = sorted_dict_event_score[event]
@@ -111,7 +112,8 @@ def event_recommendation():
         dict_return[event] = dict_event
         db.session.add(RecEvent(rec_id=session['rec_id'],
                                 event_id=event,
-                                availability=dict_event["availability"],
+                                session1_availability=dict_event["session1_availability"],
+                                session2_availability=dict_event["session2_availability"],
                                 rec_scores=dict_event["rec_scores"],
                                 event_valence=dict_event_valence[event],
                                 event_energy=dict_event_energy[event],
@@ -123,3 +125,67 @@ def event_recommendation():
 
     print(dict_return)
     return jsonify(tracks.to_dict('records'))
+
+
+@dbdw_bp.route('/register_event')
+def register_event():
+    # Here is the test version, the selected events should be returned from the front end.
+    dict_test = {}
+    dict_test['event_session1'] = "classical"
+    dict_test['event_session2'] = "electronic"
+    max_spot_num = -7
+
+    # first check with the table register_event
+    # event session1 availability
+    event_session1_availability = \
+        RegisterEvent.query.filter(
+        RegisterEvent.event_id ==
+        dict_test['event_session1']).filter(
+        RegisterEvent.event_session == 'event_session1').count()
+
+    # event session2 availability
+    event_session2_availability = \
+        RegisterEvent.query.filter(
+            RegisterEvent.event_id ==
+            dict_test['event_session2']).filter(
+            RegisterEvent.event_session == 'event_session2').count()
+
+    print(event_session1_availability)
+    print(event_session2_availability)
+
+    dict_unavailiable = {}
+    if event_session1_availability < max_spot_num and event_session2_availability < max_spot_num:
+        db.session.add(RegisterEvent(user_id=session["userid"],
+                                     session_id=session["id"],
+                                     rec_id=session["rec_id"],
+                                     event_id=dict_test['event_session1'],
+                                     event_session="event_session1",
+                                     timestamp=time.time()))
+
+        db.session.add(RegisterEvent(user_id=session["userid"],
+                                     session_id=session["id"],
+                                     rec_id=session["rec_id"],
+                                     event_id=dict_test['event_session2'],
+                                     event_session="event_session2",
+                                     timestamp=time.time()))
+        db.session.commit()
+        return render_template("test.html")
+    else:
+        dict_event1 = {}
+        dict_event1['event_id'] = dict_test['event_session1']
+        dict_event1['event_session'] = "event_session1"
+
+        dict_event2 = {}
+        dict_event2['event_id'] = dict_test['event_session2']
+        dict_event2['event_session'] = "event_session2"
+
+        if event_session1_availability == max_spot_num:
+            dict_unavailiable['event_session1'] = dict_event1
+        elif event_session2_availability == max_spot_num:
+            dict_unavailiable['event_session2'] = dict_event2
+        else:
+            dict_unavailiable['event_session1'] = dict_event1
+            dict_unavailiable['event_session2'] = dict_event2
+
+        print(dict_unavailiable)
+        return jsonify(dict_unavailiable)

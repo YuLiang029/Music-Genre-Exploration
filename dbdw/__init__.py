@@ -28,7 +28,8 @@ class RecEvent(db.Model):
     __tablename__ = 'rec_event'
     rec_id = db.Column(db.VARCHAR, db.ForeignKey('recommendation_log.id'), primary_key=True)
     event_id = db.Column(db.VARCHAR, primary_key=True)
-    availability = db.Column(db.Boolean)
+    session1_availability = db.Column(db.Boolean)
+    session2_availability = db.Column(db.Boolean)
     rec_scores = db.Column(db.FLOAT)
     event_valence = db.Column(db.FLOAT)
     event_energy = db.Column(db.FLOAT)
@@ -37,5 +38,18 @@ class RecEvent(db.Model):
     timestamp = db.Column(db.FLOAT)
 
     def __repr__(self):
-        return '<RecEvent %r-%r>' % (self.id, self.user_id)
+        return '<RecEvent %r-%r>' % (self.user_id, self.event_id)
+
+
+class RegisterEvent(db.Model):
+    __tablename__ = 'register_event'
+    user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'))
+    session_id = db.Column(db.VARCHAR, db.ForeignKey('session_log.id'))
+    rec_id = db.Column(db.VARCHAR, db.ForeignKey('recommendation_log.id'), primary_key=True)
+    event_id = db.Column(db.VARCHAR, primary_key=True)
+    event_session = db.Column(db.VARCHAR, primary_key=True)
+    timestamp = db.Column(db.FLOAT)
+
+    def __repr__(self):
+        return '<RegisterEvent %r-%r>' % (self.user_id, self.event_id)
 

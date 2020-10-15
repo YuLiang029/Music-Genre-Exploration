@@ -45,7 +45,7 @@ def event_explore():
     user_condition = UserCondition.query.filter_by(user_id=session["userid"]).first()
 
     print(user_condition.condition)
-    return render_template("explore_event.html", control=control, vis=vis, condition=user_condition.condition)
+    return render_template("explore_event_new.html", control=control, vis=vis, condition=user_condition.condition)
 
 
 @dbdw_bp.route('/event_recommendation')
@@ -88,8 +88,7 @@ def event_recommendation():
     sorted_dict_event_score = {k: v for k, v in sorted(dict_event_score.items(),
                                                        key=lambda item: item[1],
                                                        reverse=True)}
-
-    dict_return = {}
+    l_event_recs = []
     for event in sorted_dict_event_score:
 
         # dictionary for the event
@@ -109,7 +108,8 @@ def event_recommendation():
         dict_event["event_valence"] = dict_event_valence[event]
         dict_event["event_energy"] = dict_event_energy[event]
 
-        dict_return[event] = dict_event
+        dict_event["event"] = event
+
         db.session.add(RecEvent(rec_id=session['rec_id'],
                                 event_id=event,
                                 session1_availability=dict_event["session1_availability"],
@@ -121,10 +121,13 @@ def event_recommendation():
                                 user_id=session['userid'],
                                 timestamp=time.time()
                                 ))
+        l_event_recs.append(dict_event)
+
     db.session.commit()
 
-    print(dict_return)
-    return jsonify(tracks.to_dict('records'))
+    print(l_event_recs)
+    # return jsonify(tracks.to_dict('records'))
+    return jsonify(l_event_recs)
 
 
 @dbdw_bp.route('/register_event')

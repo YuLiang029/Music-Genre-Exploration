@@ -198,6 +198,12 @@ table.sv_q_matrix th {
     opacity: 1;
 }
 
+.rec_scatter path {
+    cursor: pointer;
+    transition: all .1s ease-in-out;
+    opacity: .9;
+}
+
 .barplot {
     font-size: .9rem;
 }
@@ -232,7 +238,9 @@ table.sv_q_matrix th {
 }
 
 .track--highlighted {
-    outline-color: #007bff;
+    /*outline-color: #007bff;*/
+    outline-color: #66a61e;
+    outline-width: 10px;
 }
 
 .track--barplot {

@@ -237,9 +237,15 @@ table.sv_q_matrix th {
     background-color: white;
 }
 
-.track--highlighted {
-    /*outline-color: #007bff;*/
-    outline-color: #66a61e;
+
+
+.track--highlighted1 {
+    outline-color: #007bff;
+    outline-width: 10px;
+}
+
+.track--highlighted2 {
+    outline-color: #4CAF50;
     outline-width: 10px;
 }
 
@@ -320,19 +326,19 @@ table.sv_q_matrix th {
 .main-canvas {
     /*outline: 1px solid #dddddd;;*/
     width: 600px;
-    height: 800px;
-    margin: 50px auto 0;
+    height: 900px;
+    /*margin: 50px auto 0;*/
     position: relative;
 }
 
 .box{
     width: 300px;
-    height: 400px;
+    height: 500px;
     position: absolute;
-    top: 400px;
-    font-size: 24px;
-    color: #ffffff;
-    line-height: 100px;
+    /*top: 400px;*/
+    /*font-size: 24px;*/
+    /*color: #ffffff;*/
+    /*line-height: 100px;*/
     text-align: center;
     cursor: move;
 }
@@ -340,12 +346,37 @@ table.sv_q_matrix th {
 .box1 { left: 0; top: 0;}
 .box2 { left: 300px; top: 0; }
 .box3 { left: 600px; top: 0; background-color: #5DADE2; }
-.box4 { left: 0; top: 400px; }
-.box5 { left: 300px; top: 400px; }
-.box6 { left: 600px; top: 400px; background-color: #F39C12; }
-.box7 { left: 0; top: 800px; background-color: #34495E; }
-.box8 { left: 300px; top: 800px; background-color: #FF00FF; }
-.box9 { left: 600px; top: 800px; background-color: #008080; }
+.box4 { left: 0; top: 500px; }
+.box5 { left: 300px; top: 500px; }
+.box6 { left: 600px; top: 500px; background-color: #F39C12; }
+.box7 { left: 0; top: 1000px; background-color: #34495E; }
+.box8 { left: 300px; top: 1000px; background-color: #FF00FF; }
+.box9 { left: 600px; top: 1000px; background-color: #008080; }
+
+#playlist1 {
+    color: white;
+    font-size: medium;
+    text-align: center;
+}
+
+#playlist2 {
+    color: white;
+    font-size: medium;
+    text-align: center;
+}
+
+#playlist3 {
+    color: #1b9177;
+    font-size: medium;
+    text-align: center;
+}
+
+#playlist4 {
+    color: #1b9177;
+    font-size: medium;
+    text-align: center;
+}
+
 
 #playlist1 ul {
     list-style-type: none;
@@ -371,6 +402,7 @@ table.sv_q_matrix th {
     list-style-type: none;
     padding-left: 0;
     margin: 5px;
+    color: #1b9177;
 }
 
 #playlist3 iframe {
@@ -381,8 +413,22 @@ table.sv_q_matrix th {
     list-style-type: none;
     padding-left: 0;
     margin: 5px;
+    color: #1b9177;
 }
 
 #playlist4 iframe {
     display: block;
 }
+
+#playlist_block1 {
+    /*border: thick solid #007bff;*/
+    background: #0056b3;
+    border-radius: 5px;
+
+}
+
+#playlist_block2 {
+    background: white;
+    border-radius: 5px;
+}
+

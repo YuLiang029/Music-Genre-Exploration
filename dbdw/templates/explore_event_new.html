@@ -23,7 +23,7 @@
     </div>
 
     <div class="row">
-        <div class="{% if vis %}col-sm-6 order-sm-2{% else %}col-12 col-sm-8 offset-sm-2 make-sticky-later{% endif %}">
+        <div class="{% if vis %}col-sm-6 order-sm-3{% else %}col-12 col-sm-8 offset-sm-2 make-sticky-later{% endif %}">
             <div class="mb-3 make-sticky-later">
 
 
@@ -46,33 +46,44 @@
             </div>
         </div>
 
-        <div class="{% if vis %}col-sm-6 order-sm-1{% else %}col-12 position-relative{% endif %}">
+        <div class="col-sm-3 order-sm-1 show-on-success" id="playlist_block1">
 {#            <div id="playlist" class="show-on-success" data-intro="These are the songs recommended to you.#}
 {#                Take your time to listen to them." data-step='1'>#}
 {#            </div>#}
 
 {#            <div class="container">#}
 
-                <div class="main-canvas">
-
-                    <div class="box box1 playlist_new" id="playlist1"></div>
-                    <div class="box box2 playlist_new" id="playlist3"></div>
-            {#        <div class="box box3">3</div>#}
-                    <div class="box box4 playlist_new" id="playlist2"></div>
-                    <div class="box box5 playlist_new" id="playlist4"></div>
-            {#        <div class="box box6">6</div>#}
-            {#        <div class="box box7">7</div>#}
-            {#        <div class="box box8">8</div>#}
-            {#        <div class="box box9">9</div>#}
-
-                </div>
+{#                <div class="main-canvas">#}
+{##}
+{#                    <div class="box box1 playlist_new" id="playlist1"></div>#}
+{#                    <div class="box box2 playlist_new" id="playlist3"></div>#}
+{#                    <div class="box box4 playlist_new" id="playlist2"></div>#}
+{#                    <div class="box box5 playlist_new" id="playlist4"></div>#}
+{##}
+{#                </div>#}
+                    <br>
+                    <button class="btn btn btn-primary btn-block
+                    show-on-success" id="stream_1">Stream 1 (more matching your preferences)</button>
+                    <div id="playlist1" class="playlist_new"></div>
+                    <div id="playlist2" class="playlist_new"></div>
 
 {#            </div>#}
 
 
         </div>
-    </div>
 
+        <div class="col-sm-3 order-sm-2 show-on-success" id="playlist_block2">
+
+
+            <br>
+            <button class="btn btn btn-success btn-block
+            show-on-success" id="stream_2">Stream 2 (more out of your bubbles)</button>
+            <div id="playlist3" class="playlist_new"></div>
+            <div id="playlist4" class="playlist_new"></div>
+
+        </div>
+    </div>
+    <br>
     <div class="row">
         <div class="col-sm">
             <button class="show-on-success btn btn-secondary" id="save_playlist"
@@ -81,6 +92,11 @@
             </button>
         </div>
 
+        <div class="col-sm text-right">
+            <a class="show-on-success btn btn-success" id="continue" href="/save_selected_stream">
+                Continue <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
     </div>
 
 {% endblock %}
@@ -88,17 +104,41 @@
 {% block scripts %}
 
     <script>
+    $('#stream_1').click(function () {
+            $('#playlist_block2').css("background-color", "#ffffff00");
+            $('#playlist_block1').css("background-color", "#0056b3");
+            $('#playlist1').css("color", "white");
+            $('#playlist2').css("color", "white");
+            $('#playlist3').css("color", "#1b9177");
+            $('#playlist4').css("color", "#1b9177");
+            selected_stream = "stream 1";
+            $('#continue').attr('href', '/save_selected_stream?stream=' + selected_stream);
+    });
+
+    $('#stream_2').click(function () {
+        $('#playlist_block1').css("background-color", "#ffffff00");
+        $('#playlist_block2').css("background-color", "#1b9177");
+        $('#playlist1').css("color", "#0056b3");
+        $('#playlist2').css("color", "#0056b3");
+        $('#playlist3').css("color", "white");
+        $('#playlist4').css("color", "white");
+        selected_stream = "stream 2";
+        $('#continue').attr('href', '/save_selected_stream?stream=' + selected_stream);
+
+    });
+
 
     let contour_plot;
     let user_mean_energy;
     let user_mean_valence;
+    let selected_stream;
 
-    let circle = d3.symbol().type(d3.symbolCircle)(),
+    const circle = d3.symbol().type(d3.symbolCircle)(),
         triangleU = d3.symbol().type(d3.symbolTriangle)(),
         cross = d3.symbol().type(d3.symbolCross)(),
         diamond = d3.symbol().type(d3.symbolDiamond)();
 
-    let circle_big = d3.symbol().size(200).type(d3.symbolCircle),
+    const circle_big = d3.symbol().size(200).type(d3.symbolCircle),
         triangleU_big = d3.symbol().size(200).type(d3.symbolTriangle),
         cross_big = d3.symbol().size(200).type(d3.symbolCross),
         diamond_big = d3.symbol().size(200).type(d3.symbolDiamond);
@@ -111,15 +151,22 @@
         "unrecommended": "#1b9e77"
     };
 
-    function fillPlaylist_new(recommendations){
+    function fillPlaylist_new(
+        visible_recommendations1,
+        visible_recommendations2,
+        visible_recommendations3,
+        visible_recommendations4){
+
         let $playlist1 = $("#playlist1");
-        $playlist1.append($("<ul>"));
+        $playlist1.append("<p><b>Event 1</b></p>");
+
+        $playlist1
+            .append($("<ul>"));
         let $playlist1_ul = $("#playlist1 ul");
 
         let i = 0;
 
-
-        recommendations[0].tracks.forEach(function (track) {
+        visible_recommendations1.forEach(function (track) {
             let iframe_suffix = i.toString();
 
             let $newElement = $("<li>").addClass("track")
@@ -134,13 +181,18 @@
 
             $playlist1_ul.append($newElement);
             ++i;
+            selected_stream = "stream 1";
+            $('#continue').attr('href', '/save_selected_stream?stream=' + selected_stream);
         });
 
         let $playlist2 = $("#playlist2");
-        $playlist2.append($("<ul>"));
+        $playlist2.append("<p><b>Event 2</b></p>");
+        $playlist2
+            .append($("<ul>"));
+
         let $playlist2_ul = $("#playlist2 ul");
 
-        recommendations[1].tracks.forEach(function (track) {
+        visible_recommendations2.forEach(function (track) {
             let iframe_suffix = i.toString();
 
             let $newElement = $("<li>").addClass("track")
@@ -159,11 +211,13 @@
 
 
         let $playlist3 = $("#playlist3");
+        $playlist3.append("<p><b>Event 3</b></p>");
 
-        $playlist3.append($("<ul>"));
+        $playlist3
+            .append($("<ul>"));
         let $playlist3_ul = $("#playlist3 ul");
 
-        recommendations[2].tracks.forEach(function (track) {
+        visible_recommendations3.forEach(function (track) {
             let iframe_suffix = i.toString();
 
             let $newElement = $("<li>").addClass("track")
@@ -182,11 +236,13 @@
 
 
         let $playlist4 = $("#playlist4");
+        $playlist4.append("<p><b>Event 4</b></p>");
 
-        $playlist4.append($("<ul>"));
+        $playlist4
+            .append($("<ul>"));
         let $playlist4_ul = $("#playlist4 ul");
 
-        recommendations[3].tracks.forEach(function (track) {
+        visible_recommendations4.forEach(function (track) {
             let iframe_suffix = i.toString();
 
             let $newElement = $("<li>").addClass("track")
@@ -490,14 +546,26 @@
                 .on('mouseover',function(d) {
                     d3.select(this)
                         .attr('d', shape_big);
+                    let current_track = $(".trackid[value=" + d.id + "]");
+                    if (current_track.parent().parent().parent().parent().attr("id") === "playlist_block1"){
+                        current_track.parent().addClass("track--highlighted1");
+                    }else{
+                        current_track.parent().addClass("track--highlighted2");
+                    }
 
-                    $(".trackid[value=" + d.id + "]").parent().addClass("track--highlighted");
                 })
                 .on('mouseout',function(d) {
                     d3.select(this)
                         .attr('d', shape);
 
-                    $(".trackid[value=" + d.id + "]").parent().removeClass("track--highlighted");
+                    let current_track = $(".trackid[value=" + d.id + "]");
+                    if (current_track.parent().parent().parent().parent().attr("id") === "playlist_block1"){
+                        current_track.parent().removeClass("track--highlighted1");
+                    }else{
+                        current_track.parent().removeClass("track--highlighted2");
+                    }
+
+                    {#$(".trackid[value=" + d.id + "]").parent().removeClass("track--highlighted");#}
                 })
         };
 
@@ -555,7 +623,7 @@
             .attr("transform", "translate(-75,0)");
 
         let ordinal = d3.scaleOrdinal()
-            .domain(["Your taste", "Chosen session", "Not chosen session"])
+            .domain(["Your taste", "Stream 1", "Stream 2"])
             .range([colors.user_profile, colors.recommendations1, colors.unrecommended]);
 
         this.svg.append("g")
@@ -616,6 +684,7 @@
         $('[data-toggle="tooltip"]').tooltip();
     });
 
+
     /* Read data -----------------------------------------------------------------------------------------------------*/
     Promise.all([
         d3.json("/event_recommendation"),
@@ -625,10 +694,10 @@
         let recommendations = data[0],
             user_top_tracks = data[1];
 
-        let visible_recommendations1 = recommendations[0].tracks,
-            visible_recommendations2 = recommendations[1].tracks,
-            visible_recommendations3 = recommendations[2].tracks,
-            visible_recommendations4 = recommendations[3].tracks;
+        let visible_recommendations1 = recommendations[0].tracks.slice(0, 4),
+            visible_recommendations2 = recommendations[0].tracks.slice(4, 8),
+            visible_recommendations3 = recommendations[1].tracks.slice(0, 4),
+            visible_recommendations4 = recommendations[1].tracks.slice(4, 8);
 
         user_mean_energy = mean(user_top_tracks, "energy");
         user_mean_valence = mean(user_top_tracks, "valence");
@@ -643,7 +712,11 @@
 
         // Initialise playlist and visualisation
         {#fillPlaylist(recommendations);#}
-        fillPlaylist_new(recommendations);
+        fillPlaylist_new(
+            visible_recommendations1,
+            visible_recommendations2,
+            visible_recommendations3,
+            visible_recommendations4);
         contour_plot = new ContourPlot(
             visible_recommendations1,
             visible_recommendations2,
@@ -657,50 +730,6 @@
 
         // Initialise and start the tour
         introJsObj.start();
-
-        var box = $(".box");
-        var mainCanvas = $(".main-canvas");
-
-        box.draggable({
-            containment: mainCanvas,
-            helper: "clone",
-
-            start: function () {
-                $(this).css({
-                    opacity: 0
-                });
-
-                $(".box").css("z-index", "0");
-            },
-
-            stop: function () {
-                $(this).css({
-                    opacity: 1
-                });
-            }
-        });
-
-        box.droppable({
-            accept: box,
-
-            drop: function (event, ui) {
-                var draggable = ui.draggable;
-                var droppable = $(this);
-                var dragPos = draggable.position();
-                var dropPos = droppable.position();
-
-                draggable.css({
-                    left: dropPos.left + "px",
-                    top: dropPos.top + "px",
-                    "z-index": 20
-                });
-
-                droppable.css("z-index", 10).animate({
-                    left: dragPos.left,
-                    top: dragPos.top
-                });
-            }
-        });
 
     }).catch(function(e) {
         // Display error message in console

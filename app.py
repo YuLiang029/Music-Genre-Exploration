@@ -24,16 +24,6 @@ if __name__ == "__main__":
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5001)), debug=True)
 
 
-@app.route('/')
-def index():
-    return redirect(url_for("dbdw_bp.home"))
-
-
-@app.route('/msi_next')
-def msi_next():
-    return redirect(url_for("dbdw_bp.event_explore"))
-
-
 @app.after_request
 def add_headers(response):
     response.headers.add('Access-Control-Allow-Origin', '*')

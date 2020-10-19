@@ -23,7 +23,7 @@
     </div>
 
     <div class="row">
-        <div class="{% if vis %}col-sm-7 order-sm-2{% else %}col-12 col-sm-8 offset-sm-2 make-sticky-later{% endif %}">
+        <div class="{% if vis %}col-sm-6 order-sm-2{% else %}col-12 col-sm-8 offset-sm-2 make-sticky-later{% endif %}">
             <div class="mb-3 make-sticky-later">
 
 
@@ -46,10 +46,29 @@
             </div>
         </div>
 
-        <div class="{% if vis %}col-sm-5 order-sm-1{% else %}col-12 position-relative{% endif %}">
-            <div id="playlist" class="show-on-success" data-intro="These are the songs recommended to you.
-                Take your time to listen to them." data-step='1'>
-            </div>
+        <div class="{% if vis %}col-sm-6 order-sm-1{% else %}col-12 position-relative{% endif %}">
+{#            <div id="playlist" class="show-on-success" data-intro="These are the songs recommended to you.#}
+{#                Take your time to listen to them." data-step='1'>#}
+{#            </div>#}
+
+{#            <div class="container">#}
+
+                <div class="main-canvas">
+
+                    <div class="box box1 playlist_new" id="playlist1"></div>
+                    <div class="box box2 playlist_new" id="playlist3"></div>
+            {#        <div class="box box3">3</div>#}
+                    <div class="box box4 playlist_new" id="playlist2"></div>
+                    <div class="box box5 playlist_new" id="playlist4"></div>
+            {#        <div class="box box6">6</div>#}
+            {#        <div class="box box7">7</div>#}
+            {#        <div class="box box8">8</div>#}
+            {#        <div class="box box9">9</div>#}
+
+                </div>
+
+{#            </div>#}
+
 
         </div>
     </div>
@@ -91,6 +110,100 @@
         "user_profile": "#d95f02",
         "unrecommended": "#1b9e77"
     };
+
+    function fillPlaylist_new(recommendations){
+        let $playlist1 = $("#playlist1");
+        $playlist1.append($("<ul>"));
+        let $playlist1_ul = $("#playlist1 ul");
+
+        let i = 0;
+
+
+        recommendations[0].tracks.forEach(function (track) {
+            let iframe_suffix = i.toString();
+
+            let $newElement = $("<li>").addClass("track")
+                .append($("<iframe>").attr("id","iframe_spotify" + iframe_suffix)
+                    .attr("src", "https://open.spotify.com/embed/track/" + track.id)
+                    .attr("width", "100%")
+                    .attr("height", "80")
+                    .attr("frameborder", "0")
+                    .attr("allowtransparency", "true")
+                    .attr("allow", "encrypted-media"))
+                .append($("<span>").attr("value", track.id).addClass("trackid"));
+
+            $playlist1_ul.append($newElement);
+            ++i;
+        });
+
+        let $playlist2 = $("#playlist2");
+        $playlist2.append($("<ul>"));
+        let $playlist2_ul = $("#playlist2 ul");
+
+        recommendations[1].tracks.forEach(function (track) {
+            let iframe_suffix = i.toString();
+
+            let $newElement = $("<li>").addClass("track")
+                .append($("<iframe>").attr("id","iframe_spotify" + iframe_suffix)
+                    .attr("src", "https://open.spotify.com/embed/track/" + track.id)
+                    .attr("width", "100%")
+                    .attr("height", "80")
+                    .attr("frameborder", "0")
+                    .attr("allowtransparency", "true")
+                    .attr("allow", "encrypted-media"))
+                .append($("<span>").attr("value", track.id).addClass("trackid"));
+
+            $playlist2_ul.append($newElement);
+            ++i;
+        });
+
+
+        let $playlist3 = $("#playlist3");
+
+        $playlist3.append($("<ul>"));
+        let $playlist3_ul = $("#playlist3 ul");
+
+        recommendations[2].tracks.forEach(function (track) {
+            let iframe_suffix = i.toString();
+
+            let $newElement = $("<li>").addClass("track")
+                .append($("<iframe>").attr("id","iframe_spotify" + iframe_suffix)
+                    .attr("src", "https://open.spotify.com/embed/track/" + track.id)
+                    .attr("width", "100%")
+                    .attr("height", "80")
+                    .attr("frameborder", "0")
+                    .attr("allowtransparency", "true")
+                    .attr("allow", "encrypted-media"))
+                .append($("<span>").attr("value", track.id).addClass("trackid"));
+
+            $playlist3_ul.append($newElement);
+            ++i;
+        });
+
+
+        let $playlist4 = $("#playlist4");
+
+        $playlist4.append($("<ul>"));
+        let $playlist4_ul = $("#playlist4 ul");
+
+        recommendations[3].tracks.forEach(function (track) {
+            let iframe_suffix = i.toString();
+
+            let $newElement = $("<li>").addClass("track")
+                .append($("<iframe>").attr("id","iframe_spotify" + iframe_suffix)
+                    .attr("src", "https://open.spotify.com/embed/track/" + track.id)
+                    .attr("width", "100%")
+                    .attr("height", "80")
+                    .attr("frameborder", "0")
+                    .attr("allowtransparency", "true")
+                    .attr("allow", "encrypted-media"))
+                .append($("<span>").attr("value", track.id).addClass("trackid"));
+
+            $playlist4_ul.append($newElement);
+            ++i;
+        });
+    }
+
 
     function fillPlaylist(recommendations) {
         // Check if the number of tracks equals 10
@@ -219,7 +332,7 @@
         }, 100);
 
         // Highlight point in scatter plot when user hovers over track
-        $("#playlist")
+        $(".playlist_new")
             .on("mouseover", ".track", function() {
                 let track_id = $(this).children(".trackid").attr("value");
                 let point = $(".rec_scatter [data-track-id=" + track_id + "]");
@@ -529,7 +642,8 @@
         }
 
         // Initialise playlist and visualisation
-        fillPlaylist(recommendations);
+        {#fillPlaylist(recommendations);#}
+        fillPlaylist_new(recommendations);
         contour_plot = new ContourPlot(
             visible_recommendations1,
             visible_recommendations2,
@@ -544,13 +658,57 @@
         // Initialise and start the tour
         introJsObj.start();
 
+        var box = $(".box");
+        var mainCanvas = $(".main-canvas");
+
+        box.draggable({
+            containment: mainCanvas,
+            helper: "clone",
+
+            start: function () {
+                $(this).css({
+                    opacity: 0
+                });
+
+                $(".box").css("z-index", "0");
+            },
+
+            stop: function () {
+                $(this).css({
+                    opacity: 1
+                });
+            }
+        });
+
+        box.droppable({
+            accept: box,
+
+            drop: function (event, ui) {
+                var draggable = ui.draggable;
+                var droppable = $(this);
+                var dragPos = draggable.position();
+                var dropPos = droppable.position();
+
+                draggable.css({
+                    left: dropPos.left + "px",
+                    top: dropPos.top + "px",
+                    "z-index": 20
+                });
+
+                droppable.css("z-index", 10).animate({
+                    left: dragPos.left,
+                    top: dragPos.top
+                });
+            }
+        });
+
     }).catch(function(e) {
         // Display error message in console
         console.error(e);
 
         // Show error message in #hloading box
         $('#hloading').text(e.message);
-    })
+    });
 
     </script>
 {% endblock %}

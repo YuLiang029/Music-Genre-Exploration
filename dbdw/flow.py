@@ -1,4 +1,4 @@
-from flask import render_template, Blueprint, session, jsonify, redirect
+from flask import render_template, Blueprint, session, jsonify, redirect, url_for
 import pandas as pd
 import time as time
 import uuid
@@ -11,9 +11,14 @@ from dbdw import UserCondition, RecEvent, RegisterEvent
 dbdw_bp = Blueprint('dbdw_bp', __name__, template_folder='templates')
 
 
-@dbdw_bp.route('/home')
-def home():
+@dbdw_bp.route('/')
+def index():
     return render_template("main.html")
+
+
+@dbdw_bp.route('/app_msi_survey')
+def app_msi_survey():
+    return redirect(url_for("spotify_basic_bp.msi_survey"))
 
 
 @dbdw_bp.route('/test_url')

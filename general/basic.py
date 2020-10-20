@@ -1,6 +1,6 @@
 from flask import url_for, redirect, flash, \
     render_template, request, Blueprint, session, jsonify
-from general import Artist, TopArtists, User, Track, TopTracks, SessionLog, ArtistTracks, MsiResponse
+from general import Artist, TopArtists, User, Track, TopTracks, SessionLog, ArtistTracks, MsiResponse, Playlist
 from database import db
 import uuid
 
@@ -650,4 +650,41 @@ def msi_survey():
             request.form]
         db.session.commit()
         return "done"
+
+
+@spotify_basic_bp.route('/generate_playlist_spotify/<genre>')
+def generate_playlist_spotify(genre):
+    """
+    if "oauth_token" not in session:
+    print("authorizing")
+    session["redirecturl"] = url_for("scrape")
+    return (spotify.authorize(url_for("authorized", _external=True)))
+    """
+    rec_id = session['rec_id']
+
+    tracks = request.args.get('tracks')
+    track_list = tracks.split(',')
+
+    """refresh token"""
+    if is_token_expired():
+        refresh_token = session["oauth_token"]["refresh_token"]
+        get_refresh_token(refresh_token)
+
+    playlist_id, playlist_url = generate_playlist(name=genre, description=genre)
+
+    playlist_url = save_tracks_to_playlist(playlist_id, playlist_url, track_list)
+
+    spotify_playlist = Playlist(id=playlist_id,
+                                name=genre,
+                                description=genre,
+                                url=playlist_url,
+                                rec_id=rec_id,
+                                timestamp=time.time(),
+                                user_id=session["userid"],
+                                session_id=session["id"])
+
+    db.session.add(spotify_playlist)
+    db.session.commit()
+
+    return "done"
 

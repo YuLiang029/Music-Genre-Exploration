@@ -128,7 +128,7 @@ class SessionLog(db.Model):
     timestamp = db.Column(db.FLOAT)
 
     def __repr__(self):
-        return '<SessionLog %r-%r>' % (self.user_id, self.session_id)
+        return '<SessionLog %r-%r>' % (self.user_id, self.id)
 
 
 class ArtistTracks(db.Model):
@@ -140,3 +140,17 @@ class ArtistTracks(db.Model):
     def __repr__(self):
         return '<ArtistTracks %r-%r>' % (self.artist_id, self.track_id)
 
+
+class Playlist(db.Model):
+    __tablename__ = 'playlist'
+    id = db.Column(db.VARCHAR, primary_key=True)
+    name = db.Column(db.VARCHAR)
+    description = db.Column(db.VARCHAR)
+    url = db.Column(db.VARCHAR)
+    user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'))
+    rec_id = db.Column(db.VARCHAR, db.ForeignKey('recommendation_log.id'))
+    session_id = db.Column(db.VARCHAR, db.ForeignKey('session_log.id'))
+    timestamp = db.Column(db.FLOAT)
+
+    def __repr__(self):
+        return '<Playlist %r>' % self.id

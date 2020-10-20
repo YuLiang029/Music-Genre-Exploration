@@ -69,16 +69,23 @@
     </div>
     <br>
     <div class="row">
-        <div class="col-sm">
-            <button class="show-on-success btn btn-secondary" id="save_playlist"
+        <div class="col-sm-3">
+            <button class="show-on-success btn btn-secondary save_playlist" id="save_playlist1"
                     data-intro="If you'd like, you can save the playlist to your Spotify account." data-step='4'>
-                <i class="fas fa-download"></i> Save playlist to my Spotify
+                <i class="fas fa-download"></i> Save this playlist to my Spotify
+            </button>
+        </div>
+
+        <div class="col-sm-3">
+            <button class="show-on-success btn btn-secondary save_playlist" id="save_playlist2"
+                    data-intro="If you'd like, you can save the playlist to your Spotify account." data-step='5'>
+                <i class="fas fa-download"></i> Save this playlist to my Spotify
             </button>
         </div>
 
         <div class="col-sm text-right">
             <a class="show-on-success btn btn-success" id="continue" href="/save_selected_stream"
-               data-intro="After selecting the stream to listen to, click the button to continue" data-step='5'>
+               data-intro="After selecting the stream to listen to, click the button to continue" data-step='6'>
                 Continue <i class="fas fa-arrow-right"></i>
             </a>
         </div>
@@ -93,7 +100,13 @@
     let contour_plot;
     let user_mean_energy;
     let user_mean_valence;
-    let selected_stream;
+    let visible_recommendations1,
+        visible_recommendations2,
+        visible_recommendations3,
+        visible_recommendations4;
+
+    let stream_1,
+        stream_2;
 
     const circle = d3.symbol().type(d3.symbolCircle)(),
         triangleU = d3.symbol().type(d3.symbolTriangle)(),
@@ -226,13 +239,33 @@
 
     $(function () {
         // Save playlist to Spotify
-        $('#save_playlist').on('click', function()  {
+        $('.save_playlist').on('click', function()  {
             let trackString = "";
-            for (let i = 0; i < visible_recommendations.length; i++) {
-                trackString = trackString + "," + visible_recommendations[i].id;
+            let playlistname;
+            if ($(this).attr("id") === "save_playlist1"){
+                for (let i = 0; i < visible_recommendations1.length; i++) {
+                    trackString = trackString + "," + visible_recommendations1[i].id;
+                }
+
+                for (let i = 0; i < visible_recommendations2.length; i++) {
+                    trackString = trackString + "," + visible_recommendations2[i].id;
+                }
+                playlistname = "DBDW: " + stream_1
+
+            }else{
+                for (let i = 0; i < visible_recommendations3.length; i++) {
+                    trackString = trackString + "," + visible_recommendations3[i].id;
+                }
+
+                for (let i = 0; i < visible_recommendations4.length; i++) {
+                    trackString = trackString + "," + visible_recommendations4[i].id;
+                }
+                playlistname = "DBDW: " + stream_2
             }
+
+
             $.ajax({
-                url: "/generate_playlist_spotify/{{ genre }}?tracks=" + trackString.substring(1,) + "",
+                url: "/generate_playlist_spotify/" + playlistname + "?tracks=" + trackString.substring(1,) + "",
                 global: false
             }).done(function (data){
                 if (data === "done"){
@@ -541,14 +574,6 @@
         // Extract data from promises
         let recommendations = data[0],
             user_top_tracks = data[1];
-
-        let visible_recommendations1,
-            visible_recommendations2,
-            visible_recommendations3,
-            visible_recommendations4;
-
-        let stream_1,
-            stream_2;
 
         user_mean_energy = mean(user_top_tracks, "energy");
         user_mean_valence = mean(user_top_tracks, "valence");

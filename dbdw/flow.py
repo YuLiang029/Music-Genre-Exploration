@@ -6,7 +6,8 @@ from recommendation import RecommendationLog
 from database import db
 from recommendation.recommendation import get_genre_recommendation_by_preference
 from recommendation import RecTracks
-from dbdw import UserCondition, RecEvent, RegisterEvent
+from dbdw import UserCondition, RecStream
+import random
 
 dbdw_bp = Blueprint('dbdw_bp', __name__, template_folder='templates')
 
@@ -25,32 +26,43 @@ def app_msi_survey():
 def test_url():
     user_condition = UserCondition.query.filter_by(user_id=session["userid"]).first()
     if not user_condition:
-        # get the last condition
-        last_user_condition = UserCondition.query.order_by(UserCondition.timestamp.asc()).first()
+        # get the last condition: counterbalance users in different condition
+        # last_user_condition = UserCondition.query.order_by(UserCondition.timestamp.asc()).first()
+        #
+        # if last_user_condition:
+        #     user_condition_new = UserCondition(user_id=session["userid"],
+        #                                        timestamp=time.time(),
+        #                                        condition=(last_user_condition.condition+1) % 2)
+        #     db.session.add(user_condition_new)
+        # else:
+        #     user_condition_new = UserCondition(user_id=session["userid"],
+        #                                        timestamp=time.time(),
+        #                                        condition=0)
+        #     db.session.add(user_condition_new)
 
-        if last_user_condition:
-            user_condition_new = UserCondition(user_id=session["userid"],
-                                               timestamp=time.time(),
-                                               condition=(last_user_condition.condition+1) % 3)
-            db.session.add(user_condition_new)
-        else:
-            user_condition_new = UserCondition(user_id=session["userid"],
-                                               timestamp=time.time(),
-                                               condition=0)
-            db.session.add(user_condition_new)
+        # randomly assign a user to a condition
+        condition = random.randint(0, 1)
+
+        default = "not rec"
+        if condition == 1:
+            default = "rec"
+
+        user_condition_new = UserCondition(user_id=session["userid"],
+                                           timestamp=time.time(),
+                                           condition=condition, default=default)
+        db.session.add(user_condition_new)
         db.session.commit()
-
     return render_template("form_consent.html")
 
 
 @dbdw_bp.route('/event_explore')
 def event_explore():
-    control = 1
-    vis = 1
     user_condition = UserCondition.query.filter_by(user_id=session["userid"]).first()
 
     print(user_condition.condition)
-    return render_template("explore_event_new.html", control=control, vis=vis, condition=user_condition.condition)
+    return render_template("explore_event_new.html",
+                           condition=user_condition.condition,
+                           default=user_condition.default)
 
 
 @dbdw_bp.route('/event_recommendation')
@@ -77,28 +89,13 @@ def event_recommendation():
     tracks = recommendations.merge(track_df[['id', 'event', 'stream']], on=['id'])
 
     # create four blocks of list
-    l_event = ['classical', 'electronic', 'folk', 'rnb']
-    l_stream = ['stream 1', 'stream 2']
-
-    # calculate event recommendation score, valence mean and energy mean
-    dict_event_score = {}
-    dict_event_valence = {}
-    dict_event_energy = {}
+    l_stream = ['stream a', 'stream b']
 
     # calculate stream recommendation score, valence mean and energy mean
     dict_stream_score = {}
     dict_stream_valence = {}
     dict_stream_energy = {}
 
-    for event in l_event:
-        df_event = tracks[tracks["event"] == event]
-        dict_event_score[event] = df_event.sum_rank.sum()/len(df_event)
-        dict_event_valence[event] = df_event.valence.sum()/len(df_event)
-        dict_event_energy[event] = df_event.energy.sum() / len(df_event)
-
-    sorted_dict_event_score = {k: v for k, v in sorted(dict_event_score.items(),
-                                                       key=lambda item: item[1],
-                                                       reverse=True)}
     for stream in l_stream:
         df_stream = tracks[tracks["stream"] == stream]
         dict_stream_score[stream] = df_stream.sum_rank.sum()/len(df_stream)
@@ -122,11 +119,39 @@ def event_recommendation():
         dict_stream["stream"] = stream
 
         l_stream_recs.append(dict_stream)
+
         print(l_stream_recs)
+
+        db.session.add(RecStream(rec_id=session['rec_id'],
+                                 stream_name=stream,
+                                 rec_scores=dict_stream["rec_scores"],
+                                 stream_valence=dict_stream["stream_valence"],
+                                 stream_energy=dict_stream["stream_energy"],
+                                 session_id=session['id'],
+                                 user_id=session['userid'],
+                                 timestamp=time.time()
+                                 )
+                       )
+    db.session.commit()
 
     return jsonify(l_stream_recs)
 
-
+    # code for event recommendation
+    # calculate event recommendation score, valence mean and energy mean
+    # dict_event_score = {}
+    # dict_event_valence = {}
+    # dict_event_energy = {}
+    #
+    # l_event = ['classical', 'electronic', 'folk', 'rnb']
+    # for event in l_event:
+    #     df_event = tracks[tracks["event"] == event]
+    #     dict_event_score[event] = df_event.sum_rank.sum() / len(df_event)
+    #     dict_event_valence[event] = df_event.valence.sum() / len(df_event)
+    #     dict_event_energy[event] = df_event.energy.sum() / len(df_event)
+    #
+    # sorted_dict_event_score = {k: v for k, v in sorted(dict_event_score.items(),
+    #                                                    key=lambda item: item[1],
+    #                                                    reverse=True)}
     # l_event_recs = []
     # for event in sorted_dict_event_score:
     #
@@ -159,7 +184,6 @@ def event_recommendation():
     # db.session.commit()
     #
     # print(l_event_recs)
-    # # return jsonify(tracks.to_dict('records'))
     # return jsonify(l_event_recs)
 
 

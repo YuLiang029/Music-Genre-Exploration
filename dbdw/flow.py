@@ -6,8 +6,9 @@ from recommendation import RecommendationLog
 from database import db
 from recommendation.recommendation import get_genre_recommendation_by_preference
 from recommendation import RecTracks
-from dbdw import UserCondition, RecStream, SelectedStream
+from dbdw import UserCondition, RecStream, SelectedStream, SurveyResponse
 import random
+import re
 
 dbdw_bp = Blueprint('dbdw_bp', __name__, template_folder='templates')
 
@@ -260,5 +261,87 @@ def save_selected_stream():
                                  ))
     db.session.commit()
 
+    return redirect(url_for('dbdw_bp.post_task_survey'))
+
+
+@dbdw_bp.route('/post_task_survey', methods=["GET", "POST"])
+def post_task_survey():
+    if request.method == "GET":
+
+        responses = RecommendationLog.query.filter_by(id=session["rec_id"]).first().survey_response
+        surveydata = {}
+
+        for responseitem in responses:
+            m = re.match(r"^([^\[]*)\[([0-9]+)\]$", responseitem.item_id)
+            if m:
+                print(responseitem.item_id + " " + m.group(1))
+                print(m.group(1))
+                if m.group(1) in surveydata:
+                    surveydata[m.group(1)][m.group(2)] = responseitem.value
+                else:
+                    surveydata[m.group(1)] = {}
+                    surveydata[m.group(1)][m.group(2)] = responseitem.value
+            else:
+                surveydata[responseitem.item_id] = responseitem.value
+
+        survey = {
+            "showProgressBar": "top",
+            "pages": [{
+                "questions": [{
+                    "type": "matrix",
+                    "name": "Active Engagement",
+                    "title": "Below some questions how you relate to music. "
+                             "Please indicate to what extent you agree or disagree with each statement.",
+                    "isAllRowRequired": "true",
+                    "columns": [
+                        {"value": 1, "text": "Completely Disagree"},
+                        {"value": 2, "text": "Strongly Disagree"},
+                        {"value": 3, "text": "Disagree"},
+                        {"value": 4, "text": "Neither Agree nor Disagree"},
+                        {"value": 5, "text": "Agree"},
+                        {"value": 6, "text": "Strongly Agree"},
+                        {"value": 7, "text": "Completely Agree"}
+                    ],
+                    "rows": [
+                        {"value": "1", "text": "I spend a lot of my free time doing music-related activities."},
+                        {"value": "2", "text": "I enjoy writing about music, for example on blogs and forums."},
+                        {"value": "3", "text": "I'm intrigued by musical styles I'm not familiar with and want "
+                                               "to find out more."},
+                        {"value": "4", "text": "I often read or search the internet for things related to music."},
+                        {"value": "5", "text": "I don't spend much of my disposable income on music."},
+                        {"value": "6", "text": "Music is kind of an addiction for me - I couldn't live without it."},
+                        {"value": "7", "text": "I keep track of new of music that I come across (e.g. new artists "
+                                               "or recordings)."}
+                    ]
+                }]
+            }],
+            "completedHtml": "Redirecting to the next page..."
+        }
+
+        survey_config = {
+            'title': 'Post task survey',
+            'description': 'Please fill in the survey for questions',
+            'next_url': url_for('dbdw_bp.final_step')
+        }
+
+        return render_template('survey.html', survey=survey, surveydata=surveydata, survey_config=survey_config)
+
+    if request.method == "POST":
+
+        recommendation = RecommendationLog.query.filter_by(id=session["rec_id"]).first()
+
+        recommendation.survey_response[:] = [
+            SurveyResponse(user_id=session["userid"],
+                           session_id=session["id"],
+                           rec_id=session['rec_id'],
+                           item_id=item,
+                           value=request.form[item], stop_ts=time.time()) for item in
+            request.form]
+        db.session.commit()
+        return "done"
+
+
+@dbdw_bp.route('/final_step')
+def final_step():
     return render_template("test.html")
 

@@ -5,8 +5,8 @@
     <div class="row">
         <h2 id="rec_header" class="col-12 show-on-success">Top recommendations for you – Genre: {{genre}}</h2>
 
-        <p class="show-on-success col-12">Take your time to listen to the recommendations {% if control %}and
-            play with the controls{% endif %}. After listening to the playlist, you are asked to fill
+        <p class="show-on-success col-12">Take your time to listen to the recommendations.
+            After listening to the playlist, you are asked to fill
             in a survey about your experience with the recommendations. Hover over the
             <i class="fas fa-question-circle text-muted"></i> icons to get an explanation on the user interface.</p>
 
@@ -23,52 +23,32 @@
     </div>
 
     <div class="row">
-        <div class="{% if vis %}col-sm-6 order-sm-3{% else %}col-12 col-sm-8 offset-sm-2 make-sticky-later{% endif %}">
+        <div class="col-sm-6 order-sm-3">
             <div class="mb-3 make-sticky-later">
 
-
-                {% if vis %}
-                    <div id="contour_viz" class="show-on-success" data-intro="In this graph, you can see how the
-                        recommendations (blue dots)
-                        relate to your taste (orange outline) and the typical songs of the {{ genre }} genre
-                        (green outline). The graphs shows two features of the songs: energy (the excitement of the song)
-                        and valence (the positiveness of the song)." data-step='3'>
-                        <span class="help" data-toggle="tooltip" data-placement="top" style="position:absolute;right:20px;top:20px;"
-                              title="In this graph, you can see how the
-                        recommendations (blue dots)
-                        relate to your taste (orange outline) and the typical songs of the {{ genre }} genre
-                        (green outline). The graphs shows two features of the songs: energy (the excitement of the song)
-                        and valence (the positiveness of the song).">
-                            <i class="fas fa-question-circle text-info"></i>
-                        </span>
-                    </div>
-                {% endif %}
+                <div id="contour_viz" class="show-on-success" data-intro="In this graph, you can see how the
+                    recommendations (blue dots)
+                    relate to your taste (orange outline) and the typical songs of the {{ genre }} genre
+                    (green outline). The graphs shows two features of the songs: energy (the excitement of the song)
+                    and valence (the positiveness of the song)." data-step='2'>
+                    <span class="help" data-toggle="tooltip" data-placement="top" style="position:absolute;right:20px;top:20px;"
+                          title="In this graph, you can see how the
+                    recommendations (blue dots)
+                    relate to your taste (orange outline) and the typical songs of the {{ genre }} genre
+                    (green outline). The graphs shows two features of the songs: energy (the excitement of the song)
+                    and valence (the positiveness of the song).">
+                        <i class="fas fa-question-circle text-info"></i>
+                    </span>
+                </div>
             </div>
         </div>
 
         <div class="col-sm-3 order-sm-1 show-on-success" id="playlist_block1">
-{#            <div id="playlist" class="show-on-success" data-intro="These are the songs recommended to you.#}
-{#                Take your time to listen to them." data-step='1'>#}
-{#            </div>#}
-
-{#            <div class="container">#}
-
-{#                <div class="main-canvas">#}
-{##}
-{#                    <div class="box box1 playlist_new" id="playlist1"></div>#}
-{#                    <div class="box box2 playlist_new" id="playlist3"></div>#}
-{#                    <div class="box box4 playlist_new" id="playlist2"></div>#}
-{#                    <div class="box box5 playlist_new" id="playlist4"></div>#}
-{##}
-{#                </div>#}
                     <br>
                     <button class="btn btn btn-primary btn-block
                     show-on-success" id="stream_1">Stream 1 (more matching your preferences)</button>
                     <div id="playlist1" class="playlist_new"></div>
                     <div id="playlist2" class="playlist_new"></div>
-
-{#            </div>#}
-
 
         </div>
 
@@ -87,7 +67,7 @@
     <div class="row">
         <div class="col-sm">
             <button class="show-on-success btn btn-secondary" id="save_playlist"
-                    data-intro="If you'd like, you can save the playlist to your Spotify account." data-step='4'>
+                    data-intro="If you'd like, you can save the playlist to your Spotify account." data-step='3'>
                 <i class="fas fa-download"></i> Save playlist to my Spotify
             </button>
         </div>
@@ -256,91 +236,6 @@
                 .append($("<span>").attr("value", track.id).addClass("trackid"));
 
             $playlist4_ul.append($newElement);
-            ++i;
-        });
-    }
-
-
-    function fillPlaylist(recommendations) {
-        // Check if the number of tracks equals 10
-        /*if(visible_recommendations.length < number_of_tracks) {
-            throw new Error("We cannot get enough personalized data from your Spotify account to generate recommendations.");
-        } else if(visible_recommendations.length > number_of_tracks) {
-            throw new Error("Too many tracks given to show.");
-        }*/
-
-        let $playlist = $("#playlist");
-
-        $playlist.append($("<ul>"));
-        let $playlist_ul = $("#playlist ul");
-
-        let i = 0;
-
-        recommendations[0].tracks.forEach(function (track) {
-            let iframe_suffix = i.toString();
-
-            let $newElement = $("<li>").addClass("track")
-                .append($("<iframe>").attr("id","iframe_spotify" + iframe_suffix)
-                    .attr("src", "https://open.spotify.com/embed/track/" + track.id)
-                    .attr("width", "100%")
-                    .attr("height", "80")
-                    .attr("frameborder", "0")
-                    .attr("allowtransparency", "true")
-                    .attr("allow", "encrypted-media"))
-                .append($("<span>").attr("value", track.id).addClass("trackid"));
-
-            $playlist_ul.append($newElement);
-            ++i;
-        });
-
-        recommendations[1].tracks.forEach(function (track) {
-            let iframe_suffix = i.toString();
-
-            let $newElement = $("<li>").addClass("track")
-                .append($("<iframe>").attr("id","iframe_spotify" + iframe_suffix)
-                    .attr("src", "https://open.spotify.com/embed/track/" + track.id)
-                    .attr("width", "100%")
-                    .attr("height", "80")
-                    .attr("frameborder", "0")
-                    .attr("allowtransparency", "true")
-                    .attr("allow", "encrypted-media"))
-                .append($("<span>").attr("value", track.id).addClass("trackid"));
-
-            $playlist_ul.append($newElement);
-            ++i;
-        });
-
-        recommendations[2].tracks.forEach(function (track) {
-            let iframe_suffix = i.toString();
-
-            let $newElement = $("<li>").addClass("track")
-                .append($("<iframe>").attr("id","iframe_spotify" + iframe_suffix)
-                    .attr("src", "https://open.spotify.com/embed/track/" + track.id)
-                    .attr("width", "100%")
-                    .attr("height", "80")
-                    .attr("frameborder", "0")
-                    .attr("allowtransparency", "true")
-                    .attr("allow", "encrypted-media"))
-                .append($("<span>").attr("value", track.id).addClass("trackid"));
-
-            $playlist_ul.append($newElement);
-            ++i;
-        });
-
-        recommendations[3].tracks.forEach(function (track) {
-            let iframe_suffix = i.toString();
-
-            let $newElement = $("<li>").addClass("track")
-                .append($("<iframe>").attr("id","iframe_spotify" + iframe_suffix)
-                    .attr("src", "https://open.spotify.com/embed/track/" + track.id)
-                    .attr("width", "100%")
-                    .attr("height", "80")
-                    .attr("frameborder", "0")
-                    .attr("allowtransparency", "true")
-                    .attr("allow", "encrypted-media"))
-                .append($("<span>").attr("value", track.id).addClass("trackid"));
-
-            $playlist_ul.append($newElement);
             ++i;
         });
     }
@@ -514,23 +409,6 @@
         this.add_contour_plot(event3_density, colors.unrecommended);
         this.add_contour_plot(event4_density, colors.unrecommended);
 
-        /*this.add_scatter_plot_circle = (data, color, classname) => {
-            this.svg.append("g")
-                .attr("class", classname)
-                .attr("stroke", "white")
-                .attr("fill", color)
-                .selectAll("circle")
-                .data(data)
-                    .enter().append("circle")
-                    .attr("cx", d => x(d.valence))
-                    .attr("cy", d => y(d.energy))
-                    .attr("data-track-id", d => d.id)
-                    .attr("r", 5)
-                    .on("mouseover", handleMouseOver)
-                    .on("mouseout", handleMouseOut);
-        };*/
-
-
         this.add_scatter_plot = (data, color, shape, shape_big, shape_text, classname) => {
             this.svg.append("g")
                 .attr("class", classname)
@@ -565,7 +443,6 @@
                         current_track.parent().removeClass("track--highlighted2");
                     }
 
-                    {#$(".trackid[value=" + d.id + "]").parent().removeClass("track--highlighted");#}
                 })
         };
 
@@ -574,9 +451,6 @@
             this.svg.selectAll(selector).remove();
          };
 
-        // Add a scatter plot for the genre top tracks (debugging only)
-        // add_scatter_plot(genre_top_tracks, "#69b3a2")
-        // add_scatter_plot(user_top_tracks, "red")
 
         // Add a scatter plot for the recommendations1
         this.add_scatter_plot(this.visible_recommendations1, colors.recommendations1, circle,
@@ -651,21 +525,12 @@
 
         let legendPath = d3.legendSymbol()
           .scale(symbolScale)
-          .shapePadding(16);
+          .shapePadding(16)
           //.orient("horizontal")
-          //.labelWrap(30);
+          .labelWrap(30);
 
         this.svg.select(".legendSymbol")
             .call(legendPath);
-
-        // Allow interaction with the graph
-        /*function handleMouseOver(d) {
-            $(".trackid[value=" + d.id + "]").parent().addClass("track--highlighted");
-        }
-
-        function handleMouseOut(d, i) {
-            $(".trackid[value=" + d.id + "]").parent().removeClass("track--highlighted");
-        }*/
     }
 
     /* Guided tour ---------------------------------------------------------------------------------------------------*/

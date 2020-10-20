@@ -6,7 +6,7 @@ from recommendation import RecommendationLog
 from database import db
 from recommendation.recommendation import get_genre_recommendation_by_preference
 from recommendation import RecTracks
-from dbdw import UserCondition, RecStream
+from dbdw import UserCondition, RecStream, SelectedStream
 import random
 
 dbdw_bp = Blueprint('dbdw_bp', __name__, template_folder='templates')
@@ -120,8 +120,6 @@ def event_recommendation():
 
         l_stream_recs.append(dict_stream)
 
-        print(l_stream_recs)
-
         db.session.add(RecStream(rec_id=session['rec_id'],
                                  stream_name=stream,
                                  rec_scores=dict_stream["rec_scores"],
@@ -130,8 +128,7 @@ def event_recommendation():
                                  session_id=session['id'],
                                  user_id=session['userid'],
                                  timestamp=time.time()
-                                 )
-                       )
+                                 ))
     db.session.commit()
 
     return jsonify(l_stream_recs)
@@ -254,7 +251,14 @@ def event_recommendation():
 @dbdw_bp.route('/save_selected_stream')
 def save_selected_stream():
     stream = request.args.get('stream')
-    print(stream)
+
+    db.session.add(SelectedStream(rec_id=session['rec_id'],
+                                  stream_name=stream,
+                                  session_id=session['id'],
+                                  user_id=session['userid'],
+                                  timestamp=time.time()
+                                 ))
+    db.session.commit()
 
     return render_template("test.html")
 

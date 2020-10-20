@@ -55,6 +55,18 @@ class RecStream(db.Model):
         return '<RecStream %r-%r-%r>' % (self.user_id, self.stream_name, self.rec_scores)
 
 
+class SelectedStream (db.Model):
+    __tablename__ = 'selected_stream'
+    session_id = db.Column(db.VARCHAR, db.ForeignKey('session_log.id'))
+    user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'))
+    timestamp = db.Column(db.FLOAT)
+    stream_name = db.Column(db.VARCHAR, primary_key=True)
+    rec_id = db.Column(db.VARCHAR, db.ForeignKey('recommendation_log.id'), primary_key=True)
+
+    def __repr__(self):
+        return '<SelectedStream %r-%r>' % (self.user_id, self.stream_name)
+
+
 # class RegisterEvent(db.Model):
 #     __tablename__ = 'register_event'
 #     user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'))

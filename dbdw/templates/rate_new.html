@@ -34,7 +34,7 @@
         var all_movies;
         var slice_index = 0;
         var displayed_movie;
-        var num_of_movies = 2;
+        var num_of_movies = 8;
         var movie_dict = {};
 
         getDisplayedMovies = function(){
@@ -46,7 +46,7 @@
                             $("<div>").addClass("col-sm-6 movieImg center-item")
                                 .append($("<img>")
                                     .attr("src", movie)
-                                    .attr("height", "200")
+                                    .attr("width", "350")
                                 )
                         )
                         .append(
@@ -105,7 +105,7 @@
         $(document).ready(function(){
             $('#continue').show().on('click', function () {
                 if (ratedCount < num_of_movies){
-                    alert('Please rate ' + (num_of_movies-ratedCount).toString() + ' more movies');
+                    alert('Please rate all paintings');
                 }else{
                     $.ajax({
                         type: "POST",

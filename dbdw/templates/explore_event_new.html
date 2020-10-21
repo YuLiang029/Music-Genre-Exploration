@@ -537,13 +537,13 @@
 
         this.svg.append("g")
             .attr("class", "legendSymbol")
-            .attr("transform", "translate(300, 300)");
+            .attr("transform", "translate(270, 300)");
 
         let legendPath = d3.legendSymbol()
           .scale(symbolScale)
-          .shapePadding(16)
+          .shapePadding(16);
           //.orient("horizontal")
-          .labelWrap(30);
+          //.labelWrap(30);
 
         this.svg.select(".legendSymbol")
             .call(legendPath);
@@ -589,24 +589,42 @@
         // Initialise playlist and visualisation
         {#fillPlaylist(recommendations);#}
         if ("{{ condition }}" === "1"){
-            visible_recommendations1 = recommendations[0].tracks.slice(0, 4);
-            visible_recommendations2 = recommendations[0].tracks.slice(4, 8);
-            visible_recommendations3 = recommendations[1].tracks.slice(0, 4);
-            visible_recommendations4 = recommendations[1].tracks.slice(4, 8);
+            // check stream because stream has different length
             stream_1 = recommendations[0].stream;
             stream_2 = recommendations[1].stream;
+
+            if (stream_1 === "stream a"){
+                visible_recommendations1 = recommendations[0].tracks.slice(0, 4);
+                visible_recommendations2 = recommendations[0].tracks.slice(4, 10);
+                visible_recommendations3 = recommendations[1].tracks.slice(0, 6);
+                visible_recommendations4 = recommendations[1].tracks.slice(6, 11);
+            }else{
+                visible_recommendations1 = recommendations[0].tracks.slice(0, 6);
+                visible_recommendations2 = recommendations[0].tracks.slice(6, 11);
+                visible_recommendations3 = recommendations[1].tracks.slice(0, 4);
+                visible_recommendations4 = recommendations[1].tracks.slice(4, 10);
+            }
+
 
             $("#stream_1").html("More matching your preferences: " + stream_1);
             $("#stream_2").html("More out of your bubbles: " + stream_2);
 
         } else{
-            visible_recommendations1 = recommendations[1].tracks.slice(0, 4);
-            visible_recommendations2 = recommendations[1].tracks.slice(4, 8);
-            visible_recommendations3 = recommendations[0].tracks.slice(0, 4);
-            visible_recommendations4 = recommendations[0].tracks.slice(4, 8);
 
             stream_1 = recommendations[1].stream;
             stream_2 = recommendations[0].stream;
+
+            if (stream_1 === "stream a"){
+                visible_recommendations1 = recommendations[1].tracks.slice(0, 4);
+                visible_recommendations2 = recommendations[1].tracks.slice(4, 10);
+                visible_recommendations3 = recommendations[0].tracks.slice(0, 6);
+                visible_recommendations4 = recommendations[0].tracks.slice(6, 11);
+            }else{
+                visible_recommendations1 = recommendations[1].tracks.slice(0, 6);
+                visible_recommendations2 = recommendations[1].tracks.slice(6, 11);
+                visible_recommendations3 = recommendations[0].tracks.slice(0, 4);
+                visible_recommendations4 = recommendations[0].tracks.slice(4, 10);
+            }
 
             $("#stream_1").html("More out of your bubbles: " + stream_1);
             $("#stream_2").html("More matching your preferences: " + stream_2);

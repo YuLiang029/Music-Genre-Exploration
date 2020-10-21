@@ -68,7 +68,7 @@ def event_explore():
 
 @dbdw_bp.route('/event_recommendation')
 def event_recommendation():
-    track_df = pd.read_csv("test.csv")
+    track_df = pd.read_csv("dbdw_music2.csv", delimiter=";")
 
     ts = time.time()
     session['rec_id'] = str(uuid.uuid4())
@@ -357,10 +357,12 @@ def rating():
 def get_rating_movies():
 
     l_images = []
-    l_image_id = [17590, 17629]
+    l_image_id = ["0_centroid", "0_outlier",
+                  "1_centroid", "1_outlier",
+                  "2_centroid", "2_outlier", "3_centroid", "3_outlier"]
 
     for image_id in l_image_id:
-        l_images.append(url_for('static', filename='dbdw_imgs/' + str(image_id) + ".jpg"))
+        l_images.append(url_for('static', filename='paintings/' + image_id + ".jpg"))
 
     return jsonify(l_images)
 

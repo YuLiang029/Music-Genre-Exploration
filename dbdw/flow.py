@@ -6,7 +6,7 @@ from recommendation import RecommendationLog
 from database import db
 from recommendation.recommendation import get_genre_recommendation_by_preference
 from recommendation import RecTracks
-from dbdw import UserCondition, RecStream, SelectedStream, SurveyResponse
+from dbdw import UserCondition, RecStream, SelectedStream, SurveyResponse, ImgRatings
 import random
 import re
 
@@ -323,7 +323,7 @@ def post_task_survey():
         survey_config = {
             'title': 'Survey about your experience with the recommendations and interface',
             'description': 'Before receiving the link to your chosen concert, please fill in this survey.',
-            'next_url': url_for('dbdw_bp.final_step')
+            'next_url': url_for('dbdw_bp.rating')
         }
 
         return render_template('survey.html', survey=survey, surveydata=surveydata, survey_config=survey_config)
@@ -345,7 +345,7 @@ def post_task_survey():
 
 @dbdw_bp.route('/final_step')
 def final_step():
-    return render_template("test.html")
+    return render_template("last_page.html")
 
 
 @dbdw_bp.route('/rating')
@@ -369,17 +369,20 @@ def get_rating_movies():
 def submit_movies():
     user_id = session["userid"]
     session_id = session["id"]
-    stop_ts = time.time()
+    ts = time.time()
 
     if request.method == 'POST':
         try:
             dict_data = dict(request.form)
 
             for key in dict_data:
-                scores = dict_data[key]
+                score = dict_data[key]
                 print(key)
-                print(scores)
+                print(score)
+                db.session.add(ImgRatings(user_id=user_id, session_id=session_id, ts=ts, img_id=key, rating=score))
+            db.session.commit()
             return "success"
         except Exception as e:
             print(e)
             return "error"
+

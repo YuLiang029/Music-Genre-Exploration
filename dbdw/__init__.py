@@ -90,3 +90,16 @@ class SurveyResponse(db.Model):
 
     def __repr__(self):
         return '<SurveyResponse %r-%r-%r>' % (self.user_id, self.rec_id, self.item_id)
+
+
+class ImgRatings(db.Model):
+    __tablename__ = 'img_ratings'
+    id = db.Column(db.INTEGER, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'))
+    session_id = db.Column(db.VARCHAR, db.ForeignKey('session_log.id'))
+    img_id = db.Column(db.VARCHAR)
+    rating = db.Column(db.VARCHAR)
+    ts = db.Column(db.FLOAT)
+
+    def __repr__(self):
+        return '<ImgRatings %r-%r>' % (self.id, self.user_id)

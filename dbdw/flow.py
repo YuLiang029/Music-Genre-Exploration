@@ -345,3 +345,39 @@ def post_task_survey():
 def final_step():
     return render_template("test.html")
 
+
+@dbdw_bp.route('/rating')
+def rating():
+    return render_template('rate_new.html')
+
+
+@dbdw_bp.route('/get_rating_movies')
+def get_rating_movies():
+
+    l_images = []
+    l_image_id = [17590, 17629]
+
+    for image_id in l_image_id:
+        l_images.append(url_for('static', filename='dbdw_imgs/' + str(image_id) + ".jpg"))
+
+    return jsonify(l_images)
+
+
+@dbdw_bp.route('/submit_movies', methods=["POST"])
+def submit_movies():
+    user_id = session["userid"]
+    session_id = session["id"]
+    stop_ts = time.time()
+
+    if request.method == 'POST':
+        try:
+            dict_data = dict(request.form)
+
+            for key in dict_data:
+                scores = dict_data[key]
+                print(key)
+                print(scores)
+            return "success"
+        except Exception as e:
+            print(e)
+            return "error"

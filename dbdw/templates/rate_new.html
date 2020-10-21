@@ -1,0 +1,127 @@
+{% extends "layout.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+    <h2>
+        Rating task
+    </h2>
+
+    <ol>
+        <li>Rate art work with ratings. Please rate at least <b>10</b> art works.</li>
+    </ol>
+
+    <div class="movie ui-state-default">
+
+    </div>
+
+    <div class="row">
+
+        <div class="col-sm pull-right text-right">
+            <a class="btn btn-primary" id="continue" href="javascript:void(0)">
+                Continue <i class="fas fa-arrow-right"></i>
+            </a>
+
+        </div>
+    </div>
+
+
+
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        var ratedCount = 0;
+        var all_movies;
+        var slice_index = 0;
+        var displayed_movie;
+        var num_of_movies = 2;
+        var movie_dict = {};
+
+        getDisplayedMovies = function(){
+            displayed_movie = all_movies.slice(slice_index, slice_index+num_of_movies);
+            displayed_movie.forEach(function (movie) {
+                $(".movie").append(
+                    $("<div>").addClass("movieItem row mb-2")
+                        .append(
+                            $("<div>").addClass("col-sm-6 movieImg center-item")
+                                .append($("<img>")
+                                    .attr("src", movie)
+                                    .attr("height", "200")
+                                )
+                        )
+                        .append(
+                            $("<div>").addClass("col-md-6")
+                                .append($("<input>")
+                                    .addClass("kv-ltr-theme-fas-star rating-loading starItem")
+                                    .attr("dir", "ltr")
+                                    .attr("size", "md")
+                                    .attr("id", movie)
+                                    .val(movie in movie_dict ? movie_dict[movie] : 0)
+                                    .on("change", function(){
+                                        if ($(this).val() > 0){
+                                            if (!($(this).attr("id") in movie_dict)){
+                                                ratedCount = ratedCount + 1;
+                                            }
+                                            movie_dict[$(this).attr("id")] = $(this).val();
+
+                                        }else if ($(this).val() == 0){
+                                            if ($(this).attr("id") in movie_dict){
+                                                ratedCount = ratedCount - 1;
+                                                delete movie_dict[$(this).attr("id")];
+                                            }
+                                        }
+                                    })
+                            )
+                        )
+                    )
+
+            });
+
+            $('.kv-ltr-theme-fas-star').rating({
+                hoverEnabled: false,
+                theme: 'krajee-fas',
+                containerClass: 'is-star',
+                showCaption: false,
+                }
+            )
+        };
+
+        getAllMovies = function() {
+            $.ajax({
+                url: "/get_rating_movies",
+                dataType: "json"
+            })
+            .done(function (data) {
+                if(data.length > 0){
+                    all_movies = data;
+                    getDisplayedMovies();
+                }
+
+            })
+        };
+
+        getAllMovies();
+
+        $(document).ready(function(){
+            $('#continue').show().on('click', function () {
+                if (ratedCount < num_of_movies){
+                    alert('Please rate ' + (num_of_movies-ratedCount).toString() + ' more movies');
+                }else{
+                    $.ajax({
+                        type: "POST",
+                        url: "/submit_movies",
+                        data: movie_dict,
+                    }).done(function (data){
+                        if (data === "success"){
+                            window.location.href = "/final_step"
+                        }else{
+                            alert("Fail to save the rating data. Please try again!")
+                        }
+
+                    })
+                }
+            })
+
+        });
+    </script>
+{% endblock %}

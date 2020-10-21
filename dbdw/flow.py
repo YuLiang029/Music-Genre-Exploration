@@ -290,7 +290,7 @@ def post_task_survey():
                 "questions": [{
                     "type": "matrix",
                     "name": "Active Engagement",
-                    "title": "Below some questions how you relate to music. "
+                    "title": "Below you can find some questions related to your experience with the interface and the correctness of the algorithm that recommended the sessions to you."
                              "Please indicate to what extent you agree or disagree with each statement.",
                     "isAllRowRequired": "true",
                     "columns": [
@@ -303,15 +303,14 @@ def post_task_survey():
                         {"value": 7, "text": "Completely Agree"}
                     ],
                     "rows": [
-                        {"value": "1", "text": "I spend a lot of my free time doing music-related activities."},
-                        {"value": "2", "text": "I enjoy writing about music, for example on blogs and forums."},
-                        {"value": "3", "text": "I'm intrigued by musical styles I'm not familiar with and want "
-                                               "to find out more."},
-                        {"value": "4", "text": "I often read or search the internet for things related to music."},
-                        {"value": "5", "text": "I don't spend much of my disposable income on music."},
-                        {"value": "6", "text": "Music is kind of an addiction for me - I couldn't live without it."},
-                        {"value": "7", "text": "I keep track of new of music that I come across (e.g. new artists "
-                                               "or recordings)."}
+                        {"value": "1", "text": "The stream that was preselected for me matched my music preference."},
+                        {"value": "2", "text": "The stream that were preselected for me challenged me to explore a new music taste"},
+                        {"value": "3", "text": "I liked the stream that was out of my comfort zone more than the stream that was preselected for me"},
+                        {"value": "4", "text": "The stream that was out of my comfort zone fitted my music style more"},
+                        {"value": "5", "text": "The visualization helped me in understanding my own music taste."},
+                        {"value": "6", "text": "The visualization helped me in understanding the song characteristics of the different sessions."},
+                        {"value": "7", "text": "The visualization helped me in choosing which session to go to."}
+
                     ]
                 }]
             }],
@@ -319,8 +318,8 @@ def post_task_survey():
         }
 
         survey_config = {
-            'title': 'Post task survey',
-            'description': 'Please fill in the survey for questions',
+            'title': 'Survey about your experience with the recommendations and interface',
+            'description': 'Before receiving the link to your chosen concert, please fill in this survey.',
             'next_url': url_for('dbdw_bp.final_step')
         }
 

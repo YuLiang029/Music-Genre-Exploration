@@ -87,7 +87,9 @@ def event_recommendation():
         db.session.add(rec_tracks)
         db.session.commit()
 
-    tracks = recommendations.merge(track_df[['id', 'event', 'stream']], on=['id'])
+    track_df_new = track_df[['id', 'event', 'stream']]
+    tracks = track_df_new.merge(recommendations, on=['id'])
+    print(tracks)
 
     # create four blocks of list
     l_stream = ['stream a', 'stream b']
@@ -130,6 +132,7 @@ def event_recommendation():
                                  user_id=session['userid'],
                                  timestamp=time.time()
                                  ))
+    print(l_stream_recs)
     db.session.commit()
 
     return jsonify(l_stream_recs)

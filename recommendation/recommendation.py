@@ -134,7 +134,7 @@ def get_genre_recommendation_by_preference(genre_name=None, track_df=None, by_pr
         #                                v_speechiness_crank + v_acousticness_crank)/6.0
 
         sum_rank = len_genre_df + 1 - (v_danceability_crank + v_valence_crank +
-                                       v_energy_crank) / 3.0
+                                       v_energy_crank + v_acousticness_crank) / 4.0
 
         return sum_rank
 

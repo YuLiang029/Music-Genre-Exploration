@@ -306,13 +306,12 @@ def post_task_survey():
                         {"value": 7, "text": "Completely Agree"}
                     ],
                     "rows": [
-                        {"value": "1", "text": "The stream that was preselected for me matched my music preference."},
-                        {"value": "2", "text": "The stream that were preselected for me challenged me to explore a new music taste"},
-                        {"value": "3", "text": "I liked the stream that was out of my comfort zone more than the stream that was preselected for me"},
-                        {"value": "4", "text": "The stream that was out of my comfort zone fitted my music style more"},
-                        {"value": "5", "text": "The visualization helped me in understanding my own music taste."},
-                        {"value": "6", "text": "The visualization helped me in understanding the song characteristics of the different sessions."},
-                        {"value": "7", "text": "The visualization helped me in choosing which session to go to."}
+                        {"value": "1", "text": "The stream that should match with my music preference actually matched my music preference."},
+                        {"value": "2", "text": "The stream that was more out of my bubble challenged me to explore a new music taste."},
+                        {"value": "3", "text": "I like the stream that was out of my bubble more than I expected beforehand."},
+                        {"value": "4", "text": "The visualization helped me in understanding my own music taste."},
+                        {"value": "5", "text": "The visualization helped me in understanding the song characteristics of the different sessions."},
+                        {"value": "6", "text": "The visualization helped me in choosing which session to go to."}
 
                     ]
                 }]

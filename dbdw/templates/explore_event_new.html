@@ -30,7 +30,7 @@
                 <div id="contour_viz" class="show-on-success" data-intro="In this graph, you can see how the
                     songs that match your preference (blue dots) together with the songs that are more out of your bubble (green dots)
                     relate to your music taste (orange outline). The graphs shows two features of the songs: energy (the excitement of the song)
-                    and valence (the positiveness of the song) for the 4 different sessions: Sing-Songwriter, Harpist, Pop musicican, and XXX " data-step='3'>
+                    and valence (the positiveness of the song) for the 4 different sessions: Sing-Songwriter, Harpist, Pop musicican, and Jazz musician" data-step='3'>
                     <span class="help" data-toggle="tooltip" data-placement="top" style="position:absolute;right:20px;top:20px;"
                           title="In this graph, you can see how the
                     recommendations (blue dots)
@@ -420,10 +420,10 @@
 
         // Add the contour plot for the genre
         this.add_contour_plot(user_density, colors.user_profile);
-        this.add_contour_plot(event1_density, colors.recommendations1);
-        this.add_contour_plot(event2_density, colors.recommendations1);
-        this.add_contour_plot(event3_density, colors.unrecommended);
-        this.add_contour_plot(event4_density, colors.unrecommended);
+        //this.add_contour_plot(event1_density, colors.recommendations1);
+        //this.add_contour_plot(event2_density, colors.recommendations1);
+        //this.add_contour_plot(event3_density, colors.unrecommended);
+        //this.add_contour_plot(event4_density, colors.unrecommended);
 
         this.add_scatter_plot = (data, color, shape, shape_big, shape_text, classname) => {
             this.svg.append("g")

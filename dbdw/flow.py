@@ -9,6 +9,7 @@ from recommendation import RecTracks
 from dbdw import UserCondition, RecStream, SelectedStream, SurveyResponse, ImgRatings
 import random
 import re
+from general import MsiResponse
 
 dbdw_bp = Blueprint('dbdw_bp', __name__, template_folder='templates')
 
@@ -344,7 +345,13 @@ def post_task_survey():
 
 @dbdw_bp.route('/final_step')
 def final_step():
-    return render_template("last_page.html")
+
+    email_address = MsiResponse.query.filter_by(user_id=session["userid"],
+                                                item_id="email").first().value
+
+    selected_stream = SelectedStream.query.filter_by(rec_id=session["rec_id"]).first().stream_name.strip("stream ")
+
+    return render_template("last_page.html", email_address=email_address, selected_stream=selected_stream)
 
 
 @dbdw_bp.route('/rating')

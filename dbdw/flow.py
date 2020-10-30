@@ -349,9 +349,11 @@ def final_step():
     email_address = MsiResponse.query.filter_by(user_id=session["userid"],
                                                 item_id="email").first().value
 
-    selected_stream = SelectedStream.query.filter_by(rec_id=session["rec_id"]).first().stream_name.strip("stream ")
+    selected_stream = SelectedStream.query.filter_by(rec_id=session["rec_id"]).first().stream_name
+    selected_stream_strip = selected_stream.replace("stream", "").strip()
+    print(selected_stream_strip)
 
-    return render_template("last_page.html", email_address=email_address, selected_stream=selected_stream)
+    return render_template("last_page.html", email_address=email_address, selected_stream=selected_stream_strip)
 
 
 @dbdw_bp.route('/rating')

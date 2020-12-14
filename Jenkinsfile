@@ -38,15 +38,6 @@ pipeline {
         }
     }
 
-	stage('publish') {
-	  when {
-        branch 'master'
-      }
-	  steps {
-		sh 'docker push hub.tuneblendr.com/yliang/spotify-experiment-framework:latest'
-	  }
-	}
-
 	stage('deploy') {
 	  when {
 	    branch 'master'

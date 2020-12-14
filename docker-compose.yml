@@ -1,0 +1,33 @@
+version: "3.7"
+
+services:
+  app:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    image: yliang/spotify-experiment-framework:latest
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    networks:
+      - spotify-experiment-framework-net
+      - nginx-net
+  postgresql:
+    image: postgres:13.1
+    environment:
+      - POSTGRES_PASSWORD=mysecretpassword
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    networks:
+      - spotify-experiment-framework-net
+networks:
+  spotify-experiment-framework-net:
+    driver: overlay
+    attachable: true
+  nginx-net:
+    external: true

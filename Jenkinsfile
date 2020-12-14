@@ -29,6 +29,7 @@ pipeline {
       steps {
         setBuildStatus("Building...", "PENDING");
         script{ buildBadge.setStatus('running'); }
+        sh 'prepare.sh'
       }
     }
 
@@ -41,7 +42,6 @@ pipeline {
 	stage('deploy') {
 	  when {
 	    branch 'master'
-
 	  }
 	  steps {
 		sh 'docker stack deploy -c docker-compose.yml spotify-experiment-framework'

@@ -41,6 +41,7 @@ pipeline {
 	stage('deploy') {
 	  when {
 	    branch 'master'
+
 	  }
 	  steps {
 		sh 'docker stack deploy -c docker-compose.yml spotify-experiment-framework'

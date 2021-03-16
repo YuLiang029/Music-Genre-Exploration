@@ -35,6 +35,20 @@ Yu Liang and Martijn C. Willemsen. 2021. Interactive Music Genre Exploration wit
 - dbdw-music2.csv: songs for 2020 Jads Cultural Night
 - nov_music and text_analyze contains some source code for analyzing music event descriptions [under development]
 
+### Local run
+- Run with install.requirements.text
+- Run with docker
+
+### Heroku deployment with Docker
+See [Container Registry & Runtime (Docker Deploys)](https://devcenter.heroku.com/articles/container-registry-and-runtime) for deployment details
+```
+heroku container:login
+heroku create
+heroku container:push web
+heroku container:release web
+heroku open
+```
+
 ### Acknowledgement
 - Thanks to everyone who has contributed to the repository: Sophia Hadash and Jolijn Martens
 - Special thanks to Thijs Meeuwisse and Joris Hilberink for their contribution to the interactive design and programming

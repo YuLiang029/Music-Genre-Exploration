@@ -14,8 +14,8 @@ db.init_app(app)
 app.register_blueprint(spotify_basic_bp)
 app.register_blueprint(recommendation_bp)
 # app.register_blueprint(genre_explore_bp)
-# app.register_blueprint(nudge_bp)
-app.register_blueprint(dbdw_bp)
+app.register_blueprint(nudge_bp)
+# app.register_blueprint(dbdw_bp)
 
 with app.app_context():
     db.create_all()

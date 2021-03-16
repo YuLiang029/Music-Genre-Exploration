@@ -1,8 +1,5 @@
-from flask import render_template, redirect, session, Blueprint, request, jsonify
-from general import User, TopTracks
-from general.basic import is_token_expired, get_refresh_token, generate_playlist, save_tracks_to_playlist
+from flask import render_template, redirect, Blueprint, request, jsonify
 from recommendation.recommendation import get_genre_recommendation_by_popularity
-import time
 
 
 nudge_bp = Blueprint('nudge_bp', __name__, template_folder='templates')
@@ -27,13 +24,12 @@ def select_genre():
 def explore_genre2():
 
     # Infer the experimental condition
-    control = 1
-    vis = 1
+    personalized = 1
 
     return render_template('explore_genre2.html',
                            genre=request.args.get('genre'),
                            weight=request.args.get('weight'),
-                           control=control, vis=vis)
+                           personalized=personalized)
 
 
 @nudge_bp.route('/genre_top_tracks')

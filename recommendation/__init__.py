@@ -1,5 +1,4 @@
 from database import db
-from general import Track
 
 
 # recommendation logs
@@ -31,3 +30,16 @@ class RecTracks(db.Model):
 
     def __repr__(self):
         return '<RecTracks %r-%r>' % (self.rec_id, self.track_id)
+
+
+class SurveyResponse(db.Model):
+    __tablename__ = 'survey_response'
+    user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'))
+    session_id = db.Column(db.VARCHAR, db.ForeignKey('session_log.id'))
+    rec_id = db.Column(db.VARCHAR, db.ForeignKey('recommendation_log.id'), primary_key=True)
+    item_id = db.Column(db.VARCHAR, primary_key=True)
+    value = db.Column(db.VARCHAR)
+    stop_ts = db.Column(db.FLOAT)
+
+    def __repr__(self):
+        return '<SurveyResponse %r-%r-%r>' % (self.user_id, self.rec_id, self.item_id)

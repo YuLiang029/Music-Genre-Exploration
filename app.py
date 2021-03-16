@@ -1,10 +1,10 @@
 from flask import Flask, render_template, redirect, url_for
 from general.basic import spotify_basic_bp
 from recommendation.recommendation import recommendation_bp
-# from nov_music.flow import nov_bp
 from database import db
-# from genre_exploration.flow import genre_explore_bp
+from genre_exploration.flow import genre_explore_bp
 from dbdw.flow import dbdw_bp
+from nudge.flow import nudge_bp
 
 import os
 
@@ -13,8 +13,8 @@ app.config.from_object('config')
 db.init_app(app)
 app.register_blueprint(spotify_basic_bp)
 app.register_blueprint(recommendation_bp)
-#app.register_blueprint(nov_bp)
-#app.register_blueprint(genre_explore_bp)
+# app.register_blueprint(genre_explore_bp)
+# app.register_blueprint(nudge_bp)
 app.register_blueprint(dbdw_bp)
 
 with app.app_context():

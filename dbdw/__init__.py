@@ -79,19 +79,6 @@ class SelectedStream (db.Model):
 #     def __repr__(self):
 #         return '<RegisterEvent %r-%r>' % (self.user_id, self.event_id)
 
-class SurveyResponse(db.Model):
-    __tablename__ = 'survey_response'
-    user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'))
-    session_id = db.Column(db.VARCHAR, db.ForeignKey('session_log.id'))
-    rec_id = db.Column(db.VARCHAR, db.ForeignKey('recommendation_log.id'), primary_key=True)
-    item_id = db.Column(db.VARCHAR, primary_key=True)
-    value = db.Column(db.VARCHAR)
-    stop_ts = db.Column(db.FLOAT)
-
-    def __repr__(self):
-        return '<SurveyResponse %r-%r-%r>' % (self.user_id, self.rec_id, self.item_id)
-
-
 class ImgRatings(db.Model):
     __tablename__ = 'img_ratings'
     id = db.Column(db.INTEGER, primary_key=True, autoincrement=True)

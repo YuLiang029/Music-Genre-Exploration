@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+{% block title %}Select genre{% endblock %}
+{% block content %}
+    <h3>
+        Explore my music taste by genre
+    </h3>
+
+    <div>
+    <p class="lead">
+        1. Use the dropdown menu below to select a
+        genre you would like to explore.
+    </p>
+    <form id="form_range">
+    <select name = "genre" id="genre" class="form-control form-control-lg">
+        <option value="unknown">
+            Selected genre
+        </option>
+        <option value="christmas">
+            christmas
+        </option>
+        <option value="avant-garde">
+            avant-garde
+        </option>
+        <option value="blues">
+            blues
+        </option>
+        <option value="classical">
+            classical
+        </option>
+        <option value="country">
+            country
+        </option>
+        <option value="electronic">
+            electronic
+        </option>
+        <option value="folk">
+            folk
+        </option>
+        <option value="jazz">
+            jazz
+        </option>
+        <option value="new-age">
+            new-age
+        </option>
+        <option value="rap">
+            rap
+        </option>
+        <option value="rnb">
+            rnb
+        </option>
+    </select>
+    </form>
+
+    <br>
+
+
+    <div class="text-right">
+        <a type="submit" class="btn btn-success" id="action_submit" href="#">
+            Continue <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+
+    </div>
+{% endblock %}
+{% block scripts %}
+<script>
+
+    $("#action_submit").on( "click", function() {
+        $(this).attr("href", "/explore_genre2?genre=" + $.trim($("#genre :selected").text()) + "&weight=0.5");
+    });
+
+
+</script>
+{% endblock %}

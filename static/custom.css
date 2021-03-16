@@ -186,6 +186,19 @@ table.sv_q_matrix th {
     display: block;
 }
 
+#contour_viz2 {
+    background: white;
+    box-shadow: 0px 5px 10px 0px rgba(0,0,0,0.10);
+    font-size: .9rem;
+    position: relative;
+}
+
+#contour_viz2 svg {
+    max-width: 100%;
+    margin: 0 auto;
+    display: block;
+}
+
 .rec_scatter circle {
     cursor: pointer;
     transition: all .1s ease-in-out;

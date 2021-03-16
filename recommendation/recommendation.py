@@ -14,7 +14,14 @@ recommendation_bp = Blueprint('recommendation_bp', __name__,
                               template_folder='templates')
 
 audio_features = ['danceability', 'valence', 'energy', 'liveness', 'speechiness', 'acousticness']
-track_features = ['id', 'trackname'] + audio_features
+track_features = ['id', 'trackname', 'popularity'] + audio_features
+rec_track_features = track_features + ['ranking_score']
+
+
+def get_ranking_score(v_sum_rank_ranking, v_baseline_ranking, len_genre_df, weight):
+    ranking_score = weight * (len_genre_df - v_sum_rank_ranking + 1) + (1 - weight) * (
+                len_genre_df - v_baseline_ranking + 1)
+    return ranking_score
 
 
 @recommendation_bp.route('/genre_recommendation_exp')
@@ -39,10 +46,6 @@ def genre_recommendation_exp():
 
     db.session.add(recommendation_log)
     db.session.commit()
-
-    def get_ranking_score(v_sum_rank_ranking, v_baseline_ranking, len_genre_df, weight):
-        ranking_score = weight*(len_genre_df - v_sum_rank_ranking + 1) + (1 - weight)*(len_genre_df - v_baseline_ranking + 1)
-        return ranking_score
 
     def get_genre_recommendation_by_mix(weight=0.5):
         genre_df = get_genre_recommendation_by_preference(genre_name, by_preference=False)
@@ -81,6 +84,69 @@ def genre_recommendation_exp():
     return jsonify(top_tracks_list)
 
 
+@recommendation_bp.route('/genre_recommendation_exp_multiple')
+def genre_recommendation_exp_multiple():
+    ts = time.time()
+    session['recuid'] = str(uuid.uuid4())
+    genre_name = request.args.get('genre')
+    weight = float(request.args.get('weight'))
+    print(weight)
+
+    print('selected genre is {}'.format(genre_name))
+
+    # @TODO read users' current phase in the within-subject design
+    current_phase = 0
+
+    recommendation_log = RecommendationLog(user_id=session["userid"], genre_name=genre_name,
+                                           current_phase=current_phase,
+                                           start_ts=ts, session_id=session['id'], id=session['recuid'])
+
+    db.session.add(recommendation_log)
+    db.session.commit()
+
+    def get_mix_multiple_top(l_weight: list = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]):
+        genre_df = get_genre_recommendation_by_preference(genre_name, by_preference=False)
+
+        if not isinstance(genre_df, pd.DataFrame):
+            return genre_df
+
+        genre_df = genre_df.assign(baseline_ranking=genre_df['popularity'].rank(ascending=False))
+        genre_df = genre_df.assign(sum_rank_ranking=genre_df['sum_rank'].rank(ascending=False))
+        print(genre_df)
+
+        weight_df = pd.DataFrame(columns=track_features)
+
+        for w in l_weight:
+            ranking_score = get_ranking_score(genre_df['sum_rank_ranking'].values,
+                                              genre_df['baseline_ranking'].values,
+                                              len(genre_df), w)
+            genre_df['ranking_score_' + str(w)] = ranking_score
+
+            genre_df = genre_df.sort_values(
+                by=['ranking_score_' + str(w), 'trackname'], ascending=[False, True]).reset_index(drop=True)
+            top = genre_df[:10]
+            top["weight"] = w
+            top = top.rename(columns={'ranking_score_' + str(w): 'ranking_score'})[rec_track_features]
+            weight_df = weight_df.append(top, ignore_index=False)
+
+        weight_df = weight_df.reset_index()
+        return weight_df
+
+    genre_df1 = get_mix_multiple_top(l_weight=[0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
+    top_tracks = genre_df1
+    print(genre_df1)
+
+    # for index, row in top_tracks.iterrows():
+    #     rec_tracks = RecTracks(rec_id=session['recuid'], track_id=row["id"], rank=row["index"])
+    #     db.session.add(rec_tracks)
+    #     db.session.commit()
+
+    top_tracks = top_tracks.replace(np.nan, '')
+
+    top_tracks_list = top_tracks.to_dict('records')
+    return jsonify(top_tracks_list)
+
+
 def get_genre_recommendation_by_popularity(genre_name):
     """
     get recommendation by popularity within a certain genre: function
@@ -90,11 +156,12 @@ def get_genre_recommendation_by_popularity(genre_name):
     genre_basline_folder = os.path.join(os.path.dirname(recommendation_bp.root_path), 'genre_baseline')
     genre_csv_path = os.path.join(genre_basline_folder, genre_name + ".csv")
     genre_df = pd.read_csv(genre_csv_path)
+    genre_df = genre_df.sort_values(by=['popularity'], ascending=False)
 
     print('popularity return dataframe length is {}'.format(len(genre_df)))
 
-    # return top 300 recommendations
-    return genre_df[:300]
+    # return the recommendation ranked by popularity
+    return genre_df
 
 
 def get_genre_recommendation_by_preference(genre_name=None, track_df=None, by_preference=True):

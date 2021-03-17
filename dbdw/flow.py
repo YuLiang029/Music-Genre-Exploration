@@ -293,8 +293,9 @@ def post_task_survey():
             "pages": [{
                 "questions": [{
                     "type": "matrix",
-                    "name": "Active Engagement",
-                    "title": "Below you can find some questions related to your experience with the interface and the correctness of the algorithm that recommended the sessions to you."
+                    "name": "Eval",
+                    "title": "Below you can find some questions related to your experience with the interface "
+                             "and the correctness of the algorithm that recommended the sessions to you."
                              "Please indicate to what extent you agree or disagree with each statement.",
                     "isAllRowRequired": "true",
                     "columns": [
@@ -307,11 +308,16 @@ def post_task_survey():
                         {"value": 7, "text": "Completely Agree"}
                     ],
                     "rows": [
-                        {"value": "1", "text": "The stream that should match with my music preference actually matched my music preference."},
-                        {"value": "2", "text": "The stream that was more out of my bubble challenged me to explore a new music taste."},
-                        {"value": "3", "text": "I like the stream that was out of my bubble more than I expected beforehand."},
-                        {"value": "4", "text": "The visualization helped me in understanding my own music taste."},
-                        {"value": "5", "text": "The visualization helped me in understanding the song characteristics of the different sessions."},
+                        {"value": "1", "text": "The stream that should match with "
+                                               "my music preference actually matched my music preference."},
+                        {"value": "2", "text": "The stream that was more out "
+                                               "of my bubble challenged me to explore a new music taste."},
+                        {"value": "3", "text": "I like the stream that was "
+                                               "out of my bubble more than I expected beforehand."},
+                        {"value": "4", "text": "The visualization helped me "
+                                               "in understanding my own music taste."},
+                        {"value": "5", "text": "The visualization helped me in "
+                                               "understanding the song characteristics of the different sessions."},
                         {"value": "6", "text": "The visualization helped me in choosing which session to go to."}
 
                     ]

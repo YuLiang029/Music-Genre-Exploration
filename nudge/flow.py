@@ -64,7 +64,7 @@ def post_task_survey():
             "pages": [{
                 "questions": [{
                     "type": "matrix",
-                    "name": "Eval",
+                    "name": "Help",
                     "title": "Below you can find some questions related to your experience with the interface and "
                              "the correctness of the algorithm that recommended the sessions to you."
                              "Please indicate to what extent you agree or disagree with each statement.",
@@ -79,9 +79,9 @@ def post_task_survey():
                         {"value": 7, "text": "Completely Agree"}
                     ],
                     "rows": [
-                        {"value": "help1", "text": "The playlist supports me in getting to know the new genre."},
-                        {"value": "help2", "text": "The playlist motivates me to delve deeper into the new genre."},
-                        {"value": "help3", "text": "The playlist is useful in exploring a new genre."}
+                        {"value": "1", "text": "The playlist supports me in getting to know the new genre."},
+                        {"value": "2", "text": "The playlist motivates me to delve deeper into the new genre."},
+                        {"value": "3", "text": "The playlist is useful in exploring a new genre."}
                     ]
                 }]
             }],

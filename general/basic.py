@@ -13,8 +13,7 @@ import requests
 import time
 import re
 
-spotify_basic_bp = Blueprint('spotify_basic_bp', __name__,
-                             template_folder='templates')
+spotify_basic_bp = Blueprint('spotify_basic_bp', __name__)
 
 oauth = OAuth(spotify_basic_bp)
 keys = {"CLIENT_ID": "", "CLIENT_SECRET_ID": ""}

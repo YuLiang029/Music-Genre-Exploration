@@ -24,6 +24,28 @@ def get_ranking_score(v_sum_rank_ranking, v_baseline_ranking, len_genre_df, weig
     return ranking_score
 
 
+@recommendation_bp.route('/genre_top_tracks/<genre>/<sort>/<num>')
+def genre_top_tracks(genre, sort, num):
+    """
+    genre recommendation by popularity: request handler
+    :return: recommended tracks in json
+    """
+    genre_df = get_genre_recommendation_by_popularity(genre)
+
+    if sort == "sorted":
+        genre_df = genre_df.sort_values(by=['popularity'], ascending=False)
+
+    if num != "all":
+        genre_df = genre_df[:int(num)]
+
+    # Only retain relevant columns
+    genre_df = genre_df[['popularity', 'energy', 'valence', 'acousticness',
+                         'danceability', 'speechiness', 'trackname',
+                         'firstartist']]
+
+    return jsonify(genre_df.to_dict('records'))
+
+
 @recommendation_bp.route('/genre_recommendation_exp')
 def genre_recommendation_exp():
     """

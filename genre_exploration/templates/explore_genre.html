@@ -702,7 +702,7 @@
     Promise.all([
         d3.json("/genre_recommendation_exp?genre={{ genre }}&weight={{ weight }}"),
         d3.json("/user_top_tracks"),
-        d3.json("/genre_top_tracks?genre={{ genre }}")
+        d3.json("/genre_top_tracks/{{ genre }}/sorted/300")
     ]).then(function(data) {
         // Extract data from promises
         let recommendations = data[0],

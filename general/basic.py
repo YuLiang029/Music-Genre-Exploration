@@ -660,7 +660,7 @@ def generate_playlist_spotify(genre):
     session["redirecturl"] = url_for("scrape")
     return (spotify.authorize(url_for("authorized", _external=True)))
     """
-    rec_id = session['rec_id']
+    rec_id = session['recuid']
 
     tracks = request.args.get('tracks')
     track_list = tracks.split(',')

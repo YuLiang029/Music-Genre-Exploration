@@ -6,8 +6,7 @@
         <h2 id="rec_header" class="col-12 show-on-success">Top recommendations for you – Genre: {{genre}}</h2>
 
         <p class="show-on-success col-12">Take your time to listen to the recommendations {% if control %}and
-            play with the controls{% endif %}. After listening to the playlist, you are asked to fill
-            in a survey about your experience with the recommendations. Hover over the
+            play with the controls{% endif %}. Hover over the
             <i class="fas fa-question-circle text-muted"></i> icons to get an explanation on the user interface.</p>
 
         <div id="alertbox" class="d-none-soft col-12"></div>
@@ -117,13 +116,6 @@
             </button>
         </div>
 
-        <!--<div class="col-sm text-right">
-            <a class="btn btn-primary" id="action_continue" href="/survey_playlist?genre={{ genre }}"
-               data-intro="When you are done exploring the songs, press this button to go to the survey.">
-                Continue to survey <i class="fas fa-arrow-right"></i>
-            </a>
-        </div>-->
-
     </div>
 
 {% endblock %}
@@ -147,6 +139,7 @@
     let minE;
     let maxV;
     let minV;
+    let $playlist;
 
     const number_of_tracks = 10;
     const colors = {
@@ -165,8 +158,7 @@
             throw new Error("Too many tracks given to show.");
         }
 
-        let $playlist = $("#playlist");
-
+        $playlist = $("#playlist");
         $playlist.append($("<ul>"));
         let $playlist_ul = $("#playlist ul");
 
@@ -239,8 +231,7 @@
         $("#playlist").on("mouseover", ".track", function() {
             let track_id = $(this).children(".trackid").attr("value");
             $(".rec_scatter [data-track-id=" + track_id + "]").addClass("circle--highlighted");
-        });
-        $("#playlist").on("mouseout", ".track", function() {
+        }).on("mouseout", ".track", function() {
             let track_id = $(this).children(".trackid").attr("value");
             $(".rec_scatter [data-track-id=" + track_id + "]").removeClass("circle--highlighted");
         });
@@ -301,7 +292,7 @@
             return b.combined_ranking - a.combined_ranking;
         });
 
-        let $playlist = $("#playlist");
+        $playlist = $("#playlist");
         if ($playlist.children().length !== 0) {
             $playlist.empty();
         }

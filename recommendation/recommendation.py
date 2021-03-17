@@ -53,7 +53,7 @@ def genre_recommendation_exp():
     :return:
     """
     ts = time.time()
-    session['recuid'] = str(uuid.uuid4())
+    session['rec_id'] = str(uuid.uuid4())
     genre_name = request.args.get('genre')
     weight = float(request.args.get('weight'))
     print(weight)
@@ -64,7 +64,7 @@ def genre_recommendation_exp():
     current_phase = 0
 
     recommendation_log = RecommendationLog(user_id=session["userid"], genre_name=genre_name, current_phase=current_phase,
-                                           start_ts=ts, session_id=session['id'], id=session['recuid'])
+                                           start_ts=ts, session_id=session['id'], id=session['rec_id'])
 
     db.session.add(recommendation_log)
     db.session.commit()
@@ -96,7 +96,7 @@ def genre_recommendation_exp():
     top_tracks = genre_df1[:300]
 
     for index, row in top_tracks.iterrows():
-        rec_tracks = RecTracks(rec_id=session['recuid'], track_id=row["id"], rank=index)
+        rec_tracks = RecTracks(rec_id=session['rec_id'], track_id=row["id"], rank=index)
         db.session.add(rec_tracks)
         db.session.commit()
 
@@ -109,7 +109,7 @@ def genre_recommendation_exp():
 @recommendation_bp.route('/genre_recommendation_exp_multiple')
 def genre_recommendation_exp_multiple():
     ts = time.time()
-    session['recuid'] = str(uuid.uuid4())
+    session['rec_id'] = str(uuid.uuid4())
     genre_name = request.args.get('genre')
     weight = float(request.args.get('weight'))
     print(weight)
@@ -121,7 +121,7 @@ def genre_recommendation_exp_multiple():
 
     recommendation_log = RecommendationLog(user_id=session["userid"], genre_name=genre_name,
                                            current_phase=current_phase,
-                                           start_ts=ts, session_id=session['id'], id=session['recuid'])
+                                           start_ts=ts, session_id=session['id'], id=session['rec_id'])
 
     db.session.add(recommendation_log)
     db.session.commit()

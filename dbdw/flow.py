@@ -24,8 +24,8 @@ def app_msi_survey():
     return redirect(url_for("spotify_basic_bp.msi_survey"))
 
 
-@dbdw_bp.route('/test_url')
-def test_url():
+@dbdw_bp.route('/assign_condition')
+def assign_condition():
     user_condition = UserCondition.query.filter_by(user_id=session["userid"]).first()
     if not user_condition:
         # get the last condition: counterbalance users in different condition

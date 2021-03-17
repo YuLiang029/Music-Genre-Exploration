@@ -1,8 +1,4 @@
-from flask import render_template, redirect, session, Blueprint, request, jsonify
-from general import User, TopTracks
-from general.basic import is_token_expired, get_refresh_token, generate_playlist, save_tracks_to_playlist
-from recommendation.recommendation import get_genre_recommendation_by_popularity
-import time
+from flask import render_template, redirect, Blueprint, request
 
 
 genre_explore_bp = Blueprint('genre_explore_bp', __name__, template_folder='templates')

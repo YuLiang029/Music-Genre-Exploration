@@ -98,7 +98,7 @@
         </div>
 
         <div class="col-sm text-right">
-            <a class="btn btn-primary" id="action_continue" href="/survey_playlist?genre={{ genre }}"
+            <a class="btn btn-primary" id="action_continue" href="/post_task_survey"
                data-intro="When you are done exploring the songs, press this button to go to the survey.">
                 Continue to survey <i class="fas fa-arrow-right"></i>
             </a>
@@ -308,7 +308,6 @@
                 .domain(d3.extent(density_estimate, d => d.value)) // Points per square pixel.
                 .range([0, 1]);
         }
-
 
         this.add_contour_plot = (density_estimate, color) => {
             this.svg.append("g")

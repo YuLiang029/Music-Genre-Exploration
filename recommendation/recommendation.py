@@ -15,7 +15,8 @@ recommendation_bp = Blueprint('recommendation_bp', __name__,
 
 audio_features = ['danceability', 'valence', 'energy', 'liveness', 'speechiness', 'acousticness']
 track_features = ['id', 'trackname', 'popularity'] + audio_features
-rec_track_features = track_features + ['ranking_score']
+track_features1 = track_features + ['baseline_ranking']
+rec_track_features = track_features1 + ['ranking_score']
 
 
 def get_ranking_score(v_sum_rank_ranking, v_baseline_ranking, len_genre_df, weight):
@@ -132,11 +133,11 @@ def genre_recommendation_exp_multiple():
         if not isinstance(genre_df, pd.DataFrame):
             return genre_df
 
-        genre_df = genre_df.assign(baseline_ranking=genre_df['popularity'].rank(ascending=False))
+        # genre_df = genre_df.assign(baseline_ranking=genre_df['popularity'].rank(ascending=False))
         genre_df = genre_df.assign(sum_rank_ranking=genre_df['sum_rank'].rank(ascending=False))
         print(genre_df)
 
-        weight_df = pd.DataFrame(columns=track_features)
+        weight_df = pd.DataFrame(columns=track_features1)
 
         for w in l_weight:
             ranking_score = get_ranking_score(genre_df['sum_rank_ranking'].values,
@@ -154,7 +155,7 @@ def genre_recommendation_exp_multiple():
         weight_df = weight_df.reset_index()
         return weight_df
 
-    genre_df1 = get_mix_multiple_top(l_weight=[0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
+    genre_df1 = get_mix_multiple_top(l_weight=[0.0, 0.2, 0.5, 0.7, 0.9, 1.0])
     top_tracks = genre_df1
     print(genre_df1)
 
@@ -163,7 +164,7 @@ def genre_recommendation_exp_multiple():
     #     db.session.add(rec_tracks)
     #     db.session.commit()
 
-    top_tracks = top_tracks.replace(np.nan, '')
+    #top_tracks = top_tracks.replace(np.nan, '')
 
     top_tracks_list = top_tracks.to_dict('records')
     return jsonify(top_tracks_list)
@@ -198,9 +199,10 @@ def get_genre_recommendation_by_preference(genre_name=None, track_df=None, by_pr
     if genre_name is not None:
         genre_df_folder = os.path.join(os.path.dirname(recommendation_bp.root_path), 'genre_baseline')
         genre_csv_path = os.path.join(genre_df_folder, genre_name + ".csv")
-        genre_df = pd.read_csv(genre_csv_path)[track_features].drop_duplicates(keep='first')
+        genre_df = pd.read_csv(genre_csv_path).drop_duplicates(keep='first')
     else:
-        genre_df = track_df[track_features].drop_duplicates(subset=['id'], keep='first')
+        genre_df = track_df.drop_duplicates(subset=['id'], keep='first')
+    print(genre_df)
 
     """Gaussian filter function"""
     ls = np.linspace(0, 1, 1000)
@@ -285,7 +287,7 @@ def get_genre_recommendation_by_preference(genre_name=None, track_df=None, by_pr
     print('preference-based genre dataframe length is {}'.format(len(genre_df)))
 
     if by_preference:
-        return genre_df[track_features + ['sum_rank']]
+        return genre_df
     else:
         return genre_df
 
@@ -303,7 +305,7 @@ def check_user_model():
     current_user = User.query.filter_by(id=session["userid"]).first().userhash
 
     try:
-        toptrack_df = pd.DataFrame.from_dict(user_json, orient='columns')[track_features].drop_duplicates(subset=['id'],
+        toptrack_df = pd.DataFrame.from_dict(user_json, orient='columns').drop_duplicates(subset=['id'],
                                                                                                           keep="first")
     except KeyError:
         str_return = "no top tracks"

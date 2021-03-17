@@ -31,7 +31,7 @@ def explore_genre2():
 
     return render_template('explore_genre2.html',
                            genre=request.args.get('genre'),
-                           weight=request.args.get('weight'),
+                           weight=personalized*0.5,
                            personalized=personalized)
 
 

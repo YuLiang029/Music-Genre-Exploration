@@ -5,7 +5,8 @@
     <div class="row">
         <h2 id="rec_header" class="col-12 show-on-success">Top recommendations for you – Genre: {{genre}}</h2>
 
-        <p class="show-on-success lead col-12">Take your time to listen to the recommendations and
+        <p class="show-on-success lead col-12">
+            Take your time to listen to the recommendations and
             play with the sliders. After listening to the playlist, you are asked to fill
             in a survey about your experience with the recommendations. Hover over the
             <i class="fas fa-question-circle text-muted"></i> icons to get an explanation on the user interface.</p>
@@ -30,7 +31,8 @@
                      recommendations from this genre. You can vary between the most
                      popular songs from the genre (left: weight=0) and songs
                      from that genre that are very close to your preference (right: weight=1)." data-step='2'>
-                    <span class="help" data-toggle="tooltip" data-placement="top"
+                    <span class="help text-right" data-toggle="tooltip" data-placement="top"
+                          style="position:absolute;right:20px;top:10px;"
                           title="Use the slider to balance how much your preferences are weighted in for the
                           recommendations from this genre. You can vary between the most
                           popular songs from the genre (left: weight=0) and songs
@@ -55,11 +57,12 @@
                     relate to your taste (orange outline) and the typical songs of the {{ genre }} genre
                     (green outline). The graph shows two features of the songs: energy (the excitement of the song),
                     valence (the positiveness of the song)" data-step='3'>
-                    <span class="help" data-toggle="tooltip" data-placement="top" style="position:absolute;right:20px;top:20px;"
-                          title="In this graph, you can see how the
+                    <span class="help" data-toggle="tooltip" data-placement="top"
+                          style="position:absolute;right:20px;top:10px;"
+                          title="In the below two graphs, you can see how the
                           recommendations (blue dots)
                           relate to your taste (orange outline) and the typical songs of the {{ genre }} genre
-                          (green outline). The graph shows two features of the songs: energy (the excitement of the song),
+                          (green outline). This graph shows two features of the songs: energy (the excitement of the song),
                           valence (the positiveness of the song)">
                         <i class="fas fa-question-circle text-info"></i>
                     </span>
@@ -67,11 +70,9 @@
                  <div id="contour_viz2" class="show-on-success" data-intro="
                  This graphs shows two features of the songs: danceability (how danceable a song is)
                  and acousticness (how acoustic a song is)" data-step='4'>
-                    <span class="help" data-toggle="tooltip" data-placement="top" style="position:absolute;right:20px;top:20px;"
-                          title="In this graph, you can see how the
-                          recommendations (blue dots)
-                          relate to your taste (orange outline) and the typical songs of the {{ genre }} genre
-                          (green outline). The graph shows two features of the songs: danceability (how danceable a song is)
+                    <span class="help" data-toggle="tooltip" data-placement="top"
+                          style="position:absolute;right:20px;top:10px;"
+                          title="This graph shows two features of the songs: danceability (how danceable a song is)
                           and acousticness (how acoustic a song is)">
                         <i class="fas fa-question-circle text-info"></i>
                     </span>
@@ -114,8 +115,11 @@
     let all_recommendations = []; // All recommendations fetched from the back-end
     let visible_recommendations = []; // Subset of recommendations actually shown to the user
     let contour_plot;
+    let contour_plot2;
+
     let user_mean_energy;
     let user_mean_valence;
+    let $playlist = $("#playlist");
 
     let sliderVal;
 
@@ -133,7 +137,7 @@
         } else if(visible_recommendations.length > number_of_tracks) {
             throw new Error("Too many tracks given to show.");
         }
-        let $playlist = $("#playlist");
+
 
         $playlist.append($("<ul>"));
         let $playlist_ul = $("#playlist ul");
@@ -170,7 +174,7 @@
             }).done(function (data){
                 if (data === "done"){
                     alert("Your playlist has been successfully saved to your Spotify account");
-                    $("#save_playlist")
+                    $('#save_playlist')
                         .hover().css("opacity", 1)
                         .css("cursor", "auto");
                 } else{
@@ -200,11 +204,12 @@
         }, 100);
 
         // Highlight point in scatter plot when user hovers over track
-        $("#playlist").on("mouseover", ".track", function() {
+        $($playlist)
+            .on("mouseover", ".track", function() {
             let track_id = $(this).children(".trackid").attr("value");
             $(".rec_scatter [data-track-id=" + track_id + "]").addClass("circle--highlighted");
-        });
-        $("#playlist").on("mouseout", ".track", function() {
+        })
+            .on("mouseout", ".track", function() {
             let track_id = $(this).children(".trackid").attr("value");
             $(".rec_scatter [data-track-id=" + track_id + "]").removeClass("circle--highlighted");
         });
@@ -231,7 +236,6 @@
     function calculateTradeoffScore() {
         sliderVal = $("#range_slider").val()
 
-        let $playlist = $("#playlist");
         if ($playlist.children().length !== 0) {
             $playlist.empty();
         }
@@ -243,18 +247,21 @@
     }
 
     /* Contour plot visualisation ------------------------------------------------------------------------------------*/
-    function ContourPlot(recommendations, user_top_tracks, genre_top_tracks) {
+    function ContourPlot(contour_viz, recommendations, user_top_tracks, genre_top_tracks, feature1, feature2) {
         this.recommendations = recommendations;
         this.user_top_tracks = user_top_tracks;
         this.genre_top_tracks = genre_top_tracks;
+        this.contour_viz = contour_viz;
+        this.feature1 = feature1;
+        this.feature2 = feature2;
 
         // set the dimensions and margins of the graph
-        const margin = {top: 20, right: 80, bottom: 30, left: 80},
-            width = 460 - margin.left - margin.right,
+        const margin = {top: 20, right: 120, bottom: 30, left: 120},
+            width = 540 - margin.left - margin.right,
             height = 400 - margin.top - margin.bottom;
 
         // append the svg object to the body of the page
-        this.svg = d3.select("#contour_viz")
+        this.svg = d3.select(contour_viz)
             .append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
@@ -280,10 +287,12 @@
             .attr("opacity", ".5")
             .call(d3.axisLeft(y).tickValues([]).tickSizeOuter(0));
 
-        let compute_density_estimate = data => {
+        let compute_density_estimate;
+
+        compute_density_estimate = data => {
             return d3.contourDensity()
-                .x(function(d) { return x(d.valence); })   // x and y = column name in input data
-                .y(function(d) { return y(d.energy); })
+                .x(function(d) { return x(d[feature1]); })   // x and y = column name in input data
+                .y(function(d) { return y(d[feature2]); })
                 .size([width, height])
                 .bandwidth(25)    // smaller = more precision in lines = more lines
                 (data);
@@ -326,8 +335,8 @@
                 .selectAll("circle")
                 .data(data)
                     .enter().append("circle")
-                    .attr("cx", d => x(d.valence))
-                    .attr("cy", d => y(d.energy))
+                    .attr("cx", d => x(d[feature1]))
+                    .attr("cy", d => y(d[feature2]))
                     .attr("data-track-id", d => d.id)
                     .attr("r", 5)
                     .on("mouseover", handleMouseOver)
@@ -346,6 +355,48 @@
 
         // Add a scatter plot for the recommendations
         this.add_scatter_plot(recommendations, colors.recommendations, "rec_scatter");
+        let x_negative;
+        let x_positive;
+        let y_negative;
+        let y_positive;
+
+        switch (feature1) {
+            case "valence":
+                x_negative = "Negative";
+                x_positive = "Positive";
+                break;
+            case "energy":
+                x_negative = "Calming";
+                x_positive = "Exciting";
+                break;
+            case "danceability":
+                x_negative = "Less danceable";
+                x_positive = "More danceable";
+                break;
+            case "acousticness":
+                x_negative = "Less acoustic";
+                x_positive = "More acoustic";
+                break;
+        }
+
+        switch (feature2) {
+            case "valence":
+                y_negative = "Negative";
+                y_positive = "Positive";
+                break;
+            case "energy":
+                y_negative = "Calming";
+                y_positive = "Exciting";
+                break;
+            case "danceability":
+                y_negative = "Less danceable";
+                y_positive = "More danceable";
+                break;
+            case "acousticness":
+                y_negative = "Less acoustic";
+                y_positive = "More acoustic";
+                break;
+        }
 
         // Add labels
         this.svg.append("text")
@@ -354,27 +405,28 @@
             .attr("alignment-baseline", "central")
             .attr("x", -1)
             .attr("y", height/2)
-            .text("Negative");
+            .text(x_negative);
+
         this.svg.append("text")
             .attr("class", "x label")
             .attr("text-anchor", "start")
             .attr("alignment-baseline", "central")
             .attr("x", width+1)
             .attr("y", height/2)
-            .text("Positive");
+            .text(x_positive);
         this.svg.append("text")
             .attr("class", "y label")
             .attr("text-anchor", "middle")
             .attr("x", width/2)
             .attr("y", -1)
-            .text("Exciting");
+            .text(y_positive);
         this.svg.append("text")
             .attr("class", "y label")
             .attr("text-anchor", "middle")
             .attr("alignment-baseline", "hanging")
             .attr("x", width/2)
             .attr("y", height+1)
-            .text("Calming");
+            .text(y_negative);
 
         // Add legend
         let ordinal = d3.scaleOrdinal()
@@ -383,6 +435,7 @@
         this.svg.append("g")
           .attr("class", "legendOrdinal")
           .attr("transform", "translate(-75,0)");
+
         let legendOrdinal = d3.legendColor()
           .shape("circle")
           .shapePadding(16)
@@ -390,8 +443,10 @@
           //use cellFilter to hide the "e" cell
           .cellFilter(function(d){ return d.label !== "e" })
           .scale(ordinal);
+
         this.svg.select(".legendOrdinal")
           .call(legendOrdinal);
+
 
         // Allow interaction with the graph
         function handleMouseOver(d) {
@@ -403,171 +458,11 @@
         }
     }
 
-
-    function ContourPlot2(recommendations, user_top_tracks, genre_top_tracks) {
-        this.recommendations = recommendations;
-        this.user_top_tracks = user_top_tracks;
-        this.genre_top_tracks = genre_top_tracks;
-
-        // set the dimensions and margins of the graph
-        const margin = {top: 20, right: 80, bottom: 30, left: 80},
-            width = 460 - margin.left - margin.right,
-            height = 400 - margin.top - margin.bottom;
-
-        // append the svg object to the body of the page
-        this.svg = d3.select("#contour_viz2")
-            .append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform",
-                "translate(" + margin.left + "," + margin.top + ")");
-
-        // Add X axis
-        let x = d3.scaleLinear()
-            .domain([0, 1])
-            .range([ 0, width ]);
-        this.svg.append("g")
-            .attr("transform", "translate(0," + height/2 + ")")
-            .attr("opacity", ".5")
-            .call(d3.axisBottom(x).tickValues([]).tickSizeOuter(0));
-
-        // Add Y axis
-        let y = d3.scaleLinear()
-            .domain([0, 1])
-            .range([ height, 0 ]);
-        this.svg.append("g")
-            .attr("transform", "translate(" + width/2 + ", 0)")
-            .attr("opacity", ".5")
-            .call(d3.axisLeft(y).tickValues([]).tickSizeOuter(0));
-
-        let compute_density_estimate = data => {
-            return d3.contourDensity()
-                .x(function(d) { return x(d.danceability); })   // x and y = column name in input data
-                .y(function(d) { return y(d.acousticness); })
-                .size([width, height])
-                .bandwidth(25)    // smaller = more precision in lines = more lines
-                (data);
-        };
-
-        // compute the density data for genre and user profile
-        let genre_density = compute_density_estimate(this.genre_top_tracks);
-        let user_density = compute_density_estimate(this.user_top_tracks);
-
-        let opacity_scale = (density_estimate) => {
-            return d3.scalePow()
-                .exponent(2)
-                .domain(d3.extent(density_estimate, d => d.value)) // Points per square pixel.
-                .range([0, 1]);
-        }
-
-
-        this.add_contour_plot = (density_estimate, color) => {
-            this.svg.append("g")
-                .selectAll("path")
-                .data(density_estimate)
-                    .enter()
-                    .append("path")
-                    .attr("d", d3.geoPath())
-                    .attr("fill", "none")
-                    .attr("stroke", color)
-                    .attr("stroke-opacity", d => opacity_scale(density_estimate)(d.value))
-                    .attr("stroke-linejoin", "round");
-        };
-
-        // Add the contour plot for the genre
-        this.add_contour_plot(genre_density, colors.genre);
-        this.add_contour_plot(user_density, colors.user_profile);
-
-        this.add_scatter_plot = (data, color, classname) => {
-            this.svg.append("g")
-                .attr("class", classname)
-                .attr("stroke", "white")
-                .attr("fill", color)
-                .selectAll("circle")
-                .data(data)
-                    .enter().append("circle")
-                    .attr("cx", d => x(d.danceability))
-                    .attr("cy", d => y(d.acousticness))
-                    .attr("data-track-id", d => d.id)
-                    .attr("r", 5)
-                    .on("mouseover", handleMouseOver)
-                    .on("mouseout", handleMouseOut);
-        };
-
-        this.remove_group = (selector) => {
-            this.svg.selectAll(selector).remove();
-         };
-
-        this.update_contour_plot = (recommendations) => {
-            this.remove_group(".rec_scatter");
-            this.recommendations = recommendations;
-            this.add_scatter_plot(recommendations, colors.recommendations, "rec_scatter");
-        }
-
-        // Add a scatter plot for the recommendations
-        this.add_scatter_plot(recommendations, colors.recommendations, "rec_scatter");
-
-        // Add labels
-        this.svg.append("text")
-            .attr("class", "x label")
-            .attr("text-anchor", "end")
-            .attr("alignment-baseline", "central")
-            .attr("x", -1)
-            .attr("y", height/2)
-            .text("Less danceable");
-        this.svg.append("text")
-            .attr("class", "x label")
-            .attr("text-anchor", "start")
-            .attr("alignment-baseline", "central")
-            .attr("x", width+1)
-            .attr("y", height/2)
-            .text("More danceable");
-        this.svg.append("text")
-            .attr("class", "y label")
-            .attr("text-anchor", "middle")
-            .attr("x", width/2)
-            .attr("y", -1)
-            .text("More acoustic");
-        this.svg.append("text")
-            .attr("class", "y label")
-            .attr("text-anchor", "middle")
-            .attr("alignment-baseline", "hanging")
-            .attr("x", width/2)
-            .attr("y", height+1)
-            .text("Less acoustic");
-
-        // Add legend
-        let ordinal = d3.scaleOrdinal()
-          .domain(["Your taste", "The {{ genre }} genre", "Recommended songs"])
-          .range([colors.user_profile, colors.genre, colors.recommendations]);
-        this.svg.append("g")
-          .attr("class", "legendOrdinal")
-          .attr("transform", "translate(-75,0)");
-        let legendOrdinal = d3.legendColor()
-          .shape("circle")
-          .shapePadding(16)
-          .shapeRadius(5)
-          //use cellFilter to hide the "e" cell
-          .cellFilter(function(d){ return d.label !== "e" })
-          .scale(ordinal);
-        this.svg.select(".legendOrdinal")
-          .call(legendOrdinal);
-
-        // Allow interaction with the graph
-        function handleMouseOver(d) {
-            $(".trackid[value=" + d.id + "]").parent().addClass("track--highlighted");
-        }
-
-        function handleMouseOut(d, i) {
-            $(".trackid[value=" + d.id + "]").parent().removeClass("track--highlighted");
-        }
-    }
     /* Guided tour ---------------------------------------------------------------------------------------------------*/
     // Instance the tour
     let introJsObj = introJs();
     introJsObj.onexit(function() {
-        $(".make-sticky-later").addClass("sticky");
+        $('.make-sticky-later').addClass("sticky");
     });
     introJsObj.setOptions({
         'exitOnOverlayClick': false,
@@ -611,10 +506,9 @@
 
         // Initialise playlist, sliders, and visualisation
         fillPlaylist();
-
         //setSliders();
-        contour_plot = new ContourPlot(visible_recommendations, user_top_tracks, genre_top_tracks);
-        contour_plot2 = new ContourPlot2(visible_recommendations, user_top_tracks, genre_top_tracks);
+        contour_plot = new ContourPlot("#contour_viz", visible_recommendations, user_top_tracks, genre_top_tracks, "valence", "energy");
+        contour_plot2 = new ContourPlot("#contour_viz2", visible_recommendations, user_top_tracks, genre_top_tracks, "acousticness", "danceability");
 
         // Hide loading indicator and show results
         $('.hide-on-success').hide();

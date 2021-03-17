@@ -90,6 +90,10 @@ table.sv_q_matrix th {
     font-size: 1rem;
 }
 
+.tooltip-inner {
+    text-align: left;
+}
+
 /* START CONTROL STYLING */
 
 .sliders {

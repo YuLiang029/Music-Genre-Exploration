@@ -5,11 +5,22 @@
         Explore my music taste by genre
     </h3>
 
-    <div>
     <p class="lead">
         Use the dropdown menu below to select a
         genre you would like to explore.
     </p>
+    <div class="form-check-lg">
+        <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1" checked>
+        <label class="form-check-label" for="exampleRadios1">
+            blues
+        </label>
+    </div>
+    <div class="form-check-lg">
+        <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2">
+        <label class="form-check-label" for="exampleRadios2">
+            avaht-garde
+        </label>
+    </div>
     <form id="form_range">
     <select name = "genre" id="genre" class="form-control form-control-lg">
         <option value="unknown">
@@ -60,7 +71,6 @@
         </a>
     </div>
 
-    </div>
 {% endblock %}
 {% block scripts %}
 <script>

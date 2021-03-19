@@ -127,7 +127,7 @@ def genre_recommendation_exp_multiple():
     db.session.add(recommendation_log)
     db.session.commit()
 
-    def get_mix_multiple_top(l_weight: list = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]):
+    def get_mix_multiple_top(l_weight: list):
         genre_df = get_genre_recommendation_by_preference(genre_name, by_preference=False)
 
         if not isinstance(genre_df, pd.DataFrame):

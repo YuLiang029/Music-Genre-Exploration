@@ -26,7 +26,7 @@ class TopArtists(db.Model):
     artist = db.relationship('Artist', cascade='save-update, merge')
 
     def __repr__(self):
-        return '<TopArtists %r-%r>' % (self.userid, self.artistid)
+        return '<TopArtists %r-%r>' % (self.user_id, self.artist_id)
 
 
 class Artist(db.Model):
@@ -104,7 +104,7 @@ class TopTracks(db.Model):
     track = db.relationship('Track', cascade='save-update, merge')
 
     def __repr__(self):
-        return '<TopTracks %r-%r>' % (self.userid, self.trackid)
+        return '<TopTracks %r-%r>' % (self.user_id, self.track_id)
 
 
 class MsiResponse(db.Model):

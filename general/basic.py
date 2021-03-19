@@ -201,7 +201,7 @@ def artist_scrape(limit=50):
                             new_top_artist_obj = TopArtists(user_id=session["userid"],
                                                             artist_id=x["id"],
                                                             time_period=term,
-                                                            timestamp=str(ts)
+                                                            timestamp=ts
                                                             )
                             db.session.add(new_top_artist_obj)
 
@@ -221,7 +221,7 @@ def artist_scrape(limit=50):
                         new_top_artist_obj = TopArtists(user_id=session["userid"],
                                                         artist_id=x["id"],
                                                         time_period=term,
-                                                        timestamp=str(ts),
+                                                        timestamp=ts,
                                                         artist=new_artist_obj)
                         db.session.add(new_top_artist_obj)
                 db.session.commit()

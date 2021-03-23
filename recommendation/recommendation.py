@@ -1,14 +1,16 @@
 from flask import session, jsonify, Blueprint, request
 import time
 import uuid
-from general import TopTracks, User
+from general import TopTracks, TopArtists, User
 from database import db
 import pandas as pd
 import os
 import numpy as np
 from sklearn.mixture import GaussianMixture
 from recommendation import RecommendationLog, RecTracks
-
+from collections import Counter
+import operator
+from functools import reduce
 
 recommendation_bp = Blueprint('recommendation_bp', __name__,
                               template_folder='templates')
@@ -23,6 +25,67 @@ def get_ranking_score(v_sum_rank_ranking, v_baseline_ranking, len_genre_df, weig
     ranking_score = weight * (len_genre_df - v_sum_rank_ranking + 1) + (1 - weight) * (
                 len_genre_df - v_baseline_ranking + 1)
     return ranking_score
+
+
+@recommendation_bp.route('/genre_suggestion')
+def genre_suggestion():
+    top_artists = TopArtists.query.filter_by(user_id=session["userid"]).all()
+
+    if not top_artists:
+        # error message
+        error_message = "error"
+        return jsonify(error_message)
+
+    # get a user's top artists
+    l_user_artist = []
+    for item in top_artists:
+        l_user_artist.extend(item.artist.genres.split(","))
+    c_user = Counter(l_user_artist)
+    dict_user = dict(c_user)
+
+    # get genre artists
+    l_genre = ["avant-garde", "blues", "classical",
+               "country", "electronic", "folk",
+               "jazz", "new-age", "rap", "rnb"]
+
+    for genre in l_genre:
+        genre_artists = pd.read_csv(os.path.join(os.path.dirname(recommendation_bp.root_path),
+                                                 'genre_artists/' + genre + ".csv"), sep=";")
+
+        df_genre = genre_artists[genre_artists["genre"] == genre]
+        l_genre_artist = df_genre.dropna(subset=['artist_tag']).artist_tag.str.split(",").tolist()
+        l_genre_artist_flat = reduce(operator.add, l_genre_artist)
+
+        c_genre = Counter(l_genre_artist_flat)
+        dict_genre = dict(c_genre)
+
+        # Preparation for genre suggestion
+        # 1. construct numpy array for both genre and user with all keywords
+        genre_combined = set(dict_genre.keys()).union(set(dict_user.keys()))
+        user_preference = {}
+        genre_profile = {}
+
+        for item in genre_combined:
+            user_preference[item] = 0
+            genre_profile[item] = 0
+
+        for item in dict_user:
+            user_preference[item] = dict_user[item]
+        np_user = np.fromiter(user_preference.values(), dtype="float")
+
+        for item in dict_genre:
+            genre_profile[item] = dict_genre[item]
+        np_genre = np.fromiter(genre_profile.values(), dtype="float")
+        # 2. compute cosine similarity
+        cos_m_genre = cosine_sim(np_user, np_genre)
+        print(genre)
+        print(cos_m_genre)
+    return jsonify("success")
+
+
+def cosine_sim(np1: np.ndarray, np2: np.ndarray):
+    score = np.dot(np1, np2) / (np.linalg.norm(np1) * np.linalg.norm(np2))
+    return score
 
 
 @recommendation_bp.route('/genre_top_tracks/<genre>/<sort>/<num>')

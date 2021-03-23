@@ -4,63 +4,92 @@
     <h3>
         Explore my music taste by genre
     </h3>
+    <p class="lead">Instructions: please select a music genre to explore</p>
+    <div class="row">
+        <div class="col-6">
+            <h3><span class="badge badge-primary">Explore out of your bubble</span></h3>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="genre" id="Radios1" value="avant-garde" checked>
+                <label class="form-check-label lead" for="Radios1">
+                    <b>Avant-garde</b>
+                </label>
+            </div>
+            <br>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="genre" id="Radios2" value="blues">
+                <label class="form-check-label lead" for="Radios2">
+                    <b>Blues</b>
+                </label>
+            </div>
+            <br>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="genre" id="Radios3" value="classical">
+                <label class="form-check-label lead" for="Radios3">
+                    <b>Classical</b>
+                </label>
+            </div>
+        </div>
 
-    <p class="lead">
-        Use the dropdown menu below to select a
-        genre you would like to explore.
-    </p>
-    <div class="form-check-lg">
-        <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1" checked>
-        <label class="form-check-label" for="exampleRadios1">
-            blues
-        </label>
+        <div class="col-6">
+            <h3><span class="badge badge-secondary">Explore genres close to you</span></h3>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="genre" id="Radios4" value="country">
+                <label class="form-check-label lead" for="Radios4">
+                    <b>Country</b>
+                </label>
+            </div>
+            <br>
+
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="genre" id="Radios5" value="electronic">
+                <label class="form-check-label lead" for="Radios5">
+                    <b>Electronic</b>
+                </label>
+            </div>
+            <br>
+
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="genre" id="Radios6" value="folk">
+                <label class="form-check-label lead" for="Radios6">
+                    <b>Folk</b>
+                </label>
+            </div>
+            <br>
+
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="genre" id="Radios7" value="jazz">
+                <label class="form-check-label lead" for="Radios7">
+                    <b>Jazz</b>
+                </label>
+            </div>
+            <br>
+
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="genre" id="Radios8" value="new-age">
+                <label class="form-check-label lead" for="Radios8">
+                    <b>New-age</b>
+                </label>
+            </div>
+            <br>
+
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="genre" id="Radios9" value="rap">
+                <label class="form-check-label lead" for="Radios9">
+                    <b>Rap</b>
+                </label>
+            </div>
+            <br>
+
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="genre" id="Radios10" value="rnb">
+                <label class="form-check-label lead" for="Radios10">
+                    <b>R&B</b>
+                </label>
+            </div>
+
+
+        </div>
     </div>
-    <div class="form-check-lg">
-        <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2">
-        <label class="form-check-label" for="exampleRadios2">
-            avaht-garde
-        </label>
-    </div>
-    <form id="form_range">
-    <select name = "genre" id="genre" class="form-control form-control-lg">
-        <option value="unknown">
-            Selected genre
-        </option>
-        <option value="christmas">
-            christmas
-        </option>
-        <option value="avant-garde">
-            avant-garde
-        </option>
-        <option value="blues">
-            blues
-        </option>
-        <option value="classical">
-            classical
-        </option>
-        <option value="country">
-            country
-        </option>
-        <option value="electronic">
-            electronic
-        </option>
-        <option value="folk">
-            folk
-        </option>
-        <option value="jazz">
-            jazz
-        </option>
-        <option value="new-age">
-            new-age
-        </option>
-        <option value="rap">
-            rap
-        </option>
-        <option value="rnb">
-            rnb
-        </option>
-    </select>
-    </form>
 
     <br>
 
@@ -74,9 +103,8 @@
 {% endblock %}
 {% block scripts %}
 <script>
-
     $("#action_submit").on( "click", function() {
-        $(this).attr("href", "/explore_genre2?genre=" + $.trim($("#genre :selected").text()));
+        $(this).attr("href", "/explore_genre2?genre=" + $("input[type='radio'][name='genre']:checked").val());
     });
 
 

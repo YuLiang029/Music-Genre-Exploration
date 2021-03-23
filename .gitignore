@@ -6,3 +6,4 @@ keys_tagme.json
 *.npy
 venv/
 .DS_store
+genre_artists/

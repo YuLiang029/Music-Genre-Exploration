@@ -129,7 +129,7 @@ def authorized():
             flash('You were signed in as %s' % display_name)
             session["userid"] = user.id
 
-            scrape(limit=50, type="tracks")
+            scrape(limit=50, scrape_type="tracks_artists")
             print(next_url)
 
             ts = time.time()
@@ -153,21 +153,22 @@ def authorized():
         return render_template("SpotifyConnectFailed.html")
 
 
-@spotify_basic_bp.route('/scrape')
-def scrape(limit=50, type="tracks"):
+def scrape(limit=50,
+           scrape_type="tracks"):
     """
     Scrape user top artists
     https://developer.spotify.com/console/get-current-user-top-artists-and-tracks/
     authorization scopes: user-top-read
     :param limit:
+    :param scrape_type: scraping type; scraping tracks by default
     :return:
     """
 
-    if type == "tracks":
+    if scrape_type == "tracks":
         track_scrape(limit=limit)
-    elif type == "artists":
+    elif scrape_type == "artists":
         artist_scrape(limit=limit)
-    else:
+    elif scrape_type == "tracks_artists":
         track_scrape(limit=limit)
         artist_scrape(limit=limit)
     return "done"

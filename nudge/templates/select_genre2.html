@@ -6,84 +6,73 @@
     </h3>
     <p class="lead">Instructions: please select a music genre to explore</p>
     <div class="row">
-        <div class="col-6">
-            <h3><span class="badge badge-primary">Explore out of your bubble</span></h3>
+        <div class="col-6 show-on-success">
+            <h3><span class="badge badge-primary">Genres more close to you</span></h3>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="genre" id="Radios1" value="avant-garde" checked>
-                <label class="form-check-label lead" for="Radios1">
-                    <b>Avant-garde</b>
+                <input class="form-check-input" type="radio" name="genre" id="Radios1" checked>
+                <label class="form-check-label lead font-weight-bold" id="label_radio1" for="Radios1"></label>
+            </div>
+            <br>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="genre" id="Radios2">
+                <label class="form-check-label lead font-weight-bold" id="label_radio2" for="Radios2">
                 </label>
             </div>
             <br>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="genre" id="Radios2" value="blues">
-                <label class="form-check-label lead" for="Radios2">
-                    <b>Blues</b>
-                </label>
-            </div>
-            <br>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="genre" id="Radios3" value="classical">
-                <label class="form-check-label lead" for="Radios3">
-                    <b>Classical</b>
+                <input class="form-check-input" type="radio" name="genre" id="Radios3">
+                <label class="form-check-label lead font-weight-bold" id="label_radio3" for="Radios3">
                 </label>
             </div>
         </div>
 
-        <div class="col-6">
-            <h3><span class="badge badge-secondary">Explore genres close to you</span></h3>
+        <div class="col-6 show-on-success">
+            <h3><span class="badge badge-secondary">Genres more out of your bubble</span></h3>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="genre" id="Radios4" value="country">
-                <label class="form-check-label lead" for="Radios4">
-                    <b>Country</b>
+                <input class="form-check-input" type="radio" name="genre" id="Radios4">
+                <label class="form-check-label lead font-weight-bold" id="label_radio4" for="Radios4">
                 </label>
             </div>
             <br>
 
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="genre" id="Radios5" value="electronic">
-                <label class="form-check-label lead" for="Radios5">
-                    <b>Electronic</b>
+                <input class="form-check-input" type="radio" name="genre" id="Radios5">
+                <label class="form-check-label lead font-weight-bold" id="label_radio5" for="Radios5">
                 </label>
             </div>
             <br>
 
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="genre" id="Radios6" value="folk">
-                <label class="form-check-label lead" for="Radios6">
-                    <b>Folk</b>
+                <input class="form-check-input" type="radio" name="genre" id="Radios6">
+                <label class="form-check-label lead font-weight-bold" id="label_radio6" for="Radios6">
                 </label>
             </div>
             <br>
 
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="genre" id="Radios7" value="jazz">
-                <label class="form-check-label lead" for="Radios7">
-                    <b>Jazz</b>
+                <input class="form-check-input" type="radio" name="genre" id="Radios7">
+                <label class="form-check-label lead font-weight-bold" id="label_radio7" for="Radios7">
                 </label>
             </div>
             <br>
 
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="genre" id="Radios8" value="new-age">
-                <label class="form-check-label lead" for="Radios8">
-                    <b>New-age</b>
+                <input class="form-check-input" type="radio" name="genre" id="Radios8">
+                <label class="form-check-label lead font-weight-bold" id="label_radio8" for="Radios8">
                 </label>
             </div>
             <br>
 
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="genre" id="Radios9" value="rap">
-                <label class="form-check-label lead" for="Radios9">
-                    <b>Rap</b>
+                <input class="form-check-input" type="radio" name="genre" id="Radios9">
+                <label class="form-check-label lead font-weight-bold" id="label_radio9" for="Radios9">
                 </label>
             </div>
             <br>
 
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="genre" id="Radios10" value="rnb">
-                <label class="form-check-label lead" for="Radios10">
-                    <b>R&B</b>
+                <input class="form-check-input" type="radio" name="genre" id="Radios10">
+                <label class="form-check-label lead font-weight-bold" id="label_radio10" for="Radios10">
                 </label>
             </div>
 
@@ -102,11 +91,45 @@
 
 {% endblock %}
 {% block scripts %}
-<script>
-    $("#action_submit").on( "click", function() {
-        $(this).attr("href", "/explore_genre2?genre=" + $("input[type='radio'][name='genre']:checked").val());
-    });
+    <script>
+        $.ajax({url:'/genre_suggestion', success: function(result){
+
+            console.log(result);
+            if (result === "error"){
+                alert("You do not have enough activity on your Spotify account to generate recommendations, " +
+                    "therefore you can not participate in the experiment. We still want to thank you for your effort.");
+            } else {
+                $("#Radios1").val(result[0]);
+                $("#Radios2").val(result[1]);
+                $("#Radios3").val(result[2]);
+                $("#Radios4").val(result[3]);
+                $("#Radios5").val(result[4]);
+                $("#Radios6").val(result[5]);
+                $("#Radios7").val(result[6]);
+                $("#Radios8").val(result[7]);
+                $("#Radios9").val(result[8]);
+                $("#Radios10").val(result[9]);
+
+                $("#label_radio1").html(result[0]);
+                $("#label_radio2").html(result[1]);
+                $("#label_radio3").html(result[2]);
+                $("#label_radio4").html(result[3]);
+                $("#label_radio5").html(result[4]);
+                $("#label_radio6").html(result[5]);
+                $("#label_radio7").html(result[6]);
+                $("#label_radio8").html(result[7]);
+                $("#label_radio9").html(result[8]);
+                $("#label_radio10").html(result[9]);
+            }
+            $(".hide-on-success").hide();
+        }});
+
+        $('.show-on-success').show();
+
+        $("#action_submit").on( "click", function() {
+            $(this).attr("href", "/explore_genre2?genre=" + $("input[type='radio'][name='genre']:checked").val());
+        });
 
 
-</script>
+    </script>
 {% endblock %}

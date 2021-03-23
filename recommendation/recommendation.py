@@ -1,7 +1,7 @@
 from flask import session, jsonify, Blueprint, request
 import time
 import uuid
-from general import TopTracks, TopArtists, User
+from general import TopTracks, TopArtists, User, Artist
 from database import db
 import pandas as pd
 import os
@@ -31,6 +31,7 @@ def get_ranking_score(v_sum_rank_ranking, v_baseline_ranking, len_genre_df, weig
 def genre_suggestion():
     top_artists = TopArtists.query.filter_by(user_id=session["userid"]).all()
 
+    print(top_artists)
     if not top_artists:
         # error message
         error_message = "error"
@@ -47,7 +48,7 @@ def genre_suggestion():
     l_genre = ["avant-garde", "blues", "classical",
                "country", "electronic", "folk",
                "jazz", "new-age", "rap", "rnb"]
-
+    dict_genre_score = {}
     for genre in l_genre:
         genre_artists = pd.read_csv(os.path.join(os.path.dirname(recommendation_bp.root_path),
                                                  'genre_artists/' + genre + ".csv"), sep=";")
@@ -78,9 +79,11 @@ def genre_suggestion():
         np_genre = np.fromiter(genre_profile.values(), dtype="float")
         # 2. compute cosine similarity
         cos_m_genre = cosine_sim(np_user, np_genre)
-        print(genre)
-        print(cos_m_genre)
-    return jsonify("success")
+        dict_genre_score[genre] = cos_m_genre
+    print(dict_genre_score)
+    l_genre_score_sorted = sorted(dict_genre_score, key=dict_genre_score.get, reverse=True)
+    print(l_genre_score_sorted)
+    return jsonify(l_genre_score_sorted)
 
 
 def cosine_sim(np1: np.ndarray, np2: np.ndarray):

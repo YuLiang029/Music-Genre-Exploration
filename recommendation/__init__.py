@@ -21,15 +21,34 @@ class RecommendationLog(db.Model):
         return '<RecommendationLog %r-%r-%r>' % (self.id, self.user_id, self.session_id)
 
 
-# recommended items
+# table for saving the recommended tracks
 class RecTracks(db.Model):
     __tablename__ = 'rec_tracks'
-    rec_id = db.Column(db.VARCHAR, db.ForeignKey('recommendation_log.id'), primary_key=True)
-    track_id = db.Column(db.VARCHAR, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    rec_id = db.Column(db.VARCHAR, db.ForeignKey('recommendation_log.id'))
+    track_id = db.Column(db.VARCHAR)
     rank = db.Column(db.Integer)
+    baseline_ranking = db.Column(db.FLOAT)
+    personalized_ranking = db.Column(db.FLOAT)
+    popularity_ranking = db.Column(db.FLOAT)
+    score = db.Column(db.FLOAT)
+    weight = db.Column(db.FLOAT)
 
     def __repr__(self):
         return '<RecTracks %r-%r>' % (self.rec_id, self.track_id)
+
+
+# table for saving the recommend genres
+class RecGenres(db.Model):
+    __tablename__ = 'rec_genres'
+    user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'))
+    rec_genre_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    genre = db.Column(db.VARCHAR)
+    score = db.Column(db.FLOAT)
+    ts = db.Column(db.FLOAT)
+
+    def __repr__(self):
+        return '<RecTracks %r-%r-%r>' % (self.user_id, self.genre, self.score)
 
 
 class SurveyResponse(db.Model):

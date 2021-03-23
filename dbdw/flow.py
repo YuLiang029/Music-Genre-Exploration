@@ -10,6 +10,8 @@ from dbdw import UserCondition, RecStream, SelectedStream, ImgRatings
 import random
 import re
 from general import MsiResponse
+pd.set_option('display.max_columns', None)
+
 
 dbdw_bp = Blueprint('dbdw_bp', __name__, template_folder='templates')
 
@@ -89,8 +91,7 @@ def event_recommendation():
         db.session.commit()
 
     track_df_new = track_df[['id', 'event', 'stream']]
-    tracks = track_df_new.merge(recommendations, on=['id'])
-    print(tracks)
+    tracks = track_df_new.merge(recommendations.drop(columns=['event', 'stream']), on=['id'])
 
     # create four blocks of list
     l_stream = ['stream a', 'stream b']

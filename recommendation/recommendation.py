@@ -1,13 +1,13 @@
 from flask import session, jsonify, Blueprint, request
 import time
 import uuid
-from general import TopTracks, TopArtists, User, Artist
+from general import TopTracks, TopArtists, User
 from database import db
 import pandas as pd
 import os
 import numpy as np
 from sklearn.mixture import GaussianMixture
-from recommendation import RecommendationLog, RecTracks
+from recommendation import RecommendationLog, RecTracks, RecGenres
 from collections import Counter
 import operator
 from functools import reduce
@@ -17,8 +17,8 @@ recommendation_bp = Blueprint('recommendation_bp', __name__,
 
 audio_features = ['danceability', 'valence', 'energy', 'liveness', 'speechiness', 'acousticness']
 track_features = ['id', 'trackname', 'popularity'] + audio_features
-track_features1 = track_features + ['baseline_ranking']
-rec_track_features = track_features1 + ['ranking_score']
+track_features1 = track_features + ['baseline_ranking', 'sum_rank_ranking']
+rec_track_features = track_features1 + ['ranking_score', 'weight']
 
 
 def get_ranking_score(v_sum_rank_ranking, v_baseline_ranking, len_genre_df, weight):
@@ -29,15 +29,25 @@ def get_ranking_score(v_sum_rank_ranking, v_baseline_ranking, len_genre_df, weig
 
 @recommendation_bp.route('/genre_suggestion')
 def genre_suggestion():
+    # check if the genre suggestions have been generated
+    rec_genres = RecGenres.query.filter_by(user_id=session["userid"],).order_by(RecGenres.score.desc()).all()
+
+    if rec_genres:
+        l_genre_score_sorted = []
+        for item in rec_genres:
+            l_genre_score_sorted.append(item.genre)
+        return jsonify(l_genre_score_sorted)
+
+    # get a user's top artists
     top_artists = TopArtists.query.filter_by(user_id=session["userid"]).all()
 
-    print(top_artists)
+    # return error if non top artists exist
     if not top_artists:
         # error message
         error_message = "error"
         return jsonify(error_message)
 
-    # get a user's top artists
+    # get top artists' genre
     l_user_artist = []
     for item in top_artists:
         l_user_artist.extend(item.artist.genres.split(","))
@@ -80,6 +90,10 @@ def genre_suggestion():
         # 2. compute cosine similarity
         cos_m_genre = cosine_sim(np_user, np_genre)
         dict_genre_score[genre] = cos_m_genre
+        rec_genres = RecGenres(user_id=session["userid"], genre=genre, score=cos_m_genre, ts=time.time())
+        db.session.add(rec_genres)
+
+    db.session.commit()
     print(dict_genre_score)
     l_genre_score_sorted = sorted(dict_genre_score, key=dict_genre_score.get, reverse=True)
     print(l_genre_score_sorted)
@@ -226,10 +240,15 @@ def genre_recommendation_exp_multiple():
     top_tracks = genre_df1
     print(genre_df1)
 
-    # for index, row in top_tracks.iterrows():
-    #     rec_tracks = RecTracks(rec_id=session['recuid'], track_id=row["id"], rank=row["index"])
-    #     db.session.add(rec_tracks)
-    #     db.session.commit()
+    for index, row in top_tracks.iterrows():
+        # rec_tracks = RecTracks(rec_id=session['rec_id'], track_id=row["id"], rank=row["index"])
+        rec_tracks = RecTracks(rec_id=session['rec_id'], track_id=row["id"],
+                               rank=row["index"],
+                               baseline_ranking=row['baseline_ranking'],
+                               personalized_ranking=row['sum_rank_ranking'],
+                               score=row['ranking_score'], weight=row['weight'])
+        db.session.add(rec_tracks)
+        db.session.commit()
 
     #top_tracks = top_tracks.replace(np.nan, '')
 

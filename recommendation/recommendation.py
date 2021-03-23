@@ -221,7 +221,8 @@ def genre_recommendation_exp_multiple():
         weight_df = weight_df.reset_index()
         return weight_df
 
-    genre_df1 = get_mix_multiple_top(l_weight=[0.0, 0.2, 0.5, 0.7, 0.9, 1.0])
+    # genre_df1 = get_mix_multiple_top(l_weight=[0.0, 0.2, 0.5, 0.7, 0.9, 1.0])
+    genre_df1 = get_mix_multiple_top(l_weight=[0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
     top_tracks = genre_df1
     print(genre_df1)
 

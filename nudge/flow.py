@@ -26,9 +26,9 @@ def select_genre2():
 @nudge_bp.route('/explore_genre2')
 def explore_genre2():
 
-    # Infer the experimental condition
+    # TODO: infer the experimental condition
     personalized = 1
-
+    
     return render_template('explore_genre2.html',
                            genre=request.args.get('genre'),
                            weight=personalized*0.5,

@@ -23,7 +23,7 @@ def index():
 
 @dbdw_bp.route('/app_msi_survey')
 def app_msi_survey():
-    return redirect(url_for("spotify_basic_bp.msi_survey"))
+    return redirect(url_for("spotify_basic_bp.msi_survey", redirect_path='dbdw_bp.event_explore'))
 
 
 @dbdw_bp.route('/assign_condition')

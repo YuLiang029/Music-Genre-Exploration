@@ -495,8 +495,8 @@ def scrape_artist_tracks(artist_id):
         db.session.commit()
 
 
-@spotify_basic_bp.route('/msi_survey', methods=["GET", "POST"])
-def msi_survey():
+@spotify_basic_bp.route('/msi_survey/<redirect_path>', methods=["GET", "POST"])
+def msi_survey(redirect_path):
     if request.method == "GET":
         responses = User.query.filter_by(id=session["userid"]).first().msi_response
         surveydata = {}
@@ -634,7 +634,7 @@ def msi_survey():
         survey_config = {
             'title': 'Musical sophistication survey',
             'description': 'The music sophistication survey makes us know your music expertise better.',
-            'next_url': url_for('dbdw_bp.event_explore')
+            'next_url': url_for(redirect_path)
         }
 
         print(surveydata)

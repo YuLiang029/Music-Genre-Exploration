@@ -42,7 +42,12 @@ def redirect_from_main2():
         db.session.add(user_condition_new)
         db.session.commit()
 
-    return redirect('select_genre2')
+    return redirect('msi_survey2')
+
+
+@nudge_bp.route('/msi_survey2')
+def msi_survey2():
+    return redirect(url_for("spotify_basic_bp.msi_survey", redirect_path="nudge_bp.select_genre2"))
 
 
 @nudge_bp.route('/select_genre2')

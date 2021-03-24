@@ -17,6 +17,17 @@ class User(db.Model):
         return '<User %r>' % self.id
 
 
+class UserCondition(db.Model):
+    __tablename__ = 'user_condition'
+    user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'), primary_key=True)
+    timestamp = db.Column(db.FLOAT)
+    condition = db.Column(db.INTEGER)
+    default = db.Column(db.VARCHAR)
+
+    def __repr__(self):
+        return '<UserCondition %r>' % self.user_id
+
+
 class TopArtists(db.Model):
     __tablename__ = 'top_artists'
     user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'), primary_key=True)

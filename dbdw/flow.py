@@ -6,10 +6,10 @@ from recommendation import RecommendationLog
 from database import db
 from recommendation.recommendation import get_genre_recommendation_by_preference
 from recommendation import RecTracks, SurveyResponse
-from dbdw import UserCondition, RecStream, SelectedStream, ImgRatings
+from dbdw import RecStream, SelectedStream, ImgRatings
 import random
 import re
-from general import MsiResponse
+from general import MsiResponse, UserCondition
 pd.set_option('display.max_columns', None)
 
 

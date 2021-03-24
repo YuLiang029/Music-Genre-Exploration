@@ -42,7 +42,8 @@ def redirect_from_main2():
 
 @nudge_bp.route('/select_genre2')
 def select_genre2():
-    return render_template("select_genre2.html")
+    user_condition = UserCondition.query.filter_by(user_id=session["userid"]).first()
+    return render_template("select_genre2.html", condition=user_condition.condition)
 
 
 @nudge_bp.route('/explore_genre2')

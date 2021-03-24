@@ -7,7 +7,7 @@
     <p class="lead">Instructions: please select a music genre to explore</p>
     <div class="row">
         <div class="col-6 show-on-success">
-            <h3><span class="badge badge-primary">Genres more close to you</span></h3>
+            <h3><span id="default-list" class="badge badge-primary"></span></h3>
             <div class="form-check">
                 <input class="form-check-input" type="radio" name="genre" id="Radios1" checked>
                 <label class="form-check-label lead font-weight-bold" id="label_radio1" for="Radios1"></label>
@@ -27,7 +27,7 @@
         </div>
 
         <div class="col-6 show-on-success">
-            <h3><span class="badge badge-secondary">Genres more out of your bubble</span></h3>
+            <h3><span id="the-other-list" class="badge badge-secondary"></span></h3>
             <div class="form-check">
                 <input class="form-check-input" type="radio" name="genre" id="Radios4">
                 <label class="form-check-label lead font-weight-bold" id="label_radio4" for="Radios4">
@@ -92,34 +92,74 @@
 {% endblock %}
 {% block scripts %}
     <script>
+        let condition;
         $.ajax({url:'/genre_suggestion', success: function(result){
-
             console.log(result);
+            condition = {{ condition }}
             if (result === "error"){
                 alert("You do not have enough activity on your Spotify account to generate recommendations, " +
                     "therefore you can not participate in the experiment. We still want to thank you for your effort.");
             } else {
-                $("#Radios1").val(result[0]);
-                $("#Radios2").val(result[1]);
-                $("#Radios3").val(result[2]);
-                $("#Radios4").val(result[3]);
-                $("#Radios5").val(result[4]);
-                $("#Radios6").val(result[5]);
-                $("#Radios7").val(result[6]);
-                $("#Radios8").val(result[7]);
-                $("#Radios9").val(result[8]);
-                $("#Radios10").val(result[9]);
+                if (condition > 1){
+                    $("#Radios1").val(result[0]);
+                    $("#Radios2").val(result[1]);
+                    $("#Radios3").val(result[2]);
 
-                $("#label_radio1").html(result[0]);
-                $("#label_radio2").html(result[1]);
-                $("#label_radio3").html(result[2]);
-                $("#label_radio4").html(result[3]);
-                $("#label_radio5").html(result[4]);
-                $("#label_radio6").html(result[5]);
-                $("#label_radio7").html(result[6]);
-                $("#label_radio8").html(result[7]);
-                $("#label_radio9").html(result[8]);
-                $("#label_radio10").html(result[9]);
+                    $("#Radios4").val(result[3]);
+                    $("#Radios5").val(result[4]);
+                    $("#Radios6").val(result[5]);
+                    $("#Radios7").val(result[6]);
+                    $("#Radios8").val(result[7]);
+                    $("#Radios9").val(result[8]);
+                    $("#Radios10").val(result[9]);
+
+                    $("#label_radio1").html(result[0]);
+                    $("#label_radio2").html(result[1]);
+                    $("#label_radio3").html(result[2]);
+
+                    $("#label_radio4").html(result[3]);
+                    $("#label_radio5").html(result[4]);
+                    $("#label_radio6").html(result[5]);
+                    $("#label_radio7").html(result[6]);
+                    $("#label_radio8").html(result[7]);
+                    $("#label_radio9").html(result[8]);
+                    $("#label_radio10").html(result[9]);
+
+                    $("#default-list").html("Genres more close to you");
+                    $("#the-other-list").html("Genres more out of your bubble")
+                }else{
+                    // flip the suggestion list if the condition is set as "exploration"
+                    $("#Radios1").val(result[7]);
+                    $("#Radios2").val(result[8]);
+                    $("#Radios3").val(result[9]);
+
+                    $("#Radios4").val(result[0]);
+                    $("#Radios5").val(result[1]);
+                    $("#Radios6").val(result[2]);
+                    $("#Radios7").val(result[3]);
+                    $("#Radios8").val(result[4]);
+                    $("#Radios9").val(result[5]);
+                    $("#Radios10").val(result[6]);
+
+
+                    $("#label_radio1").html(result[7]);
+                    $("#label_radio2").html(result[8]);
+                    $("#label_radio3").html(result[9]);
+
+                    $("#label_radio4").html(result[0]);
+                    $("#label_radio5").html(result[1]);
+                    $("#label_radio6").html(result[2]);
+                    $("#label_radio7").html(result[3]);
+                    $("#label_radio8").html(result[4]);
+                    $("#label_radio9").html(result[5]);
+                    $("#label_radio10").html(result[6]);
+
+                    $("#default-list").html("Genres more out of your bubble");
+                    $("#the-other-list").html("Genres more close to you")
+                }
+
+
+
             }
             $(".hide-on-success").hide();
         }});

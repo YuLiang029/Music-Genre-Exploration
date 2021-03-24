@@ -492,7 +492,8 @@
             user_top_tracks = data[1],
             genre_top_tracks = data[2];
 
-        let track_index = 50;
+        let track_index = {{ weight }}*100;
+
         // Set global variables based on data
         all_recommendations = recommendations;
         visible_recommendations = recommendations.slice(track_index, track_index+number_of_tracks);

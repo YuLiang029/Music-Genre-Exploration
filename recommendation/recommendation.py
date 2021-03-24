@@ -141,10 +141,11 @@ def genre_recommendation_exp():
 
     print('selected genre is {}'.format(genre_name))
 
-    # @TODO read users' current phase in the within-subject design
-    current_phase = 0
+    # TODO read users' current phase in the within-subject design.
+    #  The variable current phase is only available for within-subject design
+    # current_phase = 0
 
-    recommendation_log = RecommendationLog(user_id=session["userid"], genre_name=genre_name, current_phase=current_phase,
+    recommendation_log = RecommendationLog(user_id=session["userid"], genre_name=genre_name,
                                            start_ts=ts, session_id=session['id'], id=session['rec_id'])
 
     db.session.add(recommendation_log)
@@ -197,11 +198,7 @@ def genre_recommendation_exp_multiple():
 
     print('selected genre is {}'.format(genre_name))
 
-    # @TODO read users' current phase in the within-subject design
-    current_phase = 0
-
     recommendation_log = RecommendationLog(user_id=session["userid"], genre_name=genre_name,
-                                           current_phase=current_phase,
                                            start_ts=ts, session_id=session['id'], id=session['rec_id'])
 
     db.session.add(recommendation_log)

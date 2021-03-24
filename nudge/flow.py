@@ -12,6 +12,7 @@ nudge_bp = Blueprint('nudge_bp', __name__, template_folder='templates')
 
 @nudge_bp.route('/')
 def index():
+    session["app"] = "nudge_bp"
     return render_template('main2.html')
 
 
@@ -47,7 +48,8 @@ def redirect_from_main2():
 
 @nudge_bp.route('/msi_survey2')
 def msi_survey2():
-    return redirect(url_for("spotify_basic_bp.msi_survey", redirect_path="nudge_bp.select_genre2"))
+    # return redirect(url_for("spotify_basic_bp.msi_survey", redirect_path="nudge_bp.select_genre2"))
+    return redirect(url_for("spotify_basic_bp.msi_survey"))
 
 
 @nudge_bp.route('/select_genre2')

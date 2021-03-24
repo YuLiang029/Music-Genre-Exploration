@@ -215,7 +215,6 @@ def genre_recommendation_exp_multiple():
 
         # genre_df = genre_df.assign(baseline_ranking=genre_df['popularity'].rank(ascending=False))
         genre_df = genre_df.assign(sum_rank_ranking=genre_df['sum_rank'].rank(ascending=False))
-        print(genre_df)
 
         weight_df = pd.DataFrame(columns=track_features1)
 
@@ -288,7 +287,6 @@ def get_genre_recommendation_by_preference(genre_name=None, track_df=None, by_pr
         genre_df = pd.read_csv(genre_csv_path).drop_duplicates(keep='first')
     else:
         genre_df = track_df.drop_duplicates(subset=['id'], keep='first')
-    print(genre_df)
 
     """Gaussian filter function"""
     ls = np.linspace(0, 1, 1000)

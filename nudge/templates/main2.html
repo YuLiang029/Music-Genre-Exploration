@@ -32,8 +32,8 @@
     <br>
 
     <div class="text-right">
-        <a class="btn btn-success" id="action_continue" href="/login/nudge_bp.redirect_from_main2">
-            Continue and login with my Spotify account<i class="fas fa-arrow-right"></i>
+        <a class="btn btn-success" id="action_continue" href="/inform_consent">
+            Continue to the informed consent<i class="fas fa-arrow-right"></i>
         </a>
     </div>
 
@@ -47,7 +47,7 @@
         if (url.includes("?subjectid=")){
             var subjectid = url.substring(url.indexOf("=")+1, url.length);
             console.log(subjectid);
-            $('#action_continue').attr('href', '/form_consent?subjectid=' + subjectid);
+            $('#action_continue').attr('href', '/inform_consent?subjectid=' + subjectid);
         }
 
     });

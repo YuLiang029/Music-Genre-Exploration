@@ -15,6 +15,11 @@ def index():
     return render_template('main2.html')
 
 
+@nudge_bp.route('/inform_consent')
+def inform_consent():
+    return render_template('informed_consent.html')
+
+
 @nudge_bp.route('/redirect_from_main2')
 def redirect_from_main2():
     # assign study condition

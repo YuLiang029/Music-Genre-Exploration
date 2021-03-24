@@ -4,6 +4,8 @@ import re
 import time
 from recommendation import SurveyResponse
 from database import db
+from general import UserCondition
+import random
 
 nudge_bp = Blueprint('nudge_bp', __name__, template_folder='templates')
 
@@ -15,6 +17,26 @@ def index():
 
 @nudge_bp.route('/redirect_from_main2')
 def redirect_from_main2():
+    # assign study condition
+    user_condition = UserCondition.query.filter_by(user_id=session["userid"]).first()
+    if not user_condition:
+        condition = random.randint(0, 3)
+
+        condition_text = "explore, representative"
+
+        if condition == 1:
+            condition_text = "explore, mixed"
+        if condition == 2:
+            condition_text = "close, representative"
+        if condition == 3:
+            condition_text = "close, mixed"
+
+        user_condition_new = UserCondition(user_id=session["userid"],
+                                           timestamp=time.time(),
+                                           condition=condition, default=condition_text)
+        db.session.add(user_condition_new)
+        db.session.commit()
+
     return redirect('select_genre2')
 
 

@@ -49,13 +49,17 @@ def select_genre2():
 @nudge_bp.route('/explore_genre2')
 def explore_genre2():
 
-    # TODO: infer the experimental condition
-    personalized = 1
+    # infer the experimental condition
+    user_condition = UserCondition.query.filter_by(user_id=session["userid"]).first()
+    user_condition_num = user_condition.condition
+    weight = 0
+
+    if user_condition_num == 1 or user_condition_num == 3:
+        weight = 0.5
     
     return render_template('explore_genre2.html',
                            genre=request.args.get('genre'),
-                           weight=personalized*0.5,
-                           personalized=personalized)
+                           weight=weight)
 
 
 @nudge_bp.route('/last_step')

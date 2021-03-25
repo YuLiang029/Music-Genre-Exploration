@@ -5,7 +5,6 @@ from database import db
 from genre_exploration.flow import genre_explore_bp
 from dbdw.flow import dbdw_bp
 from nudge.flow import nudge_bp
-
 import os
 
 app = Flask(__name__)
@@ -13,9 +12,10 @@ app.config.from_object('config')
 db.init_app(app)
 app.register_blueprint(spotify_basic_bp)
 app.register_blueprint(recommendation_bp)
-# app.register_blueprint(genre_explore_bp)
-app.register_blueprint(nudge_bp)
-# app.register_blueprint(dbdw_bp)
+app.register_blueprint(genre_explore_bp)
+# app.register_blueprint(nudge_bp)
+app.register_blueprint(dbdw_bp)
+
 
 with app.app_context():
     db.create_all()
@@ -29,5 +29,3 @@ def add_headers(response):
     response.headers.add('Access-Control-Allow-Origin', '*')
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
     return response
-
-

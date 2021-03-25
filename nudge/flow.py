@@ -12,7 +12,6 @@ nudge_bp = Blueprint('nudge_bp', __name__, template_folder='templates')
 
 @nudge_bp.route('/')
 def index():
-    session["app"] = "nudge_bp"
     return render_template('main2.html')
 
 

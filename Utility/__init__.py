@@ -1,5 +1,6 @@
 from database import db
 
+
 class GenreArtist(db.Model):
     __tablename__ = 'genre_artist'
     id = db.Column(db.INTEGER, autoincrement=True, primary_key=True)

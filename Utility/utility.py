@@ -1,18 +1,13 @@
 from general import Track
 import pandas as pd
 from database import db
-from worker import conn
-from rq import Queue
 from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy import Spotify
 import json
-from flask import Blueprint
+from flask import Blueprint, render_template
 from Utility import GenreArtist
-from flask import render_template
 
 utility_bp = Blueprint('utility_bp', __name__)
-
-q = Queue(connection=conn)
 
 
 def client_credentials_manager(client_id, client_secret):
@@ -34,7 +29,6 @@ except Exception as e:
 
 @utility_bp.route('/run_background')
 def run_background():
-    q.enqueue(scrape_genre_artist)
     return render_template("test.html")
 
 
@@ -72,7 +66,7 @@ def scrape_genre_artist():
                         genre_allmusic=genre
                     )
                     db.session.add(new_artist_obj)
-                db.session.commit()
+                    db.session.commit()
             except Exception as e:
                 print(e)
     sp.__del__()

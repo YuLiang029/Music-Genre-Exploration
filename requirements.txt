@@ -3,7 +3,7 @@ flask_oauthlib==0.9.5
 Werkzeug==0.16.1
 flask_sqlalchemy==2.4.4
 six==1.15.0
-requests==2.24.0
+requests>=2.25
 tagme==0.1.3
 numpy==1.19.0
 pandas==1.2.3
@@ -11,3 +11,5 @@ scikit-learn==0.23.2
 psycopg2-binary==2.8.6
 redis==3.5.3
 rq==1.7.0
+spotipy==2.17.1
+urllib3>=1.26

@@ -5,6 +5,7 @@ from database import db
 from genre_exploration.flow import genre_explore_bp
 from dbdw.flow import dbdw_bp
 from nudge.flow import nudge_bp
+from Utility.utility import utility_bp
 import os
 
 app = Flask(__name__)
@@ -15,6 +16,7 @@ app.register_blueprint(recommendation_bp)
 # app.register_blueprint(genre_explore_bp)
 app.register_blueprint(nudge_bp)
 # app.register_blueprint(dbdw_bp)
+app.register_blueprint(utility_bp)
 
 
 with app.app_context():

@@ -25,16 +25,20 @@ def redirect_from_main2():
     # assign study condition
     user_condition = UserCondition.query.filter_by(user_id=session["userid"]).first()
     if not user_condition:
-        condition = random.randint(0, 3)
+        condition = random.randint(0, 5)
 
         condition_text = "explore, representative"
 
         if condition == 1:
             condition_text = "explore, mixed"
         if condition == 2:
-            condition_text = "close, representative"
+            condition_text = "explore, personalized"
         if condition == 3:
+            condition_text = "close, representative"
+        if condition == 4:
             condition_text = "close, mixed"
+        if condition == 5:
+            condition_text = "close, personalized"
 
         user_condition_new = UserCondition(user_id=session["userid"],
                                            timestamp=time.time(),
@@ -65,8 +69,10 @@ def explore_genre2():
     user_condition_num = user_condition.condition
     weight = 0
 
-    if user_condition_num == 1 or user_condition_num == 3:
+    if user_condition_num == 1 or user_condition_num == 4:
         weight = 0.5
+    if user_condition_num == 2 or user_condition_num == 5:
+        weight = 1
     
     return render_template('explore_genre2.html',
                            genre=request.args.get('genre'),

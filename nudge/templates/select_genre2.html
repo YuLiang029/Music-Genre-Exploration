@@ -4,13 +4,25 @@
     <h3>
         Explore my music taste by genre
     </h3>
-    <p class="lead">Instructions: please select a music genre to explore</p>
-    <div class="row">
-        <div class="col-6 show-on-success">
-            <h3><span id="default-list" class="badge badge-primary"></span></h3>
+        <p class="lead show-on-success">
+            Your Spotify profile shows that you like the genre
+            <span id="top_genre" class="font-weight-bold">
+            </span>
+            most. We would like to help you explore a new music genre.
+        </p>
+
+        <p class="lead">
+            Please select a new music genre from the below list to explore. The list is sorted by
+            <span id="sort" class="font-weight-bold"></span>
+        </p>
+
+        <div class="show-on-success">
+            <!--<h3><span id="default-list" class="badge badge-primary"></span></h3>-->
             <div class="form-check">
                 <input class="form-check-input" type="radio" name="genre" id="Radios1" checked>
-                <label class="form-check-label lead font-weight-bold" id="label_radio1" for="Radios1"></label>
+                <label class="form-check-label lead font-weight-bold" id="label_radio1" for="Radios1">
+                </label>
+                <span id="exp1" class="badge badge-primary"></span>
             </div>
             <br>
             <div class="form-check">
@@ -24,10 +36,8 @@
                 <label class="form-check-label lead font-weight-bold" id="label_radio3" for="Radios3">
                 </label>
             </div>
-        </div>
+            <br>
 
-        <div class="col-6 show-on-success">
-            <h3><span id="the-other-list" class="badge badge-secondary"></span></h3>
             <div class="form-check">
                 <input class="form-check-input" type="radio" name="genre" id="Radios4">
                 <label class="form-check-label lead font-weight-bold" id="label_radio4" for="Radios4">
@@ -67,18 +77,11 @@
                 <input class="form-check-input" type="radio" name="genre" id="Radios9">
                 <label class="form-check-label lead font-weight-bold" id="label_radio9" for="Radios9">
                 </label>
+                <span id="exp2" class="badge badge-secondary"></span>
             </div>
             <br>
 
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="genre" id="Radios10">
-                <label class="form-check-label lead font-weight-bold" id="label_radio10" for="Radios10">
-                </label>
-            </div>
-
-
         </div>
-    </div>
 
     <br>
 
@@ -100,8 +103,8 @@
                 alert("You do not have enough activity on your Spotify account to generate recommendations, " +
                     "therefore you can not participate in the experiment. We still want to thank you for your effort.");
             } else {
-                if (condition > 1){
-                    $("#Radios1").val(result[0]);
+                $("#top_genre").text(result[0])
+                if (condition >= 3){
                     $("#Radios2").val(result[1]);
                     $("#Radios3").val(result[2]);
 
@@ -113,8 +116,8 @@
                     $("#Radios9").val(result[8]);
                     $("#Radios10").val(result[9]);
 
-                    $("#label_radio1").html(result[0]);
-                    $("#label_radio2").html(result[1]);
+                    $("#label_radio2").html(result[1] );
+                    $("#exp1").text("the closest genre")
                     $("#label_radio3").html(result[2]);
 
                     $("#label_radio4").html(result[3]);
@@ -124,38 +127,37 @@
                     $("#label_radio8").html(result[7]);
                     $("#label_radio9").html(result[8]);
                     $("#label_radio10").html(result[9]);
+                    $("#exp2").text("the least closest genre")
 
-                    $("#default-list").html("Genres more close to you");
-                    $("#the-other-list").html("Genres more out of your bubble")
+                    $("#sort").text("how much a genre matches your preferences");
                 }else{
                     // flip the suggestion list if the condition is set as "exploration"
-                    $("#Radios1").val(result[7]);
+                    $("#Radios1").val(result[9]);
                     $("#Radios2").val(result[8]);
-                    $("#Radios3").val(result[9]);
+                    $("#Radios3").val(result[7]);
 
-                    $("#Radios4").val(result[0]);
-                    $("#Radios5").val(result[1]);
-                    $("#Radios6").val(result[2]);
+                    $("#Radios4").val(result[6]);
+                    $("#Radios5").val(result[5]);
+                    $("#Radios6").val(result[4]);
                     $("#Radios7").val(result[3]);
-                    $("#Radios8").val(result[4]);
-                    $("#Radios9").val(result[5]);
-                    $("#Radios10").val(result[6]);
+                    $("#Radios8").val(result[2]);
+                    $("#Radios9").val(result[1]);
 
 
-                    $("#label_radio1").html(result[7]);
+                    $("#label_radio1").html(result[9]);
+                    $("#exp1").text("the most novel genre")
                     $("#label_radio2").html(result[8]);
-                    $("#label_radio3").html(result[9]);
+                    $("#label_radio3").html(result[7]);
 
-                    $("#label_radio4").html(result[0]);
-                    $("#label_radio5").html(result[1]);
-                    $("#label_radio6").html(result[2]);
+                    $("#label_radio4").html(result[6]);
+                    $("#label_radio5").html(result[5]);
+                    $("#label_radio6").html(result[4]);
                     $("#label_radio7").html(result[3]);
-                    $("#label_radio8").html(result[4]);
-                    $("#label_radio9").html(result[5]);
-                    $("#label_radio10").html(result[6]);
+                    $("#label_radio8").html(result[2]);
+                    $("#label_radio9").html(result[1]);
+                    $("#exp2").text("the least novel genre")
 
-                    $("#default-list").html("Genres more out of your bubble");
-                    $("#the-other-list").html("Genres more close to you")
+                    $("#sort").text("how much a genre is novel to you");
                 }
 
 

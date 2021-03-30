@@ -98,7 +98,7 @@ def authorized():
                                   "expires_at": int(time.time()) + resp['expires_in']}
         me = spotify.request('/v1/me/')
         if me.status != 200:
-            print('HTTP Status Error: {0}'.format(resp.data))
+            print('Spotify login failure')
             return render_template("SpotifyConnectFailed.html")
         else:
             print(me.data)

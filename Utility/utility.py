@@ -4,41 +4,32 @@ from database import db
 from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy import Spotify
 import json
-from flask import Blueprint, render_template
 from Utility import GenreArtist
 
-utility_bp = Blueprint('utility_bp', __name__)
 
-
-def client_credentials_manager(client_id, client_secret):
+def client_credentials_manager():
     """
     set up client credential manager
     :return: Spotify client credential manager
     """
-    ccm = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
+    keys = json.load(open('keys_scrape.json', 'r'))
+    ccm = SpotifyClientCredentials(client_id=keys["CLIENT_ID"], client_secret=keys["CLIENT_SECRET_ID"])
     sp = Spotify(client_credentials_manager=ccm)
     sp.trace = False
     return sp
 
 
-try:
-    keys = json.load(open('keys.json', 'r'))
-except Exception as e:
-    print(e)
-
-
-@utility_bp.route('/run_background')
-def run_background():
-    return render_template("test.html")
-
-
-# handler for scraping the first-level genre-artist from Spotify
-@utility_bp.route('/scrape_genre_artist')
+# scrape the first-level genre-artist from Spotify
 def scrape_genre_artist():
-    sp = client_credentials_manager(keys["CLIENT_ID"], keys["CLIENT_SECRET_ID"])
-    l_genre_scrape = ["pop-rock"]
+    sp = client_credentials_manager()
+    l_genre_scrape = ["avant-garde", "blues", "classical",
+                      "country", "electronic", "folk",
+                      "jazz", "latin", "new-age",
+                      "pop-rock", "rap", "reggae",
+                      "rnb"]
 
     for genre in l_genre_scrape:
+        print(genre)
         all_music_artist = pd.read_csv("original_genre_artist_from_all_music/" + genre + ".csv",
                                        sep="\n",
                                        names=["artist_name"])
@@ -47,6 +38,8 @@ def scrape_genre_artist():
         for artist in artist_list:
             try:
                 x = sp.search(q=artist, type='artist')['artists']['items'][0]
+                if artist == "Goldie":
+                    x = sp.artist(artist_id="2SYqJ3uDLLXZNyZdLKBy4M")
 
                 artist_existed = GenreArtist.query.filter_by(artist_id=x['id'], genre_allmusic=genre).first()
                 if artist_existed:
@@ -73,12 +66,13 @@ def scrape_genre_artist():
     return "success"
 
 
-# handler for scraping the next-level genre-artist
-@utility_bp.route('/scrape_genre_artist_next_level/<current_level>')
+# scrape the next-level genre-artist
 def scrape_genre_artist_next_level(current_level):
-    sp = client_credentials_manager(keys["CLIENT_ID"], keys["CLIENT_SECRET_ID"])
+    sp = client_credentials_manager()
     genre_artists = GenreArtist.query.filter_by(level=current_level).all()
+    num = 0
     for artist in genre_artists:
+        num = num + 1
         try:
             related_artists = sp.artist_related_artists(artist.artist_id)['artists']
             for x in related_artists:
@@ -104,12 +98,14 @@ def scrape_genre_artist_next_level(current_level):
         except Exception as e:
             print(e)
 
+        if num % 50 == 0:
+            print(num)
+
     sp.__del__()
     return "success"
 
 
-# handler for importing genre-typical tracks to database
-@utility_bp.route('/import_tracks_from_csv')
+# import genre-typical tracks to database
 def import_tracks_from_csv():
     l_genre = ["avant-garde", "blues", "christmas",
                "classical", "country", "country",

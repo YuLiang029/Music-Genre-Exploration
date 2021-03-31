@@ -7,3 +7,4 @@ keys_tagme.json
 venv/
 .DS_store
 genre_artists/
+keys_scrape.json

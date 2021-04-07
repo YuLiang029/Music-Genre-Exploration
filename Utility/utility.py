@@ -108,13 +108,13 @@ def scrape_genre_artist_next_level(current_level):
 # get artist top tracks
 def get_artist_top_tracks():
     sp = client_credentials_manager()
-    # l_genre_scrape = ["avant-garde", "blues", "classical",
-    #                   "country", "electronic", "folk",
-    #                   "jazz", "latin", "new-age",
-    #                   "pop-rock", "rap", "reggae",
-    #                   "rnb"]
-    l_genre_scrape = ["rnb"]
+    l_genre_scrape = ["avant-garde", "blues", "classical",
+                      "country", "electronic", "folk",
+                      "jazz", "latin", "new-age",
+                      "pop-rock", "rap", "reggae",
+                      "rnb"]
 
+    # folder = "key_artist_1"
     folder = "key_artist_1_2"
     for genre in l_genre_scrape:
         print(genre)
@@ -187,14 +187,20 @@ def import_tracks_from_csv():
                "classical", "country", "country",
                "electronic", "folk", "jazz",
                "latin", "new-age", "rap", "reggae", "rnb"]
+    folder = "genre_baseline"
 
     for genre in l_genre[:1]:
-        df = pd.read_csv("genre_baseline/" + genre + ".csv", sep=";")
+        df = pd.read_csv(folder + "/" + genre + ".csv", sep=";")
 
         for index, row in df.iterrows():
             track = Track.query.filter_by(id=row.id).first()
             if track:
-                pass
+                entry = GenreTracks.query.filter_by(track_id=row.id, genre_allmusic=genre).first()
+
+                if not entry:
+                    new_genre_track = GenreTracks(track_id=row.id, genre_allmusic=genre, track=track)
+                    db.session.add(new_genre_track)
+
             else:
                 new_track_obj = Track(
                     id=row.id, trackname=row.trackname, popularity=row.popularity, preview_url=row.preview_url,
@@ -205,7 +211,10 @@ def import_tracks_from_csv():
                     speechiness=row.speechiness, tempo=row.tempo, time_signature=row.time_signature,
                     valence=row.valence
                 )
+                new_genre_track = GenreTracks(track_id=row.id, genre_allmusic=genre, track=new_track_obj)
+
                 if index % 100 == 0:
                     print(index)
+                db.session.add(new_genre_track)
                 db.session.add(new_track_obj)
             db.session.commit()

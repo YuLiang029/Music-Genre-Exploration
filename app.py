@@ -8,7 +8,7 @@ from nudge.flow import nudge_bp
 import os
 from rq import Queue
 from worker import conn
-from Utility.utility import scrape_genre_artist, scrape_genre_artist_next_level
+from Utility.utility import scrape_genre_artist, scrape_genre_artist_next_level, get_artist_top_tracks
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -45,5 +45,6 @@ def run_background():
 # scrape from Spotify
 def spotify_scrape():
     with app.app_context():
-        scrape_genre_artist_next_level(2)
+        # scrape_genre_artist_next_level(2)
         # scrape_genre_artist()
+        get_artist_top_tracks()

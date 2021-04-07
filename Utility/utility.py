@@ -1,10 +1,10 @@
-from general import Track
+from general import Track, ArtistTracks
 import pandas as pd
 from database import db
 from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy import Spotify
 import json
-from Utility import GenreArtist
+from Utility import GenreArtist, GenreTracks
 
 
 def client_credentials_manager():
@@ -103,6 +103,82 @@ def scrape_genre_artist_next_level(current_level):
 
     sp.__del__()
     return "success"
+
+
+# get artist top tracks
+def get_artist_top_tracks():
+    sp = client_credentials_manager()
+    # l_genre_scrape = ["avant-garde", "blues", "classical",
+    #                   "country", "electronic", "folk",
+    #                   "jazz", "latin", "new-age",
+    #                   "pop-rock", "rap", "reggae",
+    #                   "rnb"]
+    l_genre_scrape = ["rnb"]
+
+    folder = "key_artist_1_2"
+    for genre in l_genre_scrape:
+        print(genre)
+
+        df_genre_artists = pd.read_csv("genre_artists/" + folder + "/" + genre + ".csv", sep=";")
+        l_genre_artists = df_genre_artists.artist_id.unique().tolist()
+
+        for artist_id in l_genre_artists:
+            try:
+                top_tracks = sp.artist_top_tracks(artist_id=artist_id, country="NL")['tracks']
+                for top_track in top_tracks:
+                    track_id = top_track['id']
+                    track = Track.query.filter_by(id=track_id).first()
+                    if track:
+                        entry = GenreTracks.query.filter_by(track_id=track_id, genre_allmusic=genre).first()
+                        artist_track_entry = ArtistTracks.query.filter_by(artist_id=artist_id,
+                                                                          track_id=track_id).first()
+                        if not entry:
+                            new_genre_track = GenreTracks(track_id=track_id, genre_allmusic=genre, track=track)
+                            db.session.add(new_genre_track)
+
+                        if not artist_track_entry:
+                            new_artist_track = ArtistTracks(artist_id=artist_id, track_id=track_id, track=track)
+                            db.session.add(new_artist_track)
+
+                    else:
+                        trackname = top_track['name']
+                        popularity = top_track['popularity']
+                        preview_url = top_track['preview_url']
+                        track_number = top_track['track_number']
+                        firstartist= top_track["artists"][0]["name"]
+                        imageurl = None if len(top_track["album"]["images"]) == 0 else top_track["album"]["images"][1]["url"]
+                        spotifyurl = top_track["external_urls"]["spotify"]
+
+                        audio_features = sp.audio_features(tracks=[track_id])[0]
+                        acousticness = audio_features["acousticness"]
+                        danceability = audio_features["danceability"]
+                        duration_ms = audio_features["duration_ms"]
+                        energy = audio_features["energy"]
+                        instrumentalness = audio_features["instrumentalness"]
+                        key = audio_features["key"]
+                        liveness = audio_features["liveness"]
+                        loudness = audio_features["loudness"]
+                        speechiness = audio_features["speechiness"]
+                        tempo = audio_features["tempo"]
+                        time_signature = audio_features["time_signature"]
+                        valence = audio_features["valence"]
+
+                        new_track_obj = Track(
+                            id=track_id, trackname=trackname, popularity=popularity, preview_url=preview_url,
+                            track_number=track_number, firstartist=firstartist, imageurl=imageurl,
+                            spotifyurl=spotifyurl, acousticness=acousticness, danceability=danceability,
+                            duration_ms=duration_ms, energy=energy, instrumentalness=instrumentalness,
+                            key=key, liveness=liveness, loudness=loudness, speechiness=speechiness,
+                            tempo=tempo, time_signature=time_signature, valence=valence
+                        )
+                        new_genre_track = GenreTracks(track_id=track_id, genre_allmusic=genre, track=new_track_obj)
+                        new_artist_track = ArtistTracks(artist_id=artist_id, track_id=track_id, track=new_track_obj)
+
+                        db.session.add(new_artist_track)
+                        db.session.add(new_genre_track)
+                    db.session.commit()
+            except Exception as e:
+                print(e)
 
 
 # import genre-typical tracks to database

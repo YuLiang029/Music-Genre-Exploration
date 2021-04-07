@@ -20,3 +20,15 @@ class GenreArtist(db.Model):
 
     def __repr__(self):
         return '<GenreArtist %r-%r>' % (self.artist_id, self.genre_allmusic)
+
+
+class GenreTracks(db.Model):
+    __tablename__ = 'genre_track'
+    id = db.Column(db.INTEGER, autoincrement=True, primary_key=True)
+    track_id = db.Column(db.VARCHAR, db.ForeignKey('track.id'))
+    genre_allmusic = db.Column(db.VARCHAR)
+    baseline_score = db.Column(db.FLOAT)
+    track = db.relationship('Track', cascade='save-update, merge')
+
+    def __repr__(self):
+        return '<GenreTrack %r-%r>' % (self.track_id, self.genre_allmusic)

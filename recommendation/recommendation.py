@@ -57,14 +57,16 @@ def genre_suggestion():
     # get genre artists
     l_genre = ["avant-garde", "blues", "classical",
                "country", "electronic", "folk",
-               "jazz", "new-age", "rap", "rnb"]
+               "jazz", "latin", "new-age",
+               "pop-rock", "rap", "reggae",
+               "rnb"]
     dict_genre_score = {}
     for genre in l_genre:
         genre_artists = pd.read_csv(os.path.join(os.path.dirname(recommendation_bp.root_path),
-                                                 'genre_artists/' + genre + ".csv"), sep=";")
+                                                 'genre_artists/key_artist_1_2/' + genre + ".csv"), sep=";")
 
-        df_genre = genre_artists[genre_artists["genre"] == genre]
-        l_genre_artist = df_genre.dropna(subset=['artist_tag']).artist_tag.str.split(",").tolist()
+        df_genre = genre_artists[genre_artists["genre_allmusic"] == genre]
+        l_genre_artist = df_genre.dropna(subset=['genres']).genres.str.split(",").tolist()
         l_genre_artist_flat = reduce(operator.add, l_genre_artist)
 
         c_genre = Counter(l_genre_artist_flat)
@@ -246,7 +248,7 @@ def genre_recommendation_exp_multiple():
         db.session.add(rec_tracks)
         db.session.commit()
 
-    #top_tracks = top_tracks.replace(np.nan, '')
+    # top_tracks = top_tracks.replace(np.nan, '')
 
     top_tracks_list = top_tracks.to_dict('records')
     return jsonify(top_tracks_list)
@@ -258,7 +260,7 @@ def get_genre_recommendation_by_popularity(genre_name):
     :param genre_name:
     :return:
     """
-    genre_basline_folder = os.path.join(os.path.dirname(recommendation_bp.root_path), 'genre_baseline')
+    genre_basline_folder = os.path.join(os.path.dirname(recommendation_bp.root_path), 'genre_baseline_1_2_four_features')
     genre_csv_path = os.path.join(genre_basline_folder, genre_name + ".csv")
     genre_df = pd.read_csv(genre_csv_path)
     genre_df = genre_df.sort_values(by=['popularity'], ascending=False)
@@ -279,7 +281,7 @@ def get_genre_recommendation_by_preference(genre_name=None, track_df=None, by_pr
     """
 
     if genre_name is not None:
-        genre_df_folder = os.path.join(os.path.dirname(recommendation_bp.root_path), 'genre_baseline')
+        genre_df_folder = os.path.join(os.path.dirname(recommendation_bp.root_path), 'genre_baseline_1_2_four_features')
         genre_csv_path = os.path.join(genre_df_folder, genre_name + ".csv")
         genre_df = pd.read_csv(genre_csv_path).drop_duplicates(keep='first')
     else:

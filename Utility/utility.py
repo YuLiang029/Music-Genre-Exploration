@@ -183,27 +183,29 @@ def get_artist_top_tracks():
 
 # import genre-typical tracks to database
 def import_tracks_from_csv():
-    l_genre = ["avant-garde", "blues", "christmas",
-               "classical", "country", "country",
-               "electronic", "folk", "jazz",
-               "latin", "new-age", "rap", "reggae", "rnb"]
-    folder = "genre_baseline"
+    l_genre = ["avant-garde", "blues", "classical",
+               "country", "electronic", "folk",
+               "jazz", "latin", "new-age",
+               "pop-rock", "rap", "reggae",
+               "rnb"]
+    folder = "genre_baseline_1_2_four_features"
 
-    for genre in l_genre[:1]:
-        df = pd.read_csv(folder + "/" + genre + ".csv", sep=";")
+    for genre in l_genre:
+        df = pd.read_csv(folder + "/" + genre + ".csv", encoding='utf8')
 
         for index, row in df.iterrows():
-            track = Track.query.filter_by(id=row.id).first()
+            track = Track.query.filter_by(id=row.track_id).first()
             if track:
-                entry = GenreTracks.query.filter_by(track_id=row.id, genre_allmusic=genre).first()
+                entry = GenreTracks.query.filter_by(track_id=row.track_id, genre_allmusic=genre).first()
 
                 if not entry:
-                    new_genre_track = GenreTracks(track_id=row.id, genre_allmusic=genre, track=track)
+                    new_genre_track = GenreTracks(track_id=row.track_id, genre_allmusic=genre, track=track,
+                                                  baseline_score=row.baseline_score)
                     db.session.add(new_genre_track)
 
             else:
                 new_track_obj = Track(
-                    id=row.id, trackname=row.trackname, popularity=row.popularity, preview_url=row.preview_url,
+                    id=row.track_id, trackname=row.trackname, popularity=row.popularity, preview_url=row.preview_url,
                     track_number=row.track_number, firstartist=row.firstartist, imageurl=row.imageurl,
                     spotifyurl=row.spotifyurl, acousticness=row.acousticness, danceability=row.danceability,
                     duration_ms=row.duration_ms, energy=row.energy, instrumentalness=row.instrumentalness,
@@ -211,7 +213,8 @@ def import_tracks_from_csv():
                     speechiness=row.speechiness, tempo=row.tempo, time_signature=row.time_signature,
                     valence=row.valence
                 )
-                new_genre_track = GenreTracks(track_id=row.id, genre_allmusic=genre, track=new_track_obj)
+                new_genre_track = GenreTracks(track_id=row.track_id, genre_allmusic=genre, track=new_track_obj,
+                                              baseline_score=row.baseline_score)
 
                 if index % 100 == 0:
                     print(index)

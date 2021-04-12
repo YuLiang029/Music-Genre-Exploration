@@ -8,7 +8,7 @@ from nudge.flow import nudge_bp
 import os
 from rq import Queue
 from worker import conn
-from Utility.utility import scrape_genre_artist, scrape_genre_artist_next_level, get_artist_top_tracks
+from Utility.utility import scrape_genre_artist, scrape_genre_artist_next_level, get_artist_top_tracks, import_tracks_from_csv
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -20,7 +20,7 @@ app.register_blueprint(recommendation_bp)
 app.register_blueprint(nudge_bp)
 
 
-q = Queue(connection=conn, default_timeout=4000)
+q = Queue(connection=conn, default_timeout=6000)
 
 with app.app_context():
     db.create_all()
@@ -47,4 +47,5 @@ def spotify_scrape():
     with app.app_context():
         # scrape_genre_artist_next_level(2)
         # scrape_genre_artist()
-        get_artist_top_tracks()
+        # get_artist_top_tracks()
+        import_tracks_from_csv()

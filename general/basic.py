@@ -521,15 +521,6 @@ def msi_survey():
             "showProgressBar": "top",
             "pages": [{
                 "questions": [{
-                    "name": "email",
-                    "type": "text",
-                    "inputType": "email",
-                    "title": "Your contact email:",
-                    "isRequired": "true",
-                    "validators": [{
-                        "type": "email"
-                    }]
-                }, {
                     "name": "age",
                     "type": "text",
                     "title": "Your age (years):",

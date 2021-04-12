@@ -8,7 +8,7 @@
             Your Spotify profile shows that you like the genre
             <span id="top_genre" class="font-weight-bold">
             </span>
-            most. We would like to help you explore a new music genre.
+            most.
         </p>
 
         <div id="loadingDiv" class="mb-5 col-12 hide-on-success">
@@ -16,11 +16,14 @@
                 <div class="spinner-border" role="status">
                   <span class="sr-only">Loading...</span>
                 </div>
+                Retrieving the music genre list
             </div>
         </div>
 
         <p class="lead show-on-success">
-            Please select a new music genre from the below list to explore. The list is sorted by
+            As we would like to help you explore a new music genre,
+            please select a new music genre from the below list to explore.
+            The list is sorted by
             <span id="sort" class="font-weight-bold"></span>
         </p>
 
@@ -115,7 +118,7 @@
 
 
     <div class="text-right">
-        <a type="submit" class="btn btn-success" id="action_submit" href="#">
+        <a type="submit" class="btn btn-primary show-on-success" id="action_submit" href="#">
             Continue <i class="fas fa-arrow-right"></i>
         </a>
     </div>
@@ -208,14 +211,17 @@
 
             }
             $(".hide-on-success").hide();
-        }});
+            $('.show-on-success').show();
 
-        $('.show-on-success').show();
-
-        $("#action_submit").on( "click", function() {
-            $(this).attr("href", "/explore_genre2?genre=" + $("input[type='radio'][name='genre']:checked").val());
-        });
-
+            $("#action_submit").on( "click", function() {
+                $(this).attr("href", "/explore_genre2?genre=" + $("input[type='radio'][name='genre']:checked").val());
+            });
+        }}).catch(function(e) {
+            // Display error message in console
+            console.error(e);
+            // Show error message in #hloading box
+            $('#hloading').text(e.message);
+        })
 
     </script>
 {% endblock %}

@@ -449,6 +449,7 @@ table.sv_q_matrix th {
     border-radius: 5px;
 }
 
-input[type=radio]{
+input[type=radio].scale_radio{
   transform:scale(1.5);
 }
+

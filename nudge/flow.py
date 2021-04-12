@@ -125,10 +125,8 @@ def post_task_survey():
             "pages": [{
                 "questions": [{
                     "type": "matrix",
-                    "name": "Help",
-                    "title": "Below you can find some questions related to your experience with the interface and "
-                             "the correctness of the algorithm that recommended the sessions to you."
-                             "Please indicate to what extent you agree or disagree with each statement.",
+                    "name": "repr",
+                    "title": "Please indicate to what extent you agree or disagree with each statement.",
                     "isAllRowRequired": "true",
                     "columns": [
                         {"value": 1, "text": "Completely Disagree"},
@@ -140,9 +138,93 @@ def post_task_survey():
                         {"value": 7, "text": "Completely Agree"}
                     ],
                     "rows": [
-                        {"value": "1", "text": "The playlist supports me in getting to know the new genre."},
-                        {"value": "2", "text": "The playlist motivates me to delve deeper into the new genre."},
-                        {"value": "3", "text": "The playlist is useful in exploring a new genre."}
+                            {"value": "1", "text": "The playlist matches the style of the genre"},
+                            {"value": "2", "text": "The playlist contains songs I would expect from the genre"},
+                            {"value": "3", "text": "The songs of the playlist are less typical of the genre"},
+                            {"value": "4", "text": "The playlist represents the mainstream tastes of the genre"},
+                    ]
+                }, {
+                    "type": "matrix",
+                    "name": "pers",
+                    "title": "Please indicate to what extent you agree or disagree with each statement.",
+                    "isAllRowRequired": "true",
+                    "columns": [
+                        {"value": 1, "text": "Completely Disagree"},
+                        {"value": 2, "text": "Strongly Disagree"},
+                        {"value": 3, "text": "Disagree"},
+                        {"value": 4, "text": "Neither Agree nor Disagree"},
+                        {"value": 5, "text": "Agree"},
+                        {"value": 6, "text": "Strongly Agree"},
+                        {"value": 7, "text": "Completely Agree"}
+                    ],
+                    "rows": [
+                            {"value": "1", "text": "The playlist is personalized to my music tastes"},
+                            {"value": "2", "text": "The playlist has songs with styles I like to listen to"},
+                            {"value": "3", "text": "I find the songs from the playlist appealing"},
+                            {"value": "4", "text": "I will listen to the playlist again"}
+                    ]
+                }]},
+                {"questions": [{
+                    "type": "matrix",
+                    "name": "ctrl",
+                    "title": "Please indicate to what extent you agree or disagree with each statement.",
+                    "isAllRowRequired": "true",
+                    "columns": [
+                        {"value": 1, "text": "Completely Disagree"},
+                        {"value": 2, "text": "Strongly Disagree"},
+                        {"value": 3, "text": "Disagree"},
+                        {"value": 4, "text": "Neither Agree nor Disagree"},
+                        {"value": 5, "text": "Agree"},
+                        {"value": 6, "text": "Strongly Agree"},
+                        {"value": 7, "text": "Completely Agree"}
+                    ],
+                    "rows": [
+                        {"value": "1", "text": "I feel in control of modifying the recommendations"},
+                        {"value": "2", "text": "I found it easy to modify the recommendations in the recommender"},
+                        {"value": "3", "text": "I feel in control of specifying my preferences"},
+                        {"value": "4", "text": "I don’t feel in control of telling the system what I want"},
+                    ]
+                }, {
+                    "type": "matrix",
+                    "name": "und",
+                    "title": "Please indicate to what extent you agree or disagree with each statement.",
+                    "isAllRowRequired": "true",
+                    "columns": [
+                        {"value": 1, "text": "Completely Disagree"},
+                        {"value": 2, "text": "Strongly Disagree"},
+                        {"value": 3, "text": "Disagree"},
+                        {"value": 4, "text": "Neither Agree nor Disagree"},
+                        {"value": 5, "text": "Agree"},
+                        {"value": 6, "text": "Strongly Agree"},
+                        {"value": 7, "text": "Completely Agree"}
+                    ],
+                    "rows": [
+                        {"value": "1", "text": "I understand how the recommended songs relate to my musical taste"},
+                        {"value": "2", "text": "It is easy to grasp why I received these recommended songs"},
+                        {"value": "3", "text": "The recommendation process was clear to me"},
+                        {"value": "4", "text": "I understand why the songs were recommended to me"},
+                    ]
+                }]},
+                {"questions": [{
+                    "type": "matrix",
+                    "name": "help",
+                    "title": "Please indicate to what extent you agree or disagree with each statement.",
+                    "isAllRowRequired": "true",
+                    "columns": [
+                        {"value": 1, "text": "Completely Disagree"},
+                        {"value": 2, "text": "Strongly Disagree"},
+                        {"value": 3, "text": "Disagree"},
+                        {"value": 4, "text": "Neither Agree nor Disagree"},
+                        {"value": 5, "text": "Agree"},
+                        {"value": 6, "text": "Strongly Agree"},
+                        {"value": 7, "text": "Completely Agree"}
+                    ],
+                    "rows": [
+                        {"value": "1", "text": "The playlist supports me in getting to know the genre"},
+                        {"value": "2", "text": "The playlist is useful in exploring the genre"},
+                        {"value": "3", "text": "The playlist motivates me to more delve into the genre"},
+                        {"value": "4", "text": "The playlist contains the songs help me understand the genre"},
+                        {"value": "5", "text": "I feel supported to explore the genre with the playlist"}
                     ]
                 }]
             }],

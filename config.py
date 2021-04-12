@@ -11,8 +11,12 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 # SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL',
 #                                          'sqlite:///' + os.path.join(BASE_DIR, 'test.db')).replace("mysql://",
 #                                                                                                    "mysql+pymysql://")
-SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL',
-                                         'postgresql://localhost/explore').replace("mysql://", "mysql+pymysql://")
+# SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL',
+#                                          'postgresql://localhost/explore').replace("mysql://", "mysql+pymysql://")
+
+SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'sqlite:///' +
+                                         os.path.join(BASE_DIR, 'test.db')).replace("://", "ql://")
+
 DATABASE_CONNECT_OPTIONS = {}
 
 # Application threads. A common general assumption is

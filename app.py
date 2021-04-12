@@ -6,9 +6,9 @@ from genre_exploration.flow import genre_explore_bp
 from dbdw.flow import dbdw_bp
 from nudge.flow import nudge_bp
 import os
-from rq import Queue
-from worker import conn
-from Utility.utility import scrape_genre_artist, scrape_genre_artist_next_level, get_artist_top_tracks, import_tracks_from_csv
+# from rq import Queue
+# from worker import conn
+# from Utility.utility import scrape_genre_artist, scrape_genre_artist_next_level, get_artist_top_tracks, import_tracks_from_csv
 
 
 class ReverseProxied(object):
@@ -33,7 +33,7 @@ app.register_blueprint(recommendation_bp)
 app.register_blueprint(nudge_bp)
 
 
-q = Queue(connection=conn, default_timeout=6000)
+# q = Queue(connection=conn, default_timeout=6000)
 
 with app.app_context():
     db.create_all()
@@ -49,16 +49,16 @@ def add_headers(response):
     return response
 
 
-@app.route('/run_background')
-def run_background():
-    q.enqueue(spotify_scrape)
-    return render_template("test.html")
-
-
-# scrape from Spotify
-def spotify_scrape():
-    with app.app_context():
-        # scrape_genre_artist_next_level(2)
-        # scrape_genre_artist()
-        # get_artist_top_tracks()
-        import_tracks_from_csv()
+# @app.route('/run_background')
+# def run_background():
+#     q.enqueue(spotify_scrape)
+#     return render_template("test.html")
+#
+#
+# # scrape from Spotify
+# def spotify_scrape():
+#     with app.app_context():
+#         # scrape_genre_artist_next_level(2)
+#         # scrape_genre_artist()
+#         # get_artist_top_tracks()
+#         import_tracks_from_csv()

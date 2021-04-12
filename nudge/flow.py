@@ -17,7 +17,24 @@ def index():
 
 @nudge_bp.route('/inform_consent')
 def inform_consent():
-    return render_template('informed_consent.html')
+    if request.args.get("prolific_pid"):
+        session["prolific_pid"] = request.args.get("prolific_pid")
+        print(session["prolific_pid"])
+        return render_template('informed_consent.html')
+
+    return redirect(url_for("nudge_bp.error_page"))
+
+
+@nudge_bp.route('/register')
+def register():
+    if request.args.get("consent") == "False":
+        return redirect(url_for("nudge_bp.index"))
+
+    if 'prolific_pid' in session:
+        session["share"] = request.args.get("share")
+        return redirect(url_for('spotify_basic_bp.login', next_url='nudge_bp.redirect_from_main2'))
+    else:
+        return redirect(url_for("nudge_bp.error_page"))
 
 
 @nudge_bp.route('/redirect_from_main2')
@@ -154,3 +171,7 @@ def post_task_survey():
         db.session.commit()
         return "done"
 
+
+@nudge_bp.route('/error_page')
+def error_page():
+    return render_template("Error.html")

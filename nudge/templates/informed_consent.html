@@ -1,24 +1,193 @@
 {% extends "layout.html" %}
-{% block title %}Continue{% endblock %}
+{% block title %}Informed consent form{% endblock %}
 {% block content %}
-    <h3>
-        Consent form
-    </h3>
+    <h2>Informed consent form for participants</h2>
 
-    <p class="lead">
-        The information that we collect with this experiment is
-        securely stored and will only be used for scientific research purposes,
-        for which your data will be kept anonymous.
+    <p class="text-justify">
+        This page gives you information about the study “Music Genre Exploration”.
+        Before the study begins, it is important that you learn about the procedure followed in this study
+        and that you give your informed consent for voluntary participation. Please read this document carefully.
     </p>
 
-    <p class="lead">
-        By clicking the continue button, you agree to login with your Spotify account
-        and that your anonymous data will be used for this experiment.
+    <h5>1. Aim and benefit of the study</h5>
+    <p class="text-justify">
+        The aim of this study is to measure your interaction with and evaluation of a music genre exploration tool.
+        This information is used to improve such tools and see how people can be guided
+        when they would like to explore a new music genre.
+
+        This study is performed by Yu Liang,
+        under the supervision of Martijn Willemsen of the Human-Technology Interaction group of Eindhoven
+        University of Technology and Jheronimus Academy of Data Science.
     </p>
+
+    <h5>2. Procedure</h5>
+    <p class="text-justify">
+        In this study, you will log in with you Spotify account (note: you can only participate with an active
+        Spotify account, free or premium).
+        After that, you will be asked to fill in a survey about your music expertise.
+        You will then need to select a new music genre that you would like to get familiar with.
+        You will be able to explore and listen to songs from the genre you select, and answer questions
+        about the application and the songs that are recommended to you.
+    </p>
+
+    <h5>3. Risks</h5>
+    <p class="text-justify">
+        The study does not involve any risks or detrimental side effects.
+    </p>
+
+    <h5>4. Duration</h5>
+    <p class="text-justify">
+        The instructions, measurements and debriefing will take approximately 10 minutes.
+    </p>
+
+    <h5>5. Participants</h5>
+    <p class="text-justify">
+        You were selected to be a part of this study because of your availability indicated in the previous screening study,
+        that you have an active Spotify account and would like to receive information
+        from this follow up study for “Music Genre Exploration”.
+    </p>
+
+    <h5>6. Voluntary</h5>
+    <p class="text-justify">
+        Your participation is completely voluntary.
+        You can refuse to participate without giving any reasons and you can stop your participation at any time
+        during the study. You can also withdraw your permission to use your data up to 24 hours after they were recorded.
+        None of this will have any negative consequences for you whatsoever.
+    </p>
+
+    <h5>7. Compensation</h5>
+    <p class="text-justify">
+        You will be paid £1.25 for your completing this study.
+    </p>
+
+    <h5>8. Confidentiality</h5>
+    <p class="text-justify">
+        All research conducted at the Human-Technology Interaction Group adheres to the Code of Ethics of the NIP
+        (Nederlands Instituut voor Psychologen – Dutch Institute for Psychologists),
+        and this study has been approved by the Ethical Review Board of the department.
+    </p>
+    <p class="text-justify">
+        In this study personal data (basic demographics, such as age and gender,
+        and Spotify top listened tracks and artists) and experimental data (e.g.,
+        your responses to the questionnaires and interactions with the application) will be recorded, analyzed,
+        and stored. You need to log in with your Spotify account in order to join this study.
+    </p>
+
+    <p class="text-justify">
+        During the Spotify login, three permissions will be asked to access your Spotify data.
+        Our tool will ask for permissions to (1) view your Spotify account data (including your name, username,
+        profile picture, how many followers you have on Spotify and your public playlists),
+        (2) view your activity on Spotify (top listened artists and tracks), and
+        (3) take playlist relevant actions in Spotify on your behalf (create, edit, and follow private playlists).
+        <span class="font-weight-bold">
+            These permissions will only be granted to us during your usage of the tool.
+            We need these to enable Spotify login and for possible playlist savings during your usage
+            of the tool (on your request), but we will never record, analyze, and store any of your
+            Spotify account data. We will only store your top listened tracks and artists on Spotify
+            (up to 150 artists and tracks), but without any personal identifiable data.</span>
+    </p>
+    <p class="text-justify">
+        The goal of collecting, analyzing, and storing this data is to answer the research question and publish the
+        results in the scientific literature. To protect your privacy, all data that can be used to personally identify
+        you will be stored on an encrypted server of the Human Technology Interaction group for at least 10 years that is
+        only accessible by selected HTI staff members. No information that can be used to
+        personally identify you will be shared with others.
+    </p>
+    <p class="text-justify">
+        The data collected in this study might also be of relevance for future research projects within the Human
+        Technology Interaction group as well as for other researchers. The aim of those studies might be unrelated
+        to the goals of this study. The collected data will therefore also be made available in an online public data
+        repository. The coded data collected in this study will (to the best of our knowledge and ability)
+        not contain information that can identify you. It will include all answers you provide during the study,
+        including demographic variables (e.g., age and gender) if you choose to provide these during the study.
+    </p>
+    <p class="text-justify">
+        At the bottom of this consent form, you can indicate whether or not you agree with the use of your
+        data for future research within the Human Technology Interaction group and in an public online
+        data repository. If you are not willing to share your data in this way, you can still participate in this study.
+        Your data will be used in the scientific article but not shared with other researchers.
+    </p>
+    <p class="text-justify">
+        No video or audio recordings are made that could identify you.
+    </p>
+
+    <h5>9. Further information</h5>
+    <p class="text-justify">
+        If you want more information about this study, you can contact Yu Liang (contact email: y.liang1@tue.nl).
+    </p>
+    <p class="text-justify">
+        If you have any complaints about this study, please contact the supervisor,
+        Martijn Willemsen (M.C.Willemsen@tue.nl).
+        You can report irregularities related to scientific integrity to confidential advisors of the TU/e.
+    </p>
+
+    <h5>10. Certificate of Consent</h5>
+
+    <p class="text-justify">
+        Please read this informed consent carefully and indicate whether or not you agree with the informed consent
+    </p>
+
+    <form method="get" action="/register" id="consent_form">
+        <p class="data-collection-p">
+            I -
+        </p>
+        <div class="data-collection-inputs">
+            <label>
+                <input type="radio" name="consent" id="agree" value="True"><span>do</span>
+            </label>
+            <label>
+                <input type="radio" name="consent" id="disagree" value="False"><span>do not</span>
+            </label>
+        </div>
+        <p class="data-collection-txt">
+            agree with the informed consent.
+        </p>
+
+        <p class="data-collection-p">
+            I -
+        </p>
+        <div class="data-collection-inputs">
+            <label>
+                <input type="radio" name="share" id="agree" value="True"><span>do</span>
+            </label>
+            <label>
+                <input type="radio" name="share" id="disagree" value="False"><span>do not</span>
+            </label>
+        </div>
+        <p class="data-collection-txt">
+            give permission to make my anonymized recorded data available to
+            others in HTI research group or in a public online data repository,
+            and allow others to use this data for future research projects unrelated to this study.
+        </p>
+
+    </form>
+
 
     <div class="text-right">
-        <a class="btn btn-success" id="action_continue" href="/login/nudge_bp.redirect_from_main2">
-            Continue and login with my Spotify account<i class="fas fa-arrow-right"></i>
-        </a>
+        <button type="submit" form="consent_form" class="btn btn-primary" id="action_consent" >
+            Continue <i class="fas fa-arrow-right"></i>
+        </button>
     </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        $(function() {
+           $('#consent_form').submit(function(e) {
+               let radio_val1 = $("input[name='consent']:checked").val();
+
+               if (!radio_val1) {
+                   alert("Please indicate whether or not you agree with the informed consent");
+                   e.preventDefault();
+               }
+
+               let radio_val2 = $("input[name='share']:checked").val();
+               if (!radio_val2) {
+                   alert("Please indicate your preference on making your anonymized data available to other researchers.");
+                   e.preventDefault();
+               }
+
+           });
+        });
+    </script>
 {% endblock %}

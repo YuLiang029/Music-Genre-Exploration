@@ -101,53 +101,56 @@ def authorized():
             print('Spotify login failure')
             return render_template("SpotifyConnectFailed.html")
         else:
-            print(me.data)
+            # print(me.data)
+            # if me.data["display_name"] is None:
+            #     display_name = ""
+            # else:
+            #     display_name = me.data["display_name"]
+            # if len(me.data["images"]) == 0:
+            #     image = ""
+            # else:
+            #     image = me.data["images"][0]["url"]
+            if 'prolific_pid' in session:
+                session["spotify_id"] = me.data['id']
+                user = User.query.filter_by(id=session["prolific_pid"]).first()
 
-            if me.data["display_name"] is None:
-                display_name = ""
-            else:
-                display_name = me.data["display_name"]
-            if len(me.data["images"]) == 0:
-                image = ""
-            else:
-                image = me.data["images"][0]["url"]
+                if user is None:
+                    userhash = str(uuid.uuid4())
+                    consent_to_share = False
 
-            user = User.query.filter_by(id=me.data["id"]).first()
+                    if session["share"] == "True":
+                        consent_to_share = True
 
-            if user is None:
-                userhash = str(uuid.uuid4())
-                user = User(
-                    id=me.data["id"],
-                    username=display_name,
-                    imageurl=image,
-                    userhash=userhash,
-                    consent_to_share=False)
+                    user = User(
+                        id=session["prolific_pid"],
+                        userhash=userhash,
+                        consent_to_share=consent_to_share)
 
-                db.session.add(user)
+                    db.session.add(user)
+                    db.session.commit()
+
+                # flash('You were signed in as %s' % display_name)
+                session["userid"] = user.id
+                scrape(limit=50, scrape_type="tracks_artists")
+                print(next_url)
+
+                ts = time.time()
+
+                # if "subjectid" in session:
+                #     print(session["subjectid"])
+                #     subjectid = session["subjectid"]
+                # else:
+                #     print("No subject id")
+                #     subjectid = "No subject id"
+
+                session['id'] = str(uuid.uuid4())
+                session_log = SessionLog(user_id=session["userid"], id=session['id'], timestamp=ts)
+
+                db.session.add(session_log)
                 db.session.commit()
 
-            flash('You were signed in as %s' % display_name)
-            session["userid"] = user.id
-
-            scrape(limit=50, scrape_type="tracks_artists")
-            print(next_url)
-
-            ts = time.time()
-
-            if "subjectid" in session:
-                print(session["subjectid"])
-                subjectid = session["subjectid"]
-            else:
-                print("No subject id")
-                subjectid = "No subject id"
-
-            session['id'] = str(uuid.uuid4())
-            session_log = SessionLog(user_id=session["userid"], id=session['id'], timestamp=ts)
-
-            db.session.add(session_log)
-            db.session.commit()
-
-            return redirect(next_url)
+                return redirect(next_url)
+            return render_template("Error.html")
     except Exception as e:
         print(e)
         return render_template("SpotifyConnectFailed.html")
@@ -418,7 +421,7 @@ def generate_playlist(name="demo", description="for demo use", public=False):
     :param public: Boolean, default: False
     :return: playlist_id: string, playlist_url: string
     """
-    url = '/v1/users/' + session["userid"] + '/playlists'
+    url = '/v1/users/' + session["spotify_id"] + '/playlists'
     data = {"name": name, "description": description, "public": public}
     try:
         playlist = spotify.post(url, data=data, format='json')
@@ -441,7 +444,7 @@ def save_tracks_to_playlist(playlist_id, playlist_url, track_list):
     :param track_list: a list of track ids to be added
     :return: playlist_url: string
     """
-    url = '/v1/users/' + session["userid"] + '/playlists/' + playlist_id + '/tracks?position=0'
+    url = '/v1/users/' + session["spotify_id"] + '/playlists/' + playlist_id + '/tracks?position=0'
     prefix = "spotify:track:"
     new_track_list = []
 

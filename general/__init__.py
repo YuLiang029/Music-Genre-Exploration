@@ -11,7 +11,7 @@ class User(db.Model):
     top_artists = db.relationship('TopArtists', cascade='all')
     subject_id = db.Column(db.VARCHAR)
 
-    msi_response = db.relationship('MsiResponse', cascade='all, delete-orphan')
+    msi_response = db.relationship('MsiResponse', cascade='all, delete-orphan', backref="user")
 
     def __repr__(self):
         return '<User %r>' % self.id
@@ -122,7 +122,6 @@ class MsiResponse(db.Model):
     __tablename__ = 'msi_response'
     user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'), primary_key=True)
     item_id = db.Column(db.VARCHAR, primary_key=True)
-    user = db.relationship('User')
     value = db.Column(db.VARCHAR)
     start_ts = db.Column(db.FLOAT)
     stop_ts = db.Column(db.FLOAT)

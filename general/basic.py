@@ -643,7 +643,7 @@ def msi_survey():
 
         user = User.query.filter_by(id=session["userid"]).first()
         user.msi_response[:] = [
-            MsiResponse(user_id=user.id, user=user,
+            MsiResponse(user_id=user.id,
                         item_id=item, value=request.form[item], stop_ts=stop_ts) for item in
             request.form]
         db.session.commit()

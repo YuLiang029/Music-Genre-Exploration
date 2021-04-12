@@ -10,8 +10,21 @@ from rq import Queue
 from worker import conn
 from Utility.utility import scrape_genre_artist, scrape_genre_artist_next_level, get_artist_top_tracks, import_tracks_from_csv
 
+
+class ReverseProxied(object):
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        scheme = environ.get('HTTP_X_FORWARDED_PROTO')
+        if scheme:
+            environ['wsgi.url_scheme'] = scheme
+        return self.app(environ, start_response)
+
+
 app = Flask(__name__)
 app.config.from_object('config')
+app.wsgi_app = ReverseProxied(app.wsgi_app)
 db.init_app(app)
 app.register_blueprint(spotify_basic_bp)
 app.register_blueprint(recommendation_bp)

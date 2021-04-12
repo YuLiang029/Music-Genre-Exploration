@@ -62,3 +62,23 @@ class SurveyResponse(db.Model):
 
     def __repr__(self):
         return '<SurveyResponse %r-%r-%r>' % (self.user_id, self.rec_id, self.item_id)
+
+
+class TrackInteractLog(db.Model):
+    __tablename__ = 'track_interact_log'
+    id = db.Column(db.INTEGER, autoincrement=True, primary_key=True)
+    user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'))
+    rec_id = db.Column(db.VARCHAR, db.ForeignKey('recommendation_log.id'))
+    session_id = db.Column(db.VARCHAR, db.ForeignKey('session_log.id'))
+    timestamp = db.Column(db.FLOAT)
+    track_id = db.Column(db.VARCHAR, db.ForeignKey('track.id'))
+
+
+class SliderInteractLog(db.Model):
+    __tablename__ = 'slider_interact_log'
+    id = db.Column(db.INTEGER, autoincrement=True, primary_key=True)
+    user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'))
+    rec_id = db.Column(db.VARCHAR, db.ForeignKey('recommendation_log.id'))
+    session_id = db.Column(db.VARCHAR, db.ForeignKey('session_log.id'))
+    timestamp = db.Column(db.FLOAT)
+    value = db.Column(db.FLOAT)

@@ -195,8 +195,6 @@
                     url: "/log_track_interact",
                     data: {
                         'track_id': track_id,
-                        'weight_flag': "L",
-                        'genre_name': "{{genre}}"
                     },
                     global: false
                 });
@@ -218,8 +216,9 @@
     });
 
     /* Slider functions ----------------------------------------------------------------------------------------------*/
-    function slidersChangedNew() {
+    function slidersChangedNew(slider) {
         calculateTradeoffScore();
+        logSliderInteraction(slider);
     }
 
     function logSliderInteraction(slider) {
@@ -227,8 +226,7 @@
             type: "POST",
             url: "/log_slider_interact",
             data: {
-                'sliderid': slider.id,
-                'sliderval': slider.value
+                'slider_val': slider.value
             }
         });
     }

@@ -7,7 +7,7 @@ import pandas as pd
 import os
 import numpy as np
 from sklearn.mixture import GaussianMixture
-from recommendation import RecommendationLog, RecTracks, RecGenres
+from recommendation import RecommendationLog, RecTracks, RecGenres, TrackInteractLog, SliderInteractLog
 from collections import Counter
 import operator
 from functools import reduce
@@ -548,4 +548,35 @@ def gmm_density1(X):
     p1 = np.exp(best_gmm.score_samples(P))
 
     return p1
+
+
+@recommendation_bp.route('/log_track_interact', methods=['POST'])
+def log_track_interact():
+    if request.method == 'POST':
+        track_interact_log = TrackInteractLog(
+            user_id=session["userid"],
+            rec_id=session["rec_id"],
+            session_id=session["id"],
+            timestamp=time.time(),
+            track_id=request.form["track_id"],
+        )
+        db.session.add(track_interact_log)
+        db.session.commit()
+        print("Stored interaction with track {}".format(request.form["track_id"]))
+        return "done"
+
+
+@recommendation_bp.route('/log_slider_interact', methods=['POST'])
+def log_slider_interact():
+    if request.method == 'POST':
+        slider_interact_log = SliderInteractLog(
+            user_id=session["userid"],
+            rec_id=session["rec_id"],
+            timestamp=time.time(),
+            session_id=session["id"],
+            value=request.form["slider_val"]
+        )
+        db.session.add(slider_interact_log)
+        db.session.commit()
+        return "done"
 

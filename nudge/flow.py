@@ -104,7 +104,11 @@ def last_step():
 @nudge_bp.route('/post_task_survey', methods=["GET", "POST"])
 def post_task_survey():
     if request.method == "GET":
-        responses = RecommendationLog.query.filter_by(id=session["rec_id"]).first().survey_response
+        recommendation_log = RecommendationLog.query.filter_by(id=session["rec_id"]).first()
+        responses = recommendation_log.survey_response
+        recommendation_log.stop_ts = time.time()
+        db.session.commit()
+
         surveydata = {}
 
         for responseitem in responses:
@@ -240,15 +244,14 @@ def post_task_survey():
         return render_template('survey.html', survey=survey, surveydata=surveydata, survey_config=survey_config)
 
     if request.method == "POST":
-
         recommendation = RecommendationLog.query.filter_by(id=session["rec_id"]).first()
-
+        stop_ts = time.time()
         recommendation.survey_response[:] = [
             SurveyResponse(user_id=session["userid"],
                            session_id=session["id"],
                            rec_id=session["rec_id"],
                            item_id=item,
-                           value=request.form[item], stop_ts=time.time()) for item in
+                           value=request.form[item], stop_ts=stop_ts) for item in
             request.form]
         db.session.commit()
         return "done"

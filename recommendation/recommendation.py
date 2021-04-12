@@ -11,6 +11,9 @@ from recommendation import RecommendationLog, RecTracks, RecGenres
 from collections import Counter
 import operator
 from functools import reduce
+from sklearn.feature_extraction.text import CountVectorizer
+import networkx as nx
+import pickle
 
 recommendation_bp = Blueprint('recommendation_bp', __name__,
                               template_folder='templates')
@@ -25,6 +28,99 @@ def get_ranking_score(v_sum_rank_ranking, v_baseline_ranking, len_genre_df, weig
     ranking_score = weight * (len_genre_df - v_sum_rank_ranking + 1) + (1 - weight) * (
                 len_genre_df - v_baseline_ranking + 1)
     return ranking_score
+
+
+@recommendation_bp.route('/genre_suggestion_new')
+def genre_suggestion_new():
+    # get genre artists
+    l_genre = ["avant-garde", "blues", "classical",
+               "country", "electronic", "folk",
+               "jazz", "latin", "new-age",
+               "pop-rock", "rap", "reggae",
+               "rnb"]
+
+    with open('tags.pkl', 'rb') as f:
+        l_tags = pickle.load(f)
+
+    with open('nodes.pkl', 'rb') as f:
+        l_nodes = pickle.load(f)
+
+    print(l_tags)
+
+    # check if the genre suggestions have been generated
+    rec_genres = RecGenres.query.filter_by(user_id=session["userid"], ).order_by(RecGenres.score.desc()).all()
+
+    if rec_genres:
+        l_genre_score_sorted = []
+        for item in rec_genres:
+            l_genre_score_sorted.append(item.genre)
+        return jsonify(l_genre_score_sorted)
+
+    # get a user's top artists
+    top_artists = TopArtists.query.filter_by(user_id=session["userid"]).all()
+
+    # return error if non top artists exist
+    if not top_artists:
+        # error message
+        error_message = "error"
+        return jsonify(error_message)
+
+    # get top artists' genre
+    user_corpus = []
+    for item in top_artists:
+        print(item.artist.genres)
+        user_corpus.append(item.artist.genres)
+
+    user_vectorizer = CountVectorizer(token_pattern='(?u)[a-zA-Z][a-z-& ]+')
+    user_result = user_vectorizer.fit_transform(user_corpus).todense()
+    yu_cols = user_vectorizer.get_feature_names()
+    df_user_tag = pd.DataFrame(user_result, columns=yu_cols)
+    user_dict = df_user_tag.sum(axis=0).to_dict()
+    t_dict = {}
+
+    for nodes in l_nodes:
+        t_dict[nodes] = 0
+
+    for nodes in user_dict:
+        if nodes in t_dict:
+            t_dict[nodes] = t_dict[nodes] + user_dict[nodes]
+
+    # distribute weight to source code rather than using a uniform distribution
+    n_zero_nodes = 0
+    n_nonzero_nodes = 0
+    sum_nonzero_nodes = 0
+
+    for nodes in t_dict:
+        if t_dict[nodes] == 0:
+            n_zero_nodes = n_zero_nodes + 1
+        else:
+            n_nonzero_nodes = n_nonzero_nodes + 1
+            sum_nonzero_nodes = sum_nonzero_nodes + t_dict[nodes]
+
+    G = nx.read_gpickle("tags.gpickle")
+    tag_score = nx.pagerank(G, personalization=t_dict)
+
+    dict_genre_score = {}
+    for i in range(len(l_genre)):
+        genre_score = 0
+        genre_tags = l_tags[i]
+
+        j = 0
+        for tag in genre_tags:
+            if tag in tag_score:
+                j = j + 1
+                genre_score = genre_score + tag_score[tag]
+
+        dict_genre_score[l_genre[i]] = genre_score/j
+        rec_genres = RecGenres(user_id=session["userid"], genre=l_genre[i],
+                               score=dict_genre_score[l_genre[i]], ts=time.time())
+        db.session.add(rec_genres)
+
+    db.session.commit()
+    print(dict_genre_score)
+    l_genre_score_sorted = sorted(dict_genre_score, key=dict_genre_score.get, reverse=True)
+    print(l_genre_score_sorted)
+    return jsonify(l_genre_score_sorted)
 
 
 @recommendation_bp.route('/genre_suggestion')

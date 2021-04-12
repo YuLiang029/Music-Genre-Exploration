@@ -77,10 +77,30 @@
                 <input class="form-check-input" type="radio" name="genre" id="Radios9">
                 <label class="form-check-label lead font-weight-bold" id="label_radio9" for="Radios9">
                 </label>
-                <span id="exp2" class="badge badge-secondary"></span>
             </div>
             <br>
 
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="genre" id="Radios10">
+                <label class="form-check-label lead font-weight-bold" id="label_radio10" for="Radios10">
+                </label>
+            </div>
+            <br>
+
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="genre" id="Radios11">
+                <label class="form-check-label lead font-weight-bold" id="label_radio11" for="Radios11">
+                </label>
+            </div>
+            <br>
+
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="genre" id="Radios12">
+                <label class="form-check-label lead font-weight-bold" id="label_radio12" for="Radios12">
+                </label>
+                <span id="exp2" class="badge badge-secondary"></span>
+            </div>
+            <br>
         </div>
 
     <br>
@@ -115,6 +135,9 @@
                     $("#Radios7").val(result[7]);
                     $("#Radios8").val(result[8]);
                     $("#Radios9").val(result[9]);
+                    $("#Radios10").val(result[10]);
+                    $("#Radios11").val(result[11]);
+                    $("#Radios12").val(result[12]);
 
                     $("#label_radio1").html(result[1]);
                     $("#exp1").text("the closest genre")
@@ -127,34 +150,45 @@
                     $("#label_radio7").html(result[7]);
                     $("#label_radio8").html(result[8]);
                     $("#label_radio9").html(result[9]);
+                    $("#label_radio10").html(result[10]);
+                    $("#label_radio11").html(result[11]);
+                    $("#label_radio12").html(result[12]);
                     $("#exp2").text("the least closest genre")
 
                     $("#sort").text("how much a genre matches your preferences");
                 }else{
                     // flip the suggestion list if the condition is set as "exploration"
-                    $("#Radios1").val(result[9]);
-                    $("#Radios2").val(result[8]);
-                    $("#Radios3").val(result[7]);
+                    $("#Radios1").val(result[12]);
+                    $("#Radios2").val(result[11]);
+                    $("#Radios3").val(result[10]);
 
-                    $("#Radios4").val(result[6]);
-                    $("#Radios5").val(result[5]);
-                    $("#Radios6").val(result[4]);
-                    $("#Radios7").val(result[3]);
-                    $("#Radios8").val(result[2]);
-                    $("#Radios9").val(result[1]);
+                    $("#Radios4").val(result[9]);
+                    $("#Radios5").val(result[8]);
+                    $("#Radios6").val(result[7]);
+                    $("#Radios7").val(result[6]);
+                    $("#Radios8").val(result[5]);
+                    $("#Radios9").val(result[4]);
+
+                    $("#Radios10").val(result[3]);
+                    $("#Radios11").val(result[2]);
+                    $("#Radios12").val(result[1]);
 
 
-                    $("#label_radio1").html(result[9]);
+                    $("#label_radio1").html(result[12]);
                     $("#exp1").text("the most novel genre")
-                    $("#label_radio2").html(result[8]);
-                    $("#label_radio3").html(result[7]);
+                    $("#label_radio2").html(result[11]);
+                    $("#label_radio3").html(result[10]);
 
-                    $("#label_radio4").html(result[6]);
-                    $("#label_radio5").html(result[5]);
-                    $("#label_radio6").html(result[4]);
-                    $("#label_radio7").html(result[3]);
-                    $("#label_radio8").html(result[2]);
-                    $("#label_radio9").html(result[1]);
+                    $("#label_radio4").html(result[9]);
+                    $("#label_radio5").html(result[8]);
+                    $("#label_radio6").html(result[7]);
+                    $("#label_radio7").html(result[6]);
+                    $("#label_radio8").html(result[5]);
+                    $("#label_radio9").html(result[4]);
+                    $("#label_radio10").html(result[3]);
+                    $("#label_radio11").html(result[2]);
+                    $("#label_radio12").html(result[1]);
+
                     $("#exp2").text("the least novel genre")
 
                     $("#sort").text("how much a genre is novel to you");

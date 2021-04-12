@@ -4,12 +4,15 @@
 
     <div class="row">
         <h2 id="rec_header" class="col-12 show-on-success">Top recommendations for you – Genre: {{genre}}</h2>
-
+        <h3 class="col-12 show-on-success">Task:</h3>
         <p class="show-on-success lead col-12">
-            Take your time to listen to the recommendations and
-            play with the sliders. After listening to the playlist, you are asked to fill
-            in a survey about your experience with the recommendations. Hover over the
-            <i class="fas fa-question-circle text-muted"></i> icons to get an explanation on the user interface.</p>
+            Your task is to create a good playlist is helpful for you to explore the genre {{genre}} using the slider.
+            <span class="font-weight-bold">Put the slider at the place you find the most helpful.</span>
+            After finishing creating the playlist, you will be asked to fill
+            in a survey about your experience with the recommendations and the interface.</p>
+
+        <p class="show-on-success col-12 lead">
+            Tips: Hover over the <i class="fas fa-question-circle text-muted"></i> icons to get an explanation on the user interface.</p>
 
         <div id="alertbox" class="d-none-soft col-12"></div>
 
@@ -29,13 +32,13 @@
                 <div class="sliders show-on-success" id="moodControl"
                      data-intro="Use the slider to balance how much your preferences are weighted in for the
                      recommendations from this genre. You can vary between the most
-                     popular songs from the genre (left: weight=0) and songs
+                     representative songs from the genre (left: weight=0) and songs
                      from that genre that are very close to your preference (right: weight=1)." data-step='2'>
                     <span class="help text-right" data-toggle="tooltip" data-placement="top"
                           style="position:absolute;right:20px;top:10px;"
                           title="Use the slider to balance how much your preferences are weighted in for the
                           recommendations from this genre. You can vary between the most
-                          popular songs from the genre (left: weight=0) and songs
+                          representative songs from the genre (left: weight=0) and songs
                           from that genre that are very close to your preference (right: weight=1).">
                         <i class="fas fa-question-circle text-info"></i>
                     </span>
@@ -455,11 +458,11 @@
 
         // Allow interaction with the graph
         function handleMouseOver(d) {
-            $(".trackid[value=" + d.id + "]").parent().addClass("track--highlighted");
+            $(".trackid[value=" + d.id + "]").parent().addClass("track--highlighted1");
         }
 
         function handleMouseOut(d, i) {
-            $(".trackid[value=" + d.id + "]").parent().removeClass("track--highlighted");
+            $(".trackid[value=" + d.id + "]").parent().removeClass("track--highlighted1");
         }
     }
 

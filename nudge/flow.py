@@ -98,7 +98,8 @@ def explore_genre2():
 
 @nudge_bp.route('/last_step')
 def last_step():
-    return render_template("general_last_page.html")
+    return redirect("https://app.prolific.co/submissions/complete?cc=47904236")
+    # return render_template("general_last_page.html")
 
 
 @nudge_bp.route('/post_task_survey', methods=["GET", "POST"])
@@ -130,7 +131,8 @@ def post_task_survey():
                 "questions": [{
                     "type": "matrix",
                     "name": "repr",
-                    "title": "Please indicate to what extent you agree or disagree with each statement.",
+                    "title": "Please indicate to what extent you agree or disagree with each statement about "
+                             "the good 'playlist' ",
                     "isAllRowRequired": "true",
                     "columns": [
                         {"value": 1, "text": "Completely Disagree"},
@@ -150,7 +152,8 @@ def post_task_survey():
                 }, {
                     "type": "matrix",
                     "name": "pers",
-                    "title": "Please indicate to what extent you agree or disagree with each statement.",
+                    "title": "Please indicate to what extent you agree or disagree with each statement "
+                             "about the good 'playlist'",
                     "isAllRowRequired": "true",
                     "columns": [
                         {"value": 1, "text": "Completely Disagree"},
@@ -165,7 +168,7 @@ def post_task_survey():
                             {"value": "1", "text": "The playlist is personalized to my music tastes"},
                             {"value": "2", "text": "The playlist has songs with styles I like to listen to"},
                             {"value": "3", "text": "I find the songs from the playlist appealing"},
-                            {"value": "4", "text": "I will listen to the playlist again"}
+                            {"value": "4", "text": "I will listen to the playlist again"},
                     ]
                 }]},
                 {"questions": [{
@@ -207,12 +210,15 @@ def post_task_survey():
                         {"value": "2", "text": "It is easy to grasp why I received these recommended songs"},
                         {"value": "3", "text": "The recommendation process was clear to me"},
                         {"value": "4", "text": "I understand why the songs were recommended to me"},
+                        {"value": "5", "text": "It is important that you pay attention to this study. "
+                                               "Please tick 'Completely Disagree'"}
                     ]
                 }]},
                 {"questions": [{
                     "type": "matrix",
                     "name": "help",
-                    "title": "Please indicate to what extent you agree or disagree with each statement.",
+                    "title": "Please indicate to what extent you agree or disagree with each statement about "
+                             "the good 'playlist'",
                     "isAllRowRequired": "true",
                     "columns": [
                         {"value": 1, "text": "Completely Disagree"},

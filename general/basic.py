@@ -521,24 +521,6 @@ def msi_survey():
             "showProgressBar": "top",
             "pages": [{
                 "questions": [{
-                    "name": "age",
-                    "type": "text",
-                    "title": "Your age (years):",
-                    "isRequired": "true"
-                }, {
-                    "name": "gender",
-                    "type": "dropdown",
-                    "title": "Your gender:",
-                    "isRequired": "true",
-                    "colCount": 0,
-                    "choices": [
-                        "male",
-                        "female",
-                        "other"
-                    ]
-                }]
-            }, {
-                "questions": [{
                     "type": "matrix",
                     "name": "Active Engagement",
                     "title": "Below some questions how you relate to music. "
@@ -567,7 +549,8 @@ def msi_survey():
                 }, {
                     "type": "dropdown",
                     "name": "8",
-                    "title": "I have attended _ live music events as an audience member in the past twelve months.",
+                    "title": "I have attended _ live (online) music events as an audience "
+                             " member in the past twelve months.",
                     "isRequired": "true",
                     "colCount": 0,
                     "choices": [

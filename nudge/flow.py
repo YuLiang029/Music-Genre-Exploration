@@ -28,7 +28,7 @@ def inform_consent():
 @nudge_bp.route('/register')
 def register():
     if request.args.get("consent") == "False":
-        return redirect(url_for("nudge_bp.index"))
+        return redirect(url_for("nudge_bp.disagree_informed_consent"))
 
     if 'prolific_pid' in session:
         session["share"] = request.args.get("share")
@@ -132,7 +132,7 @@ def post_task_survey():
                     "type": "matrix",
                     "name": "repr",
                     "title": "Please indicate to what extent you agree or disagree with each statement about "
-                             "the good 'playlist' ",
+                             "the playlist you just created",
                     "isAllRowRequired": "true",
                     "columns": [
                         {"value": 1, "text": "Completely Disagree"},
@@ -153,7 +153,7 @@ def post_task_survey():
                     "type": "matrix",
                     "name": "pers",
                     "title": "Please indicate to what extent you agree or disagree with each statement "
-                             "about the good 'playlist'",
+                             "about the playlist you just created",
                     "isAllRowRequired": "true",
                     "columns": [
                         {"value": 1, "text": "Completely Disagree"},
@@ -168,7 +168,7 @@ def post_task_survey():
                             {"value": "1", "text": "The playlist is personalized to my music tastes"},
                             {"value": "2", "text": "The playlist has songs with styles I like to listen to"},
                             {"value": "3", "text": "I find the songs from the playlist appealing"},
-                            {"value": "4", "text": "I will listen to the playlist again"},
+                            {"value": "4", "text": "I would listen to the playlist again"},
                     ]
                 }]},
                 {"questions": [{
@@ -186,10 +186,11 @@ def post_task_survey():
                         {"value": 7, "text": "Completely Agree"}
                     ],
                     "rows": [
-                        {"value": "1", "text": "I feel in control of modifying the recommendations"},
-                        {"value": "2", "text": "I found it easy to modify the recommendations in the recommender"},
-                        {"value": "3", "text": "I feel in control of specifying my preferences"},
-                        {"value": "4", "text": "I don’t feel in control of telling the system what I want"},
+                        {"value": "1", "text": "I felt in control of modifying the recommendations"},
+                        {"value": "2", "text": "I felt I couldn't really tell the system what I wanted in my playlist"},
+                        {"value": "3", "text": "I found it easy to modify the recommendations in the recommender"},
+                        {"value": "4", "text": "I was able to clearly specify my preferences"},
+
                     ]
                 }, {
                     "type": "matrix",
@@ -218,7 +219,7 @@ def post_task_survey():
                     "type": "matrix",
                     "name": "help",
                     "title": "Please indicate to what extent you agree or disagree with each statement about "
-                             "the good 'playlist'",
+                             "the playlist you just created",
                     "isAllRowRequired": "true",
                     "columns": [
                         {"value": 1, "text": "Completely Disagree"},
@@ -232,9 +233,9 @@ def post_task_survey():
                     "rows": [
                         {"value": "1", "text": "The playlist supports me in getting to know the genre"},
                         {"value": "2", "text": "The playlist is useful in exploring the genre"},
-                        {"value": "3", "text": "The playlist motivates me to more delve into the genre"},
-                        {"value": "4", "text": "The playlist contains the songs help me understand the genre"},
-                        {"value": "5", "text": "I feel supported to explore the genre with the playlist"}
+                        {"value": "3", "text": "The playlist motivates me to delve more into the genre"},
+                        {"value": "4", "text": "The songs in the playlist did not help me to explore the genre"},
+                        {"value": "5", "text": "I feel supported by the playlist to explore the genre"}
                     ]
                 }]
             }],
@@ -266,3 +267,8 @@ def post_task_survey():
 @nudge_bp.route('/error_page')
 def error_page():
     return render_template("Error.html")
+
+
+@nudge_bp.route('/disagree_informed_consent')
+def disagree_informed_consent():
+    return render_template("Error_inform_consent.html")

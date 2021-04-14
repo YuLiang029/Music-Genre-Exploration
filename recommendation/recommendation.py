@@ -45,7 +45,7 @@ def genre_suggestion_new():
     with open('nodes.pkl', 'rb') as f:
         l_nodes = pickle.load(f)
 
-    print(l_tags)
+    # print(l_tags)
 
     # check if the genre suggestions have been generated
     rec_genres = RecGenres.query.filter_by(user_id=session["userid"], ).order_by(RecGenres.score.desc()).all()
@@ -68,7 +68,7 @@ def genre_suggestion_new():
     # get top artists' genre
     user_corpus = []
     for item in top_artists:
-        print(item.artist.genres)
+        # print(item.artist.genres)
         user_corpus.append(item.artist.genres)
 
     user_vectorizer = CountVectorizer(token_pattern='(?u)[a-zA-Z][a-z-& ]+')
@@ -332,7 +332,7 @@ def genre_recommendation_exp_multiple():
     # genre_df1 = get_mix_multiple_top(l_weight=[0.0, 0.2, 0.5, 0.7, 0.9, 1.0])
     genre_df1 = get_mix_multiple_top(l_weight=[0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
     top_tracks = genre_df1
-    print(genre_df1)
+    # print(genre_df1)
 
     for index, row in top_tracks.iterrows():
         # rec_tracks = RecTracks(rec_id=session['rec_id'], track_id=row["id"], rank=row["index"])

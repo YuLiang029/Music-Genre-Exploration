@@ -22,6 +22,7 @@ audio_features = ['danceability', 'valence', 'energy', 'liveness', 'speechiness'
 track_features = ['id', 'trackname', 'popularity'] + audio_features
 track_features1 = track_features + ['baseline_ranking', 'sum_rank_ranking']
 rec_track_features = track_features1 + ['ranking_score', 'weight']
+audio_features_exp = ['danceability', 'valence', 'energy', 'acousticness']
 
 
 def get_ranking_score(v_sum_rank_ranking, v_baseline_ranking, len_genre_df, weight):
@@ -396,7 +397,7 @@ def get_genre_recommendation_by_preference(genre_name=None, track_df=None, by_pr
         y = x.astype(float)*999
         return np.rint(y).astype(int)
 
-    def get_sum_rank(v_danceability_crank, v_valence_crank, v_energy_crank, v_liveness_crank, v_speechiness_crank,
+    def get_sum_rank(v_danceability_crank, v_valence_crank, v_energy_crank,
                      v_acousticness_crank, len_genre_df):
 
         # sum_rank = len_genre_df + 1 - (v_danceability_crank + v_valence_crank +
@@ -417,7 +418,7 @@ def get_genre_recommendation_by_preference(genre_name=None, track_df=None, by_pr
         return str_return
     elif (str_return == "successfully build the model") or (str_return == "is the model"):
         try:
-            for audio_feature in audio_features:
+            for audio_feature in audio_features_exp:
                 p1 = np.load(os.path.join(user_folder_path, current_user + "_" + audio_feature + ".npy"))
                 _map = np.convolve(p1, _filter, mode='same') / 1000
 
@@ -430,10 +431,10 @@ def get_genre_recommendation_by_preference(genre_name=None, track_df=None, by_pr
                     genre_df['valence_convolve'] = l_convolve
                 elif audio_feature == 'energy':
                     genre_df['energy_convolve'] = l_convolve
-                elif audio_feature == 'liveness':
-                    genre_df['liveness_convolve'] = l_convolve
-                elif audio_feature == 'speechiness':
-                    genre_df['speechiness_convolve'] = l_convolve
+                # elif audio_feature == 'liveness':
+                #     genre_df['liveness_convolve'] = l_convolve
+                # elif audio_feature == 'speechiness':
+                #     genre_df['speechiness_convolve'] = l_convolve
                 elif audio_feature == 'acousticness':
                     genre_df['acousticness_convolve'] = l_convolve
 
@@ -447,8 +448,8 @@ def get_genre_recommendation_by_preference(genre_name=None, track_df=None, by_pr
         danceability_crank=genre_df['danceability_convolve'].rank(ascending=False),
         valence_crank=genre_df['valence_convolve'].rank(ascending=False),
         energy_crank=genre_df['energy_convolve'].rank(ascending=False),
-        liveness_crank=genre_df['liveness_convolve'].rank(ascending=False),
-        speechiness_crank=genre_df['speechiness_convolve'].rank(ascending=False),
+        # liveness_crank=genre_df['liveness_convolve'].rank(ascending=False),
+        # speechiness_crank=genre_df['speechiness_convolve'].rank(ascending=False),
         acousticness_crank=genre_df['acousticness_convolve'].rank(ascending=False))
 
     len_genre_df = len(genre_df)
@@ -456,8 +457,8 @@ def get_genre_recommendation_by_preference(genre_name=None, track_df=None, by_pr
     sum_rank = get_sum_rank(v_danceability_crank=genre_df['danceability_crank'].values,
                             v_valence_crank=genre_df['valence_crank'].values,
                             v_energy_crank=genre_df['energy_crank'].values,
-                            v_liveness_crank=genre_df['liveness_crank'].values,
-                            v_speechiness_crank=genre_df['speechiness_crank'].values,
+                            # v_liveness_crank=genre_df['liveness_crank'].values,
+                            # v_speechiness_crank=genre_df['speechiness_crank'].values,
                             v_acousticness_crank=genre_df['acousticness_crank'].values,
                             len_genre_df=len_genre_df)
 
@@ -498,15 +499,15 @@ def check_user_model():
             os.path.isfile(os.path.join(user_folder_path, current_user + "_danceability.npy")) and
             os.path.isfile(os.path.join(user_folder_path, current_user + "_valence.npy")) and
             os.path.isfile(os.path.join(user_folder_path, current_user + "_energy.npy")) and
-            os.path.isfile(os.path.join(user_folder_path, current_user + "_liveness.npy")) and
-            os.path.isfile(os.path.join(user_folder_path, current_user + "_speechiness.npy")) and
+            # os.path.isfile(os.path.join(user_folder_path, current_user + "_liveness.npy")) and
+            # os.path.isfile(os.path.join(user_folder_path, current_user + "_speechiness.npy")) and
             os.path.isfile(os.path.join(user_folder_path, current_user + "_acousticness.npy"))
     ):
         return "is the model"
 
     else:
         try:
-            for audio_feature in audio_features:
+            for audio_feature in audio_features_exp:
                 p1 = gmm_density1(toptrack_df[[audio_feature]].values)
                 np.save(os.path.join(user_folder_path, current_user + "_" + audio_feature), p1)
             return "successfully build the model"

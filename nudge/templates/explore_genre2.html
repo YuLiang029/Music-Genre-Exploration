@@ -175,8 +175,9 @@
             for (let i = 0; i < visible_recommendations.length; i++) {
                 trackString = trackString + "," + visible_recommendations[i].id;
             }
+            let slider_val_save = $("#range_slider").val();
             $.ajax({
-                url: "/generate_playlist_spotify/{{ genre }}?tracks=" + trackString.substring(1,) + "",
+                url: "/generate_playlist_spotify/{{ genre }}?weight=" + slider_val_save + "&tracks=" + trackString.substring(1,) + "",
                 global: false
             }).done(function (data){
                 if (data === "done"){

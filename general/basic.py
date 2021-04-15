@@ -646,19 +646,21 @@ def generate_playlist_spotify(genre):
     tracks = request.args.get('tracks')
     track_list = tracks.split(',')
 
+    weight = request.args.get('weight')
+
     """refresh token"""
     if is_token_expired():
         refresh_token = session["oauth_token"]["refresh_token"]
         get_refresh_token(refresh_token)
 
-    playlist_id, playlist_url = generate_playlist(name=genre, description=genre)
-
+    description = "Recommendation for genre: " + genre + " with weight " + weight
+    playlist_id, playlist_url = generate_playlist(name=genre, description=description)
     playlist_url = save_tracks_to_playlist(playlist_id, playlist_url, track_list)
 
-    spotify_playlist = Playlist(id=playlist_id,
+    playlist_id_hash = str(uuid.uuid4())
+    spotify_playlist = Playlist(id=playlist_id_hash,
                                 name=genre,
-                                description=genre,
-                                url=playlist_url,
+                                description=weight,
                                 rec_id=rec_id,
                                 timestamp=time.time(),
                                 user_id=session["userid"],

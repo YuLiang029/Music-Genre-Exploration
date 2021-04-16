@@ -91,8 +91,6 @@ def genre_suggestion_new():
             t_dict[nodes] = t_dict[nodes] + user_dict[nodes]
             flag = 1
 
-    print(flag)
-    print(t_dict)
     if flag == 0:
         return jsonify("error")
 

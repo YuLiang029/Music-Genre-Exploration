@@ -65,13 +65,15 @@ def genre_suggestion_new():
     # return error if non top artists exist
     if not top_artists:
         # error message
-        return render_template("Error_not_enough_information.html")
+        return jsonify("error")
 
     # get top artists' genre
     user_corpus = []
     for item in top_artists:
         # print(item.artist.genres)
         user_corpus.append(item.artist.genres)
+    if len(user_corpus) == 0:
+        return jsonify("error")
 
     user_vectorizer = CountVectorizer(token_pattern='(?u)[a-zA-Z][a-z-& ]+')
     user_result = user_vectorizer.fit_transform(user_corpus).todense()
@@ -89,8 +91,10 @@ def genre_suggestion_new():
             t_dict[nodes] = t_dict[nodes] + user_dict[nodes]
             flag = 1
 
+    print(flag)
+    print(t_dict)
     if flag == 0:
-        return render_template("Error_not_enough_information.html")
+        return jsonify("error")
 
     # distribute weight to source code rather than using a uniform distribution
     n_zero_nodes = 0
@@ -339,26 +343,30 @@ def genre_recommendation_exp_multiple():
 
     # genre_df1 = get_mix_multiple_top(l_weight=[0.0, 0.2, 0.5, 0.7, 0.9, 1.0])
     genre_df1 = get_mix_multiple_top(l_weight=[0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
-    top_tracks = genre_df1
-    # print(genre_df1)
 
-    l_rec_trakcs = []
-    for index, row in top_tracks.iterrows():
-        # rec_tracks = RecTracks(rec_id=session['rec_id'], track_id=row["id"], rank=row["index"])
-        rec_tracks = RecTracks(rec_id=session['rec_id'], track_id=row["id"],
-                               rank=row["index"],
-                               baseline_ranking=row['baseline_ranking'],
-                               personalized_ranking=row['sum_rank_ranking'],
-                               score=row['ranking_score'], weight=row['weight'])
-        l_rec_trakcs.append(rec_tracks)
+    if not isinstance(genre_df1, pd.DataFrame):
+        return jsonify("error")
+    else:
+        top_tracks = genre_df1
+        # print(genre_df1)
 
-    db.session.add_all(l_rec_trakcs)
-    db.session.commit()
+        l_rec_trakcs = []
+        for index, row in top_tracks.iterrows():
+            # rec_tracks = RecTracks(rec_id=session['rec_id'], track_id=row["id"], rank=row["index"])
+            rec_tracks = RecTracks(rec_id=session['rec_id'], track_id=row["id"],
+                                   rank=row["index"],
+                                   baseline_ranking=row['baseline_ranking'],
+                                   personalized_ranking=row['sum_rank_ranking'],
+                                   score=row['ranking_score'], weight=row['weight'])
+            l_rec_trakcs.append(rec_tracks)
 
-    # top_tracks = top_tracks.replace(np.nan, '')
+        db.session.add_all(l_rec_trakcs)
+        db.session.commit()
 
-    top_tracks_list = top_tracks.to_dict('records')
-    return jsonify(top_tracks_list)
+        # top_tracks = top_tracks.replace(np.nan, '')
+
+        top_tracks_list = top_tracks.to_dict('records')
+        return jsonify(top_tracks_list)
 
 
 def get_genre_recommendation_by_popularity(genre_name):

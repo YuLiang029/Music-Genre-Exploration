@@ -14,8 +14,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 # SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL',
 #                                          'postgresql://localhost/explore_test').replace("mysql://", "mysql+pymysql://")
 
-SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'sqlite:///' +
-                                         os.path.join(BASE_DIR, 'test.db')).replace("://", "ql://")
+SQLALCHEMY_DATABASE_URI = os.environ.get('HEROKU_POSTGRESQL_MAROON_URL').replace("://", "ql://", 1)
 
 DATABASE_CONNECT_OPTIONS = {}
 

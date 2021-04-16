@@ -1,4 +1,4 @@
-from flask import session, jsonify, Blueprint, request
+from flask import session, jsonify, Blueprint, request, render_template
 import time
 import uuid
 from general import TopTracks, TopArtists, User
@@ -24,6 +24,14 @@ track_features1 = track_features + ['baseline_ranking', 'sum_rank_ranking']
 rec_track_features = track_features1 + ['ranking_score', 'weight']
 audio_features_exp = ['danceability', 'valence', 'energy', 'acousticness']
 
+with open('tags.pkl', 'rb') as f:
+    l_tags = pickle.load(f)
+
+with open('nodes.pkl', 'rb') as f:
+    l_nodes = pickle.load(f)
+
+G = nx.read_gpickle("tags.gpickle")
+
 
 def get_ranking_score(v_sum_rank_ranking, v_baseline_ranking, len_genre_df, weight):
     ranking_score = weight * (len_genre_df - v_sum_rank_ranking + 1) + (1 - weight) * (
@@ -39,12 +47,6 @@ def genre_suggestion_new():
                "jazz", "latin", "new-age",
                "pop-rock", "rap", "reggae",
                "rnb"]
-
-    with open('tags.pkl', 'rb') as f:
-        l_tags = pickle.load(f)
-
-    with open('nodes.pkl', 'rb') as f:
-        l_nodes = pickle.load(f)
 
     # print(l_tags)
 
@@ -63,8 +65,7 @@ def genre_suggestion_new():
     # return error if non top artists exist
     if not top_artists:
         # error message
-        error_message = "error"
-        return jsonify(error_message)
+        return render_template("Error_not_enough_information.html")
 
     # get top artists' genre
     user_corpus = []
@@ -82,9 +83,14 @@ def genre_suggestion_new():
     for nodes in l_nodes:
         t_dict[nodes] = 0
 
+    flag = 0
     for nodes in user_dict:
         if nodes in t_dict:
             t_dict[nodes] = t_dict[nodes] + user_dict[nodes]
+            flag = 1
+
+    if flag == 0:
+        return render_template("Error_not_enough_information.html")
 
     # distribute weight to source code rather than using a uniform distribution
     n_zero_nodes = 0
@@ -98,10 +104,10 @@ def genre_suggestion_new():
             n_nonzero_nodes = n_nonzero_nodes + 1
             sum_nonzero_nodes = sum_nonzero_nodes + t_dict[nodes]
 
-    G = nx.read_gpickle("tags.gpickle")
     tag_score = nx.pagerank(G, personalization=t_dict)
 
     dict_genre_score = {}
+    l_rec_genres = []
     for i in range(len(l_genre)):
         genre_score = 0
         genre_tags = l_tags[i]
@@ -115,8 +121,9 @@ def genre_suggestion_new():
         dict_genre_score[l_genre[i]] = genre_score/j
         rec_genres = RecGenres(user_id=session["userid"], genre=l_genre[i],
                                score=dict_genre_score[l_genre[i]], ts=time.time())
-        db.session.add(rec_genres)
+        l_rec_genres.append(rec_genres)
 
+    db.session.add_all(l_rec_genres)
     db.session.commit()
     print(dict_genre_score)
     l_genre_score_sorted = sorted(dict_genre_score, key=dict_genre_score.get, reverse=True)
@@ -335,6 +342,7 @@ def genre_recommendation_exp_multiple():
     top_tracks = genre_df1
     # print(genre_df1)
 
+    l_rec_trakcs = []
     for index, row in top_tracks.iterrows():
         # rec_tracks = RecTracks(rec_id=session['rec_id'], track_id=row["id"], rank=row["index"])
         rec_tracks = RecTracks(rec_id=session['rec_id'], track_id=row["id"],
@@ -342,8 +350,10 @@ def genre_recommendation_exp_multiple():
                                baseline_ranking=row['baseline_ranking'],
                                personalized_ranking=row['sum_rank_ranking'],
                                score=row['ranking_score'], weight=row['weight'])
-        db.session.add(rec_tracks)
-        db.session.commit()
+        l_rec_trakcs.append(rec_tracks)
+
+    db.session.add_all(l_rec_trakcs)
+    db.session.commit()
 
     # top_tracks = top_tracks.replace(np.nan, '')
 

@@ -192,9 +192,9 @@ def artist_scrape(limit=50):
                 return "top_artists_request status: " + str(top_artists_request.status), 400
             else:
                 top_artists = top_artists_request.data["items"]
+                l_top_artist = []
                 for x in top_artists:
                     artist = Artist.query.filter_by(id=x["id"]).first()
-
                     if artist:
                         entry = TopArtists.query.filter_by(user_id=session["userid"],
                                                            artist_id=x["id"],
@@ -207,7 +207,8 @@ def artist_scrape(limit=50):
                                                             time_period=term,
                                                             timestamp=ts
                                                             )
-                            db.session.add(new_top_artist_obj)
+                            l_top_artist.append(new_top_artist_obj)
+                            # db.session.add(new_top_artist_obj)
 
                     else:
                         new_artist_obj = Artist(
@@ -227,7 +228,9 @@ def artist_scrape(limit=50):
                                                         time_period=term,
                                                         timestamp=ts,
                                                         artist=new_artist_obj)
-                        db.session.add(new_top_artist_obj)
+                        l_top_artist.append(new_top_artist_obj)
+                        # db.session.add(new_top_artist_obj)
+                db.session.add_all(l_top_artist)
                 db.session.commit()
         except Exception as e:
             print(e.args)
@@ -253,6 +256,7 @@ def track_scrape(limit=50):
                 audio_feature_data = audio_feature_request.data["audio_features"]
                 track_list = combine_track_features(top_tracks, audio_feature_data)
                 library_objects = tracklist2object(track_list)
+                l_top_tracks = []
                 for x in library_objects:
                     track = Track.query.filter_by(id=x.id).first()
                     if track:
@@ -267,7 +271,8 @@ def track_scrape(limit=50):
                                                          time_period=term,
                                                          timestamp=str(ts),
                                                          track=track)
-                            db.session.add(new_toptrack_obj)
+                            # db.session.add(new_toptrack_obj)
+                            l_top_tracks.append(new_toptrack_obj)
                     else:
                         new_track_obj = Track(
                             id=x.id, trackname=x.trackname, popularity=x.popularity, preview_url=x.preview_url,
@@ -281,7 +286,9 @@ def track_scrape(limit=50):
                         new_toptrack_obj = TopTracks(user_id=session["userid"],
                                                      track_id=x.id, time_period=term,
                                                      timestamp=str(ts), track=new_track_obj)
-                        db.session.add(new_toptrack_obj)
+                        l_top_tracks.append(new_toptrack_obj)
+                        # db.session.add(new_toptrack_obj)
+                db.session.add_all(l_top_tracks)
                 db.session.commit()
         except Exception as e:
             print(e.args)

@@ -14,3 +14,4 @@ rq==1.7.0
 spotipy==2.17.1
 urllib3>=1.26
 networkx==2.5.1
+Flask-DebugToolbar==0.11.0

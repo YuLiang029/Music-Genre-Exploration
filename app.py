@@ -9,6 +9,7 @@ import os
 # from rq import Queue
 # from worker import conn
 # from Utility.utility import scrape_genre_artist, scrape_genre_artist_next_level, get_artist_top_tracks, import_tracks_from_csv
+# from flask_debugtoolbar import DebugToolbarExtension
 
 
 class ReverseProxied(object):
@@ -23,6 +24,7 @@ class ReverseProxied(object):
 
 
 app = Flask(__name__)
+# app.debug = True
 app.config.from_object('config')
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 db.init_app(app)
@@ -31,7 +33,7 @@ app.register_blueprint(recommendation_bp)
 # app.register_blueprint(genre_explore_bp)
 # app.register_blueprint(dbdw_bp)
 app.register_blueprint(nudge_bp)
-
+# toolbar = DebugToolbarExtension(app)
 
 # q = Queue(connection=conn, default_timeout=6000)
 
@@ -48,6 +50,10 @@ def add_headers(response):
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
     return response
 
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    db.session.remove()
 
 # @app.route('/run_background')
 # def run_background():

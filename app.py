@@ -50,10 +50,10 @@ def add_headers(response):
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
     return response
 
-#
-# @app.teardown_appcontext
-# def shutdown_session(exception=None):
-#     db.session.remove()
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    db.session.remove()
 
 # @app.route('/run_background')
 # def run_background():

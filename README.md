@@ -23,7 +23,25 @@ Recommendations for Music Genre Exploration. (UMAP19)](https://dl.acm.org/doi/ab
 }
 ```
 
-Yu Liang and Martijn C. Willemsen. 2021. Interactive Music Genre Exploration with Visualization and Mood Control (ACM IUI 2021, to be printed)
+[Yu Liang and Martijn C. Willemsen. 2021. Interactive Music Genre Exploration with Visualization and Mood Control (ACM IUI 2021)](https://dl.acm.org/doi/abs/10.1145/3397481.3450700)
+```
+@inproceedings{10.1145/3397481.3450700,
+author = {Liang, Yu and Willemsen, Martijn C.},
+title = {Interactive Music Genre Exploration with Visualization and Mood Control},
+year = {2021},
+isbn = {9781450380171},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3397481.3450700},
+doi = {10.1145/3397481.3450700},
+booktitle = {26th International Conference on Intelligent User Interfaces},
+pages = {175–185},
+numpages = {11},
+keywords = {mood, user study, recommender system, visualization, music, interactive design, exploration},
+location = {College Station, TX, USA},
+series = {IUI '21}
+}
+```
 
 ### Code structure
 - general: basic function to connect with Spotify API

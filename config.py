@@ -41,4 +41,5 @@ CSRF_SESSION_KEY = "secret"
 # Secret key for signing cookies
 SECRET_KEY = os.urandom(16)
 
-SQLALCHEMY_POOL_SIZE = 20
+# set SQLALCHEMY maximum concurrent thread number
+# SQLALCHEMY_POOL_SIZE = 20

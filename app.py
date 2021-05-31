@@ -8,10 +8,12 @@ from nudge.flow import nudge_bp
 import os
 # from rq import Queue
 # from worker import conn
-# from Utility.utility import scrape_genre_artist, scrape_genre_artist_next_level, get_artist_top_tracks, import_tracks_from_csv
-# from flask_debugtoolbar import DebugToolbarExtension
+# from Utility.utility import scrape_genre_artist, scrape_genre_artist_next_level, \
+#     get_artist_top_tracks, import_tracks_from_csv
+from flask_debugtoolbar import DebugToolbarExtension
 
 
+# Force HTTPS connection on server
 class ReverseProxied(object):
     def __init__(self, app):
         self.app = app
@@ -28,13 +30,25 @@ app = Flask(__name__)
 app.config.from_object('config')
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 db.init_app(app)
-app.register_blueprint(spotify_basic_bp)
-app.register_blueprint(recommendation_bp)
-# app.register_blueprint(genre_explore_bp)
-# app.register_blueprint(dbdw_bp)
-app.register_blueprint(nudge_bp)
-# toolbar = DebugToolbarExtension(app)
 
+# Register blueprint for spotify login
+app.register_blueprint(spotify_basic_bp)
+
+# Register blueprint for recommendation module
+app.register_blueprint(recommendation_bp)
+
+# Register blueprint for Basic Genre Exploration app
+# app.register_blueprint(genre_explore_bp)
+
+# Register blueprint for the DBDW app
+# app.register_blueprint(dbdw_bp)
+
+# Register blueprint for the nudge study
+app.register_blueprint(nudge_bp)
+
+toolbar = DebugToolbarExtension(app)
+
+# Initialize queue for worker
 # q = Queue(connection=conn, default_timeout=6000)
 
 with app.app_context():
@@ -51,10 +65,12 @@ def add_headers(response):
     return response
 
 
+# Shutdown database session after operations
 @app.teardown_appcontext
 def shutdown_session(exception=None):
     db.session.remove()
 
+# Function that can run in the background
 # @app.route('/run_background')
 # def run_background():
 #     q.enqueue(spotify_scrape)

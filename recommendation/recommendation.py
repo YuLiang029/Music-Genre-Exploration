@@ -24,21 +24,16 @@ track_features1 = track_features + ['baseline_ranking', 'sum_rank_ranking']
 rec_track_features = track_features1 + ['ranking_score', 'weight']
 audio_features_exp = ['danceability', 'valence', 'energy', 'acousticness']
 
-with open('tags.pkl', 'rb') as f:
+with open(os.path.join(os.path.dirname(recommendation_bp.root_path), 'recommendation/tags.pkl'), 'rb') as f:
     l_tags = pickle.load(f)
 
-with open('nodes.pkl', 'rb') as f:
+with open(os.path.join(os.path.dirname(recommendation_bp.root_path), 'recommendation/nodes.pkl'), 'rb') as f:
     l_nodes = pickle.load(f)
 
-G = nx.read_gpickle("tags.gpickle")
+G = nx.read_gpickle(os.path.join(os.path.dirname(recommendation_bp.root_path), 'recommendation/tags.gpickle'))
 
 
-def get_ranking_score(v_sum_rank_ranking, v_baseline_ranking, len_genre_df, weight):
-    ranking_score = weight * (len_genre_df - v_sum_rank_ranking + 1) + (1 - weight) * (
-                len_genre_df - v_baseline_ranking + 1)
-    return ranking_score
-
-
+# Genre suggestion function based on Personalized PageRank
 @recommendation_bp.route('/genre_suggestion_new')
 def genre_suggestion_new():
     # get genre artists
@@ -133,6 +128,7 @@ def genre_suggestion_new():
     return jsonify(l_genre_score_sorted)
 
 
+# Genre suggestion function based on simple cosine similarity
 @recommendation_bp.route('/genre_suggestion')
 def genre_suggestion():
     # check if the genre suggestions have been generated
@@ -233,6 +229,12 @@ def genre_top_tracks(genre, sort, num):
                          'firstartist']]
 
     return jsonify(genre_df.to_dict('records'))
+
+
+def get_ranking_score(v_sum_rank_ranking, v_baseline_ranking, len_genre_df, weight):
+    ranking_score = weight * (len_genre_df - v_sum_rank_ranking + 1) + (1 - weight) * (
+                len_genre_df - v_baseline_ranking + 1)
+    return ranking_score
 
 
 @recommendation_bp.route('/genre_recommendation_exp')

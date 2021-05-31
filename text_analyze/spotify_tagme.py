@@ -36,6 +36,13 @@ class WikiContent(db.Model):
         return '<WikiContent %r>' % self.id
 
 
+class UserTopArtistWikiRecord(db.Model):
+    __tablename = 'user_top_artist_wiki_record'
+    user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'), primary_key=True)
+    annote_wid = db.Column(db.VARCHAR)
+    annote_title = db.Column(db.VARCHAR)
+
+
 spotify_tagme_bp = Blueprint('spotify_tagme_bp', __name__)
 
 keys_tagme = {"token": ""}
@@ -48,8 +55,8 @@ except Exception as e:
 tagme.GCUBE_TOKEN = str(keys_tagme["token"])
 
 
-@spotify_tagme_bp.route('/annote_event')
-def annote_event():
+@spotify_tagme_bp.route('/annotate_event')
+def annotate_event():
     events = db.session.query(Event).all()
 
     for event in events:
@@ -72,15 +79,8 @@ def annote_event():
     return render_template('test.html')
 
 
-class UserTopArtistWikiRecord(db.Model):
-    __tablename = 'user_top_artist_wiki_record'
-    user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'), primary_key=True)
-    annote_wid = db.Column(db.VARCHAR)
-    annote_title = db.Column(db.VARCHAR)
-
-
-@spotify_tagme_bp.route('/annote_user_top_artist')
-def annote_user_top_artist():
+@spotify_tagme_bp.route('/annotate_user_top_artist')
+def annotate_user_top_artist():
     user_id = session["userid"]
 
     user_top_artist_wiki_record = UserTopArtistWikiRecord.query.filter_by(user_id=user_id).first()

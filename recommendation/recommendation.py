@@ -209,6 +209,7 @@ def cosine_sim(np1: np.ndarray, np2: np.ndarray):
     return score
 
 
+# Get tracks from a music genre (can be sorted by popularity)
 @recommendation_bp.route('/genre_top_tracks/<genre>/<sort>/<num>')
 def genre_top_tracks(genre, sort, num):
     """
@@ -237,6 +238,8 @@ def get_ranking_score(v_sum_rank_ranking, v_baseline_ranking, len_genre_df, weig
     return ranking_score
 
 
+# Get recommended tracks from the requested music genre with the requested weight (0.0-1.0)
+# for balancing representativeness and personalization
 @recommendation_bp.route('/genre_recommendation_exp')
 def genre_recommendation_exp():
     """
@@ -298,6 +301,8 @@ def genre_recommendation_exp():
     return jsonify(top_tracks_list)
 
 
+# Get top-10 recommended tracks from a requested music genre with a list of weight values
+# (0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0) for balancing representativeness and personalization
 @recommendation_bp.route('/genre_recommendation_exp_multiple')
 def genre_recommendation_exp_multiple():
     ts = time.time()
@@ -341,7 +346,6 @@ def genre_recommendation_exp_multiple():
         weight_df = weight_df.reset_index()
         return weight_df
 
-    # genre_df1 = get_mix_multiple_top(l_weight=[0.0, 0.2, 0.5, 0.7, 0.9, 1.0])
     genre_df1 = get_mix_multiple_top(l_weight=[0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
 
     if not isinstance(genre_df1, pd.DataFrame):
@@ -363,12 +367,11 @@ def genre_recommendation_exp_multiple():
         db.session.add_all(l_rec_trakcs)
         db.session.commit()
 
-        # top_tracks = top_tracks.replace(np.nan, '')
-
         top_tracks_list = top_tracks.to_dict('records')
         return jsonify(top_tracks_list)
 
 
+# Popularity-based recommendations: get the most popular tracks from the genre
 def get_genre_recommendation_by_popularity(genre_name):
     """
     get recommendation by popularity within a certain genre: function
@@ -386,6 +389,8 @@ def get_genre_recommendation_by_popularity(genre_name):
     return genre_df
 
 
+# Personalized approaches: get the most personalized tracks of the genre based on users'
+# preferences on the audio features.
 def get_genre_recommendation_by_preference(genre_name=None, track_df=None, by_preference=True):
     """
     get recommendation by preference within a certain genre: function
@@ -490,6 +495,8 @@ def get_genre_recommendation_by_preference(genre_name=None, track_df=None, by_pr
         return genre_df
 
 
+# Check if the user model exist or not.
+# If not: build the user model, else: get recommendations from the existed user model
 def check_user_model():
     userid = session["userid"]
 
@@ -534,10 +541,10 @@ def check_user_model():
             return "error"
 
 
+# The Gaussian Mixture Model for building the user profile on audio features
 def gmm_density1(X):
     """
     Gaussian Mixture Model
-    :param y:
     :param X:
     :return: Y, Z
     """
@@ -569,6 +576,7 @@ def gmm_density1(X):
     return p1
 
 
+# Log functionality for track interactions
 @recommendation_bp.route('/log_track_interact', methods=['POST'])
 def log_track_interact():
     if request.method == 'POST':
@@ -585,6 +593,7 @@ def log_track_interact():
         return "done"
 
 
+# Log functionality for slider interactions
 @recommendation_bp.route('/log_slider_interact', methods=['POST'])
 def log_slider_interact():
     if request.method == 'POST':

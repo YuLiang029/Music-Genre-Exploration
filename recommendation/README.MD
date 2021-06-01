@@ -1,4 +1,4 @@
-### Recommendation module
+## Recommendation module
 This folder contains the core recommendation functions for music genre exploration 
 and music genre suggestions (i.e., recommending music genres that users are interested in). 
 

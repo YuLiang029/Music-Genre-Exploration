@@ -70,6 +70,12 @@ def add_headers(response):
 def shutdown_session(exception=None):
     db.session.remove()
 
+
+# Render 404 page if the requested url is not found
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('404NotFound.html', title='404'), 404
+
 # Function that can run in the background
 # @app.route('/run_background')
 # def run_background():

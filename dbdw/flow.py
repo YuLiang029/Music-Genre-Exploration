@@ -10,8 +10,7 @@ from dbdw import RecStream, SelectedStream, ImgRatings
 import random
 import re
 from general import MsiResponse, UserCondition
-pd.set_option('display.max_columns', None)
-
+import os
 
 dbdw_bp = Blueprint('dbdw_bp', __name__, template_folder='templates')
 
@@ -58,7 +57,11 @@ def event_explore():
 
 @dbdw_bp.route('/event_recommendation')
 def event_recommendation():
-    track_df = pd.read_csv("dbdw_music2.csv", delimiter=";")
+    dbdw_data_path = os.path.join(
+        os.path.join(os.path.dirname(dbdw_bp.root_path),
+                     'dbdw'), "dbdw_music2.csv")
+
+    track_df = pd.read_csv(dbdw_data_path, delimiter=";")
 
     ts = time.time()
     session['rec_id'] = str(uuid.uuid4())
@@ -364,8 +367,7 @@ def get_items_to_rate():
                   "2_centroid", "2_outlier", "3_centroid", "3_outlier"]
 
     for image_id in l_image_id:
-        l_images.append('paintings/' + image_id + ".jpg")
-
+        l_images.append(url_for('static', filename='paintings/' + image_id + ".jpg"))
     return jsonify(l_images)
 
 

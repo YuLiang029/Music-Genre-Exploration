@@ -266,7 +266,7 @@ def post_task_survey():
 
 @nudge_bp.route('/error_page')
 def error_page():
-    return render_template("Error.html")
+    return render_template("Error_non_prolificid.html")
 
 
 @nudge_bp.route('/disagree_informed_consent')

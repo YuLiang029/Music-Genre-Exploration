@@ -4,84 +4,162 @@
     <h3>
         Explore my music taste by genre
     </h3>
-
-    <div>
-    <p class="lead">
-        1. Use the dropdown menu below to select a
-        genre you would like to explore.
+    <p class="show-on-success">
+        Your Spotify profile shows that you like the genre
+        <span id="top_genre" class="font-weight-bold">
+        </span>
+        most.
     </p>
-    <form id="form_range">
-    <select name = "genre" id="genre" class="form-control form-control-lg">
-        <option value="unknown">
-            Selected genre
-        </option>
-        <option value="christmas">
-            christmas
-        </option>
-        <option value="avant-garde">
-            avant-garde
-        </option>
-        <option value="blues">
-            blues
-        </option>
-        <option value="classical">
-            classical
-        </option>
-        <option value="country">
-            country
-        </option>
-        <option value="electronic">
-            electronic
-        </option>
-        <option value="folk">
-            folk
-        </option>
-        <option value="jazz">
-            jazz
-        </option>
-        <option value="new-age">
-            new-age
-        </option>
-        <option value="rap">
-            rap
-        </option>
-        <option value="rnb">
-            rnb
-        </option>
-    </select>
-    </form>
 
-    <br>
-    <div class="text-justify lead">
-        <p>2. Use the slider to balance how much your preferences are weighted in for the
-        recommendations from this genre. You can vary between the most
-        popular songs from the genre (left: weight=0) and songs
-            from that genre that are very close to your preference (right: weight=1).</p>
-
-        <div class="row text-justify">
-            <div class="col-sm">
-                <span class="slider-tag text-dark">More popular</span>
+    <div id="loadingDiv" class="mb-5 col-12 hide-on-success">
+        <div id="hloading" class="text-center lead">
+            <div class="spinner-border" role="status">
+              <span class="sr-only">Loading...</span>
             </div>
-            <div class="col-sm text-right">
-                <span class="slider-tag text-dark">More personalized</span>
-            </div>
-
+            Retrieving the music genre list
         </div>
-        <input type="range" class="slider_new" min="0" max="1" value=0.5 step="0.1" id="range_slider" name="weight">
-        <p><span id="range_value"></span></p>
-
-
     </div>
+
+  <div class="row">
+      <div class="col-sm-6">
+          <p class="text-justify">
+                1. Please first select a new music genre
+                from the below genre list to explore.
+                The list is sorted by
+                <span id="sort"></span>
+          </p>
+          <div class="show-on-success">
+              <div class="form-check">
+                  <input class="form-check-input scale_radio" type="radio" name="genre" id="Radios1" checked>
+                  <label class="form-check-label font-weight-bold" id="label_radio1" for="Radios1">
+                  </label><h5><span id="exp1" class="badge badge-primary"></span></h5>
+              </div>
+              <div class="form-check">
+                  <input class="form-check-input scale_radio" type="radio" name="genre" id="Radios2">
+                  <label class="form-check-label font-weight-bold" id="label_radio2" for="Radios2">
+                  </label>
+              </div>
+              <br>
+              <div class="form-check">
+                  <input class="form-check-input scale_radio" type="radio" name="genre" id="Radios3">
+                  <label class="form-check-label font-weight-bold" id="label_radio3" for="Radios3">
+                  </label>
+              </div>
+              <br>
+
+              <div class="form-check">
+                  <input class="form-check-input scale_radio" type="radio" name="genre" id="Radios4">
+                  <label class="form-check-label font-weight-bold" id="label_radio4" for="Radios4">
+                  </label>
+              </div>
+              <br>
+
+              <div class="form-check">
+                  <input class="form-check-input scale_radio" type="radio" name="genre" id="Radios5">
+                  <label class="form-check-label font-weight-bold" id="label_radio5" for="Radios5">
+                  </label>
+              </div>
+              <br>
+
+              <div class="form-check">
+                  <input class="form-check-input scale_radio" type="radio" name="genre" id="Radios6">
+                  <label class="form-check-label font-weight-bold" id="label_radio6" for="Radios6">
+                  </label>
+              </div>
+              <br>
+
+              <div class="form-check">
+                  <input class="form-check-input scale_radio" type="radio" name="genre" id="Radios7">
+                  <label class="form-check-label font-weight-bold" id="label_radio7" for="Radios7">
+                  </label>
+              </div>
+              <br>
+
+              <div class="form-check">
+                  <input class="form-check-input scale_radio" type="radio" name="genre" id="Radios8">
+                  <label class="form-check-label font-weight-bold" id="label_radio8" for="Radios8">
+                  </label>
+              </div>
+              <br>
+
+              <div class="form-check">
+                  <input class="form-check-input scale_radio" type="radio" name="genre" id="Radios9">
+                  <label class="form-check-label font-weight-bold" id="label_radio9" for="Radios9">
+                  </label>
+              </div>
+              <br>
+
+              <div class="form-check">
+                  <input class="form-check-input scale_radio" type="radio" name="genre" id="Radios10">
+                  <label class="form-check-label font-weight-bold" id="label_radio10" for="Radios10">
+                  </label>
+              </div>
+              <br>
+
+              <div class="form-check">
+                  <input class="form-check-input scale_radio" type="radio" name="genre" id="Radios11">
+                  <label class="form-check-label font-weight-bold" id="label_radio11" for="Radios11">
+                  </label>
+              </div>
+              <br>
+
+              <div class="form-check">
+                  <input class="form-check-input scale_radio" type="radio" name="genre" id="Radios12">
+                  <label class="form-check-label font-weight-bold" id="label_radio12" for="Radios12">
+                  </label>
+                  <h5><span id="exp2" class="badge badge-secondary"></span></h5>
+              </div>
+          </div>
+      </div>
+      <div class="col-sm-6">
+          <p class="text-justify">
+              2. Use the slider to balance how much your preferences are weighted in for the
+              recommendations from this genre. You can vary between the most
+              representative songs from the genre (left: weight=0) and
+              songs from that genre that are very close to your preference (right: weight=1).
+          </p>
+
+          <div class="row text-justify">
+                <div class="col-sm">
+                    <span class="slider-tag text-dark">More representative</span>
+                </div>
+                <div class="col-sm text-right">
+                    <span class="slider-tag text-dark">More personalized</span>
+                </div>
+
+            </div>
+            <input type="range" class="slider_new" min="0" max="1" value=0.5 step="0.1" id="range_slider" name="weight">
+            <p>
+                <span id="range_value">
+                </span>
+            </p>
+    </div>
+  </div>
 
     <div class="text-right">
-        <a type="submit" class="btn btn-success" id="action_submit" href="#">
+        <a role="button" class="btn btn-primary show-on-success" id="action_submit" href="#">
             Continue <i class="fas fa-arrow-right"></i>
         </a>
-    </div>
     </div>
 {% endblock %}
 {% block scripts %}
 <script>
+    let dict_map = {
+            "avant-garde": "Avant-garde",
+            "blues": "Blues",
+            "classical": "Classical",
+            "country": "Country",
+            "electronic": "Electronic",
+            "folk": "Folk",
+            "jazz": "Jazz",
+            "latin": "Latin",
+            "new-age": "New age",
+            "pop-rock": "Pop/Rock",
+            "rap": "Rap",
+            "reggae": "Reggae",
+            "rnb": "R&B"
+    };
+
     var slider = document.getElementById("range_slider");
     var output = document.getElementById("range_value");
     //output.innerHTML = slider.value;
@@ -90,10 +168,63 @@
         //output.innerHTML = this.value;
     };
 
-    $("#action_submit").on( "click", function() {
-        $(this).attr("href", "/explore_genre?genre=" + $.trim($("#genre :selected").text()) + "&weight=" + $.trim($("#range_slider").val()));
-    });
+    $.ajax({url:'/genre_suggestion_new', success: function(result){
+        console.log(result);
+        if (result === "error"){
+            alert("You do not have enough activity on your Spotify account to generate recommendations, " +
+                "therefore you can not participate in the experiment. " +
+                "We still want to thank you for your effort.");
+            window.location.href='/'
+        } else {
+            $("#top_genre").text(dict_map[result[0]])
+
+            // genre suggestion on novelty first
+            $("#Radios1").val(result[12]);
+            $("#Radios2").val(result[11]);
+            $("#Radios3").val(result[10]);
+
+            $("#Radios4").val(result[9]);
+            $("#Radios5").val(result[8]);
+            $("#Radios6").val(result[7]);
+            $("#Radios7").val(result[6]);
+            $("#Radios8").val(result[5]);
+            $("#Radios9").val(result[4]);
+
+            $("#Radios10").val(result[3]);
+            $("#Radios11").val(result[2]);
+            $("#Radios12").val(result[1]);
 
 
+            $("#label_radio1").html(dict_map[result[12]]);
+            $("#exp1").text("the most novel genre")
+            $("#label_radio2").html(dict_map[result[11]]);
+            $("#label_radio3").html(dict_map[result[10]]);
+
+            $("#label_radio4").html(dict_map[result[9]]);
+            $("#label_radio5").html(dict_map[result[8]]);
+            $("#label_radio6").html(dict_map[result[7]]);
+            $("#label_radio7").html(dict_map[result[6]]);
+            $("#label_radio8").html(dict_map[result[5]]);
+            $("#label_radio9").html(dict_map[result[4]]);
+            $("#label_radio10").html(dict_map[result[3]]);
+            $("#label_radio11").html(dict_map[result[2]]);
+            $("#label_radio12").html(dict_map[result[1]]);
+
+            $("#exp2").text("the least novel genre")
+
+            $("#sort").text("how much a genre is novel to you");
+        }
+        $(".hide-on-success").hide();
+        $('.show-on-success').show();
+
+        $("#action_submit").on( "click", function() {
+            $(this).attr("href", "/explore_genre?genre=" + $.trim($("#genre :selected").text()) + "&weight=" + $.trim($("#range_slider").val()));
+        });
+    }}).catch(function(e) {
+        // Display error message in console
+        console.error(e);
+        // Show error message in #hloading box
+        $('#hloading').text(e.message);
+    })
 </script>
 {% endblock %}

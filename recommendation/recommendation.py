@@ -18,11 +18,11 @@ import pickle
 recommendation_bp = Blueprint('recommendation_bp', __name__,
                               template_folder='templates')
 
-audio_features = ['danceability', 'valence', 'energy', 'liveness', 'speechiness', 'acousticness']
-track_features = ['id', 'trackname', 'popularity'] + audio_features
-track_features1 = track_features + ['baseline_ranking', 'sum_rank_ranking']
-rec_track_features = track_features1 + ['ranking_score', 'weight']
-audio_features_exp = ['danceability', 'valence', 'energy', 'acousticness']
+audio_features = ['danceability', 'valence', 'energy', 'acousticness']
+basic_track_features = ['id', 'trackname', 'firstartist', 'popularity'] + audio_features
+
+rec_track_features1 = basic_track_features + ['baseline_ranking', 'sum_rank_ranking']
+rec_track_features2 = rec_track_features1 + ['ranking_score', 'weight']
 
 with open(os.path.join(os.path.dirname(recommendation_bp.root_path), 'recommendation/tags.pkl'), 'rb') as f:
     l_tags = pickle.load(f)
@@ -42,8 +42,6 @@ def genre_suggestion_new():
                "jazz", "latin", "new-age",
                "pop-rock", "rap", "reggae",
                "rnb"]
-
-    # print(l_tags)
 
     # check if the genre suggestions have been generated
     rec_genres = RecGenres.query.filter_by(user_id=session["userid"], ).order_by(RecGenres.score.desc()).all()
@@ -65,7 +63,6 @@ def genre_suggestion_new():
     # get top artists' genre
     user_corpus = []
     for item in top_artists:
-        # print(item.artist.genres)
         user_corpus.append(item.artist.genres)
     if len(user_corpus) == 0:
         return jsonify("error")
@@ -122,7 +119,7 @@ def genre_suggestion_new():
 
     db.session.add_all(l_rec_genres)
     db.session.commit()
-    print(dict_genre_score)
+
     l_genre_score_sorted = sorted(dict_genre_score, key=dict_genre_score.get, reverse=True)
     print(l_genre_score_sorted)
     return jsonify(l_genre_score_sorted)
@@ -198,7 +195,6 @@ def genre_suggestion():
         db.session.add(rec_genres)
 
     db.session.commit()
-    print(dict_genre_score)
     l_genre_score_sorted = sorted(dict_genre_score, key=dict_genre_score.get, reverse=True)
     print(l_genre_score_sorted)
     return jsonify(l_genre_score_sorted)
@@ -209,27 +205,47 @@ def cosine_sim(np1: np.ndarray, np2: np.ndarray):
     return score
 
 
-# Get tracks from a music genre (can be sorted by popularity)
-@recommendation_bp.route('/genre_top_tracks/<genre>/<sort>/<num>')
-def genre_top_tracks(genre, sort, num):
+def get_genre_tracks(genre):
+    """"
+    get genre tracks from a given genre
+    :param genre:
+    :return: dataframe of genre tracks
     """
-    genre recommendation by popularity: request handler
-    :return: recommended tracks in json
-    """
-    genre_df = get_genre_recommendation_by_popularity(genre)
+    genre_basline_folder = os.path.join(os.path.dirname(recommendation_bp.root_path),
+                                        'genre_baseline_1_2_four_features')
+    genre_csv_path = os.path.join(genre_basline_folder, genre + ".csv")
+    genre_df = pd.read_csv(genre_csv_path)
+    return genre_df
 
-    if sort == "sorted":
-        genre_df = genre_df.sort_values(by=['popularity'], ascending=False)
+
+# Get top typical tracks of a genre
+@recommendation_bp.route('/get_genre_typical_tracks/<genre>/<num>')
+def get_genre_typical_tracks(genre, num):
+    genre_df = get_genre_tracks(genre)
 
     if num != "all":
         genre_df = genre_df[:int(num)]
 
-    # Only retain relevant columns
-    genre_df = genre_df[['popularity', 'energy', 'valence', 'acousticness',
-                         'danceability', 'speechiness', 'trackname',
-                         'firstartist']]
+    return jsonify(genre_df[basic_track_features].to_dict('records'))
 
-    return jsonify(genre_df.to_dict('records'))
+
+# Get top popular tracks of a genre
+@recommendation_bp.route('/get_genre_popular_tracks/<genre>/<num>')
+def get_genre_popular_tracks(genre, num):
+    """
+    get recommendation by popularity within a certain genre
+    :param genre:
+    :param num:
+    :return:
+    """
+    genre_df = get_genre_tracks(genre)
+    genre_df = genre_df.sort_values(by=['popularity'], ascending=False)
+
+    if num != "all":
+        genre_df = genre_df[:int(num)]
+
+    # return the recommendation ranked by popularity
+    return jsonify(genre_df[basic_track_features].to_dict('records'))
 
 
 def get_ranking_score(v_sum_rank_ranking, v_baseline_ranking, len_genre_df, weight):
@@ -267,8 +283,6 @@ def genre_recommendation_exp():
     def get_genre_recommendation_by_mix(weight=0.5):
         genre_df = get_genre_recommendation_by_preference(genre_name, by_preference=False)
 
-        print(genre_df)
-
         if not isinstance(genre_df, pd.DataFrame):
             return genre_df
 
@@ -282,7 +296,6 @@ def genre_recommendation_exp():
 
         genre_df = genre_df.sort_values(
             by=['ranking_score', 'trackname'], ascending=[False, True]).reset_index(drop=True)
-        print('mix genre dataframe length is {}'.format(len(genre_df)))
 
         return genre_df
 
@@ -328,7 +341,7 @@ def genre_recommendation_exp_multiple():
         # genre_df = genre_df.assign(baseline_ranking=genre_df['popularity'].rank(ascending=False))
         genre_df = genre_df.assign(sum_rank_ranking=genre_df['sum_rank'].rank(ascending=False))
 
-        weight_df = pd.DataFrame(columns=track_features1)
+        weight_df = pd.DataFrame(columns=rec_track_features1)
 
         for w in l_weight:
             ranking_score = get_ranking_score(genre_df['sum_rank_ranking'].values,
@@ -340,7 +353,7 @@ def genre_recommendation_exp_multiple():
                 by=['ranking_score_' + str(w), 'trackname'], ascending=[False, True]).reset_index(drop=True)
             top = genre_df[:10]
             top["weight"] = w
-            top = top.rename(columns={'ranking_score_' + str(w): 'ranking_score'})[rec_track_features]
+            top = top.rename(columns={'ranking_score_' + str(w): 'ranking_score'})[rec_track_features2]
             weight_df = weight_df.append(top, ignore_index=False)
 
         weight_df = weight_df.reset_index()
@@ -352,7 +365,6 @@ def genre_recommendation_exp_multiple():
         return jsonify("error")
     else:
         top_tracks = genre_df1
-        # print(genre_df1)
 
         l_rec_trakcs = []
         for index, row in top_tracks.iterrows():
@@ -369,24 +381,6 @@ def genre_recommendation_exp_multiple():
 
         top_tracks_list = top_tracks.to_dict('records')
         return jsonify(top_tracks_list)
-
-
-# Popularity-based recommendations: get the most popular tracks from the genre
-def get_genre_recommendation_by_popularity(genre_name):
-    """
-    get recommendation by popularity within a certain genre: function
-    :param genre_name:
-    :return:
-    """
-    genre_basline_folder = os.path.join(os.path.dirname(recommendation_bp.root_path), 'genre_baseline_1_2_four_features')
-    genre_csv_path = os.path.join(genre_basline_folder, genre_name + ".csv")
-    genre_df = pd.read_csv(genre_csv_path)
-    genre_df = genre_df.sort_values(by=['popularity'], ascending=False)
-
-    print('popularity return dataframe length is {}'.format(len(genre_df)))
-
-    # return the recommendation ranked by popularity
-    return genre_df
 
 
 # Personalized approaches: get the most personalized tracks of the genre based on users'
@@ -423,10 +417,6 @@ def get_genre_recommendation_by_preference(genre_name=None, track_df=None, by_pr
     def get_sum_rank(v_danceability_crank, v_valence_crank, v_energy_crank,
                      v_acousticness_crank, len_genre_df):
 
-        # sum_rank = len_genre_df + 1 - (v_danceability_crank + v_valence_crank +
-        #                                v_energy_crank + v_liveness_crank +
-        #                                v_speechiness_crank + v_acousticness_crank)/6.0
-
         sum_rank = len_genre_df + 1 - (v_danceability_crank + v_valence_crank +
                                        v_energy_crank + v_acousticness_crank) / 4.0
 
@@ -441,7 +431,7 @@ def get_genre_recommendation_by_preference(genre_name=None, track_df=None, by_pr
         return str_return
     elif (str_return == "successfully build the model") or (str_return == "is the model"):
         try:
-            for audio_feature in audio_features_exp:
+            for audio_feature in audio_features:
                 p1 = np.load(os.path.join(user_folder_path, current_user + "_" + audio_feature + ".npy"))
                 _map = np.convolve(p1, _filter, mode='same') / 1000
 
@@ -454,15 +444,11 @@ def get_genre_recommendation_by_preference(genre_name=None, track_df=None, by_pr
                     genre_df['valence_convolve'] = l_convolve
                 elif audio_feature == 'energy':
                     genre_df['energy_convolve'] = l_convolve
-                # elif audio_feature == 'liveness':
-                #     genre_df['liveness_convolve'] = l_convolve
-                # elif audio_feature == 'speechiness':
-                #     genre_df['speechiness_convolve'] = l_convolve
                 elif audio_feature == 'acousticness':
                     genre_df['acousticness_convolve'] = l_convolve
 
         except Exception as e:
-            print (e)
+            print(e)
     else:
         return str_return
 
@@ -471,8 +457,6 @@ def get_genre_recommendation_by_preference(genre_name=None, track_df=None, by_pr
         danceability_crank=genre_df['danceability_convolve'].rank(ascending=False),
         valence_crank=genre_df['valence_convolve'].rank(ascending=False),
         energy_crank=genre_df['energy_convolve'].rank(ascending=False),
-        # liveness_crank=genre_df['liveness_convolve'].rank(ascending=False),
-        # speechiness_crank=genre_df['speechiness_convolve'].rank(ascending=False),
         acousticness_crank=genre_df['acousticness_convolve'].rank(ascending=False))
 
     len_genre_df = len(genre_df)
@@ -480,8 +464,6 @@ def get_genre_recommendation_by_preference(genre_name=None, track_df=None, by_pr
     sum_rank = get_sum_rank(v_danceability_crank=genre_df['danceability_crank'].values,
                             v_valence_crank=genre_df['valence_crank'].values,
                             v_energy_crank=genre_df['energy_crank'].values,
-                            # v_liveness_crank=genre_df['liveness_crank'].values,
-                            # v_speechiness_crank=genre_df['speechiness_crank'].values,
                             v_acousticness_crank=genre_df['acousticness_crank'].values,
                             len_genre_df=len_genre_df)
 
@@ -524,15 +506,13 @@ def check_user_model():
             os.path.isfile(os.path.join(user_folder_path, current_user + "_danceability.npy")) and
             os.path.isfile(os.path.join(user_folder_path, current_user + "_valence.npy")) and
             os.path.isfile(os.path.join(user_folder_path, current_user + "_energy.npy")) and
-            # os.path.isfile(os.path.join(user_folder_path, current_user + "_liveness.npy")) and
-            # os.path.isfile(os.path.join(user_folder_path, current_user + "_speechiness.npy")) and
             os.path.isfile(os.path.join(user_folder_path, current_user + "_acousticness.npy"))
     ):
         return "is the model"
 
     else:
         try:
-            for audio_feature in audio_features_exp:
+            for audio_feature in audio_features:
                 p1 = gmm_density1(toptrack_df[[audio_feature]].values)
                 np.save(os.path.join(user_folder_path, current_user + "_" + audio_feature), p1)
             return "successfully build the model"

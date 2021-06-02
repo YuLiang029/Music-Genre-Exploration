@@ -9,8 +9,6 @@
             play with the controls{% endif %}. Hover over the
             <i class="fas fa-question-circle text-muted"></i> icons to get an explanation on the user interface.</p>
 
-        <div id="alertbox" class="d-none-soft col-12"></div>
-
         <div id="loadingDiv" class="mb-5 col-12 hide-on-success">
             <div id="hloading" class="text-center lead">
                 <div class="spinner-border" role="status">
@@ -693,7 +691,7 @@
     Promise.all([
         d3.json("/genre_recommendation_exp?genre={{ genre }}&weight={{ weight }}"),
         d3.json("/user_top_tracks"),
-        d3.json("/genre_top_tracks/{{ genre }}/sorted/300")
+        d3.json("/get_genre_typical_tracks/{{ genre }}/300")
     ]).then(function(data) {
         // Extract data from promises
         let recommendations = data[0],

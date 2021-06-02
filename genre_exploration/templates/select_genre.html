@@ -218,7 +218,8 @@
         $('.show-on-success').show();
 
         $("#action_submit").on( "click", function() {
-            $(this).attr("href", "/explore_genre?genre=" + $.trim($("#genre :selected").text()) + "&weight=" + $.trim($("#range_slider").val()));
+            $(this).attr("href", "/explore_genre?genre=" + $("input[type='radio'][name='genre']:checked").val() +
+                "&weight=" + $.trim($("#range_slider").val()));
         });
     }}).catch(function(e) {
         // Display error message in console

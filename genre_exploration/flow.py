@@ -22,7 +22,10 @@ def select_genre():
 @genre_explore_bp.route('/explore_genre')
 def explore_genre():
 
-    # Set the condition
+    # Set the condition:
+    # vis = 1: contour plot
+    # vis = 0: bar charts
+
     control = 1
     vis = 1
 

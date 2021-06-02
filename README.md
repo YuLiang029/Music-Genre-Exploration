@@ -46,12 +46,13 @@ series = {IUI '21}
 ### Code structure
 - general: basic function to connect with Spotify API
 - recommendation: recommendation function 
-- dbdw: source code for [Den Bosch Data Week - Jads Cultural Night](https://dbdw-culture-night.herokuapp.com/)
+- dbdw: source code for Den Bosch Data Week - Jads Cultural Night 2020
+  (click to see the details about [Jads Cultural Night 2020](https://www.denbosch.nl/nl/denboschdataweek/dinsdag)
 - genre_exploration: source code for the [Genre Exploration Demo App](https://genre-explore-exp.herokuapp.com/).
 - genre_baseline: csv files of the 13 different music genres (avant-garde, 
   blues, classical, country, electronic, folk, jazz, latin, new-age, rap, reggae, rnb and christmas).
 - dbdw-music2.csv: songs for 2020 Jads Cultural Night
-- nov_music and text_analyze contains some source code for analyzing music event descriptions [under development]
+- nov_music and text_analyze contains some source code for analyzing music event descriptions [inactive in development]
 
 ### Local run
 - Run with install.requirements.text

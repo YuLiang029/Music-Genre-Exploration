@@ -24,7 +24,6 @@ def index():
 @dbdw_bp.route('/app_msi_survey')
 def app_msi_survey():
     # specify redirect path as parameters
-    # return redirect(url_for("spotify_basic_bp.msi_survey", redirect_path='dbdw_bp.event_explore'))
     return redirect(url_for("spotify_basic_bp.msi_survey"))
 
 
@@ -32,20 +31,6 @@ def app_msi_survey():
 def assign_condition():
     user_condition = UserCondition.query.filter_by(user_id=session["userid"]).first()
     if not user_condition:
-        # get the last condition: counterbalance users in different condition
-        # last_user_condition = UserCondition.query.order_by(UserCondition.timestamp.asc()).first()
-        #
-        # if last_user_condition:
-        #     user_condition_new = UserCondition(user_id=session["userid"],
-        #                                        timestamp=time.time(),
-        #                                        condition=(last_user_condition.condition+1) % 2)
-        #     db.session.add(user_condition_new)
-        # else:
-        #     user_condition_new = UserCondition(user_id=session["userid"],
-        #                                        timestamp=time.time(),
-        #                                        condition=0)
-        #     db.session.add(user_condition_new)
-
         # randomly assign a user to a condition
         condition = random.randint(0, 1)
 
@@ -66,7 +51,7 @@ def event_explore():
     user_condition = UserCondition.query.filter_by(user_id=session["userid"]).first()
 
     print(user_condition.condition)
-    return render_template("explore_event_new.html",
+    return render_template("explore_event.html",
                            condition=user_condition.condition,
                            default=user_condition.default)
 
@@ -95,7 +80,7 @@ def event_recommendation():
     track_df_new = track_df[['id', 'event', 'stream']]
     tracks = track_df_new.merge(recommendations.drop(columns=['event', 'stream']), on=['id'])
 
-    # create four blocks of list
+    # list of two streams
     l_stream = ['stream a', 'stream b']
 
     # calculate stream recommendation score, valence mean and energy mean
@@ -367,11 +352,11 @@ def final_step():
 
 @dbdw_bp.route('/rating')
 def rating():
-    return render_template('rate_new.html')
+    return render_template('rating.html')
 
 
-@dbdw_bp.route('/get_rating_movies')
-def get_rating_movies():
+@dbdw_bp.route('/get_items_to_rate')
+def get_items_to_rate():
 
     l_images = []
     l_image_id = ["0_centroid", "0_outlier",
@@ -379,13 +364,13 @@ def get_rating_movies():
                   "2_centroid", "2_outlier", "3_centroid", "3_outlier"]
 
     for image_id in l_image_id:
-        l_images.append(url_for('static', filename='paintings/' + image_id + ".jpg"))
+        l_images.append('paintings/' + image_id + ".jpg")
 
     return jsonify(l_images)
 
 
-@dbdw_bp.route('/submit_movies', methods=["POST"])
-def submit_movies():
+@dbdw_bp.route('/submit_ratings', methods=["POST"])
+def submit_ratings():
     user_id = session["userid"]
     session_id = session["id"]
     ts = time.time()

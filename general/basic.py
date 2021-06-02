@@ -609,7 +609,8 @@ def msi_survey():
             'title': 'Musical sophistication survey',
             'description': 'The music sophistication survey makes us know your music expertise better.',
             # 'next_url': url_for(redirect_path)
-            'next_url': url_for("nudge_bp.select_genre2")
+            # 'next_url': url_for("nudge_bp.select_genre2")
+            'next_url': url_for("dbdw_bp.event_explore")
         }
 
         print(surveydata)

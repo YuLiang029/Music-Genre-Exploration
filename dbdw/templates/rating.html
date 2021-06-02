@@ -11,7 +11,7 @@
         You can rate an artwork by clicking on the stars (half stars are also possible).
     </p>
 
-    <div class="movie ui-state-default">
+    <div class="ui-state-default">
 
     </div>
 
@@ -33,21 +33,21 @@
 {% block scripts %}
     <script>
         var ratedCount = 0;
-        var all_movies;
+        var all_items;
         var slice_index = 0;
-        var displayed_movie;
-        var num_of_movies = 8;
-        var movie_dict = {};
+        var displayed_items;
+        var num_of_items = 8;
+        var item_dict = {};
 
-        getDisplayedMovies = function(){
-            displayed_movie = all_movies.slice(slice_index, slice_index+num_of_movies);
-            displayed_movie.forEach(function (movie) {
-                $(".movie").append(
-                    $("<div>").addClass("movieItem row mb-2")
+        getDisplayedItems = function(){
+            displayed_items = all_items.slice(slice_index, slice_index+num_of_items);
+            displayed_items.forEach(function (item) {
+                $(".item").append(
+                    $("<div>").addClass("row mb-2")
                         .append(
-                            $("<div>").addClass("col-sm-6 movieImg center-item")
+                            $("<div>").addClass("col-sm-6 center-item")
                                 .append($("<img>")
-                                    .attr("src", movie)
+                                    .attr("src", item)
                                     .attr("width", "350")
                                 )
                         )
@@ -57,19 +57,19 @@
                                     .addClass("kv-ltr-theme-fas-star rating-loading starItem")
                                     .attr("dir", "ltr")
                                     .attr("size", "md")
-                                    .attr("id", movie)
-                                    .val(movie in movie_dict ? movie_dict[movie] : 0)
+                                    .attr("id", item)
+                                    .val(item in item_dict ? item_dict[item] : 0)
                                     .on("change", function(){
                                         if ($(this).val() > 0){
-                                            if (!($(this).attr("id") in movie_dict)){
+                                            if (!($(this).attr("id") in item_dict)){
                                                 ratedCount = ratedCount + 1;
                                             }
-                                            movie_dict[$(this).attr("id")] = $(this).val();
+                                            item_dict[$(this).attr("id")] = $(this).val();
 
                                         }else if ($(this).val() == 0){
-                                            if ($(this).attr("id") in movie_dict){
+                                            if ($(this).attr("id") in item_dict){
                                                 ratedCount = ratedCount - 1;
-                                                delete movie_dict[$(this).attr("id")];
+                                                delete item_dict[$(this).attr("id")];
                                             }
                                         }
                                     })
@@ -88,31 +88,31 @@
             )
         };
 
-        getAllMovies = function() {
+        getAllItems = function() {
             $.ajax({
-                url: "/get_rating_movies",
+                url: "/get_items_to_rate",
                 dataType: "json"
             })
             .done(function (data) {
                 if(data.length > 0){
-                    all_movies = data;
-                    getDisplayedMovies();
+                    all_items = data;
+                    getDisplayedItems();
                 }
 
             })
         };
 
-        getAllMovies();
+        getAllItems();
 
         $(document).ready(function(){
             $('#continue').show().on('click', function () {
-                if (ratedCount < num_of_movies){
+                if (ratedCount < num_of_items){
                     alert('Please rate all paintings');
                 }else{
                     $.ajax({
                         type: "POST",
-                        url: "/submit_movies",
-                        data: movie_dict,
+                        url: "/submit_ratings",
+                        data: item_dict,
                     }).done(function (data){
                         if (data === "success"){
                             window.location.href = "/final_step"

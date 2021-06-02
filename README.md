@@ -55,7 +55,7 @@ series = {IUI '21}
 - nov_music and text_analyze contains some source code for analyzing music event descriptions [inactive in development]
 
 ### Local run
-- Run with install.requirements.text
+- Run with install.requirements.txt
 - Run with docker
 
 ### Heroku deployment with Docker

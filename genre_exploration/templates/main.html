@@ -3,17 +3,16 @@
 {% block content %}
 
     <h2>
-        Welcome to the app ‘Music genre exploration’ 🎅 🎄 🎄
+        Welcome to the app ‘Music genre exploration’
     </h2>
 
-    <h3 class="lead">Merry Christmas and happy new year! </h3>
     <p>
         This music genre exploration app is designed to help you
         explore a new music genre that you are not familiar with.
     </p>
 
     <p>
-        To use this app, you are required to login with your active Spotify account.
+        To use this app, you need to login with your active Spotify account.
         This will allow us to get your Spotify top listened tracks to personalise the
         recommendations and it allows you to store the list to your Spotify account
         if you would like. The information that we collect with this app is securely stored
@@ -23,7 +22,6 @@
 
     <p>
         <b>Note:</b> If you are using a mobile phone or tablet, please switch to a computer or laptop.
-        Please use either Chrome or Microsoft Edge, as other browsers are not supported.
     </p>
 
     <p>
@@ -44,20 +42,4 @@
         </a>
     </div>-->
 
-{% endblock %}
-
-{% block scripts %}
-    <script>
-    $(function () {
-        var url = window.location.href;
-
-        if (url.includes("?subjectid=")){
-            var subjectid = url.substring(url.indexOf("=")+1, url.length);
-            console.log(subjectid);
-            $('#action_continue').attr('href', '/form_consent?subjectid=' + subjectid);
-        }
-
-    });
-
-    </script>
 {% endblock %}

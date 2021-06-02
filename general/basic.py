@@ -12,6 +12,7 @@ import base64
 import requests
 import time
 import re
+import hashlib
 
 spotify_basic_bp = Blueprint('spotify_basic_bp', __name__)
 
@@ -101,56 +102,44 @@ def authorized():
             print('Spotify login failure')
             return render_template("SpotifyConnectFailed.html")
         else:
-            # print(me.data)
-            # if me.data["display_name"] is None:
-            #     display_name = ""
-            # else:
-            #     display_name = me.data["display_name"]
-            # if len(me.data["images"]) == 0:
-            #     image = ""
-            # else:
-            #     image = me.data["images"][0]["url"]
+            session["spotify_id"] = me.data['id']
+
+            # TODO: functionality for specifying if prolific_pid is available or not
             if 'prolific_pid' in session:
-                session["spotify_id"] = me.data['id']
-                user = User.query.filter_by(id=session["prolific_pid"]).first()
+                userid = session["prolific_pid"]
+            else:
+                # use Hash function for anonymization
+                userid = hashlib.sha256(session["spotify_id"].encode('utf-8')).hexdigest()
 
-                if user is None:
-                    userhash = str(uuid.uuid4())
-                    consent_to_share = False
+            user = User.query.filter_by(id=userid).first()
 
+            if user is None:
+                userhash = str(uuid.uuid4())
+
+                consent_to_share = False
+                if session.get('share'):
                     if session["share"] == "True":
                         consent_to_share = True
 
-                    user = User(
-                        id=session["prolific_pid"],
-                        userhash=userhash,
-                        consent_to_share=consent_to_share)
+                user = User(id=userid, userhash=userhash, consent_to_share=consent_to_share)
 
-                    db.session.add(user)
-                    db.session.commit()
-
-                # flash('You were signed in as %s' % display_name)
-                session["userid"] = user.id
-                scrape(limit=50, scrape_type="tracks_artists")
-                print(next_url)
-
-                ts = time.time()
-
-                # if "subjectid" in session:
-                #     print(session["subjectid"])
-                #     subjectid = session["subjectid"]
-                # else:
-                #     print("No subject id")
-                #     subjectid = "No subject id"
-
-                session['id'] = str(uuid.uuid4())
-                session_log = SessionLog(user_id=session["userid"], id=session['id'], timestamp=ts)
-
-                db.session.add(session_log)
+                db.session.add(user)
                 db.session.commit()
 
-                return redirect(next_url)
-            return render_template("Error.html")
+            session["userid"] = user.id
+            scrape(limit=50, scrape_type="tracks_artists")
+            print(next_url)
+
+            ts = time.time()
+
+            session['id'] = str(uuid.uuid4())
+            session_log = SessionLog(user_id=session["userid"], id=session['id'], timestamp=ts)
+
+            db.session.add(session_log)
+            db.session.commit()
+
+            return redirect(next_url)
+
     except Exception as e:
         print(e)
         return render_template("SpotifyConnectFailed.html")

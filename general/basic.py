@@ -114,14 +114,12 @@ def authorized():
             user = User.query.filter_by(id=userid).first()
 
             if user is None:
-                userhash = str(uuid.uuid4())
-
                 consent_to_share = False
                 if session.get('share'):
                     if session["share"] == "True":
                         consent_to_share = True
 
-                user = User(id=userid, userhash=userhash, consent_to_share=consent_to_share)
+                user = User(id=userid, consent_to_share=consent_to_share)
 
                 db.session.add(user)
                 db.session.commit()

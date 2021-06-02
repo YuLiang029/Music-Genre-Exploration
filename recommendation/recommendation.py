@@ -425,7 +425,7 @@ def get_genre_recommendation_by_preference(genre_name=None, track_df=None, by_pr
     """Check if user profile has already modeled"""
     str_return = check_user_model()
     user_folder_path = os.path.join(os.path.dirname(recommendation_bp.root_path), 'user_folder')
-    current_user = User.query.filter_by(id=session["userid"]).first().userhash
+    current_user = User.query.filter_by(id=session["userid"]).first().id
 
     if (str_return == "no top tracks") or (str_return == "not enough top tracks"):
         return str_return
@@ -489,7 +489,7 @@ def check_user_model():
     user_folder_path = os.path.join(os.path.dirname(recommendation_bp.root_path), 'user_folder')
     print(user_folder_path)
 
-    current_user = User.query.filter_by(id=session["userid"]).first().userhash
+    current_user = User.query.filter_by(id=session["userid"]).first().id
 
     try:
         toptrack_df = pd.DataFrame.from_dict(user_json, orient='columns').drop_duplicates(subset=['id'],

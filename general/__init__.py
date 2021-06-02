@@ -6,7 +6,6 @@ class User(db.Model):
     id = db.Column(db.VARCHAR, primary_key=True)
     username = db.Column(db.VARCHAR)
     imageurl = db.Column(db.VARCHAR)
-    userhash = db.Column(db.VARCHAR)
     consent_to_share = db.Column(db.Boolean)
     top_artists = db.relationship('TopArtists', cascade='all')
     subject_id = db.Column(db.VARCHAR)

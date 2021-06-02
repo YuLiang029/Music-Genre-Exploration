@@ -47,7 +47,7 @@ series = {IUI '21}
 - general: basic function to connect with Spotify API
 - recommendation: recommendation function 
 - dbdw: source code for Den Bosch Data Week - Jads Cultural Night 2020
-  (click to see the details about [Jads Cultural Night 2020](https://www.denbosch.nl/nl/denboschdataweek/dinsdag)
+  (click to see the details about [Jads Cultural Night 2020](https://www.denbosch.nl/nl/denboschdataweek/dinsdag))
 - genre_exploration: source code for the [Genre Exploration Demo App](https://genre-explore-exp.herokuapp.com/).
 - genre_baseline: csv files of the 13 different music genres (avant-garde, 
   blues, classical, country, electronic, folk, jazz, latin, new-age, rap, reggae, rnb and christmas).

@@ -279,24 +279,6 @@
             });
         });
 
-        // logging function for iframe @TODO: update to a correct function
-        /*setInterval(function(){
-            var elem = document.activeElement;
-            var track_id;
-            if(elem.id.startsWith('iframe_spotify')){
-                track_id = elem.src.replace('https://open.spotify.com/embed/track/','');
-                elem.blur();
-                $.ajax({
-                    type: "POST",
-                    url: "/log_track_interact",
-                    data: {
-                        'track_id': track_id
-                    },
-                    global: false
-                });
-            }
-        }, 100);*/
-
         // Highlight point in scatter plot when user hovers over track
         $(".playlist_new")
             .on("mouseover", ".track", function() {

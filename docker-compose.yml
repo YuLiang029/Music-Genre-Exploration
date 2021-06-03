@@ -22,6 +22,7 @@ services:
     image: postgres:13.1
     environment:
       - POSTGRES_PASSWORD=$YU_POSTGRESQL_PASSWORD
+      - POSTGRES_HOST_AUTH_METHOD=trust
     deploy:
       mode: replicated
       replicas: 1

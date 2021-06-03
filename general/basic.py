@@ -17,12 +17,13 @@ import hashlib
 spotify_basic_bp = Blueprint('spotify_basic_bp', __name__)
 
 oauth = OAuth(spotify_basic_bp)
-keys = {"CLIENT_ID": "", "CLIENT_SECRET_ID": ""}
+keys = {"CLIENT_ID": os.environ['YU_SPOTIFY_CLIENT_ID'],
+        "CLIENT_SECRET_ID": os.environ['YU_SPOTIFY_CLIENT_SECRET']}
 
-try:
-    keys = json.load(open('keys.json', 'r'))
-except Exception as e:
-    print(e)
+# try:
+#     keys = json.load(open('keys.json', 'r'))
+# except Exception as e:
+#     print(e)
 
 
 spotify = oauth.remote_app(

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if test -f ".env" then
+if test -f ".env"; then
   export $(cat .env | xargs)
 fi
 

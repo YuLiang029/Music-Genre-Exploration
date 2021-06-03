@@ -29,7 +29,7 @@ pipeline {
       steps {
         setBuildStatus("Building...", "PENDING");
         script{ buildBadge.setStatus('running'); }
-        sh 'prepare.sh'
+        sh './prepare.sh'
       }
     }
 

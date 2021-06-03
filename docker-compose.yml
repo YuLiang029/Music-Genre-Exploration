@@ -5,6 +5,10 @@ services:
     build:
       dockerfile: Dockerfile
       context: .
+    environment:
+      - POSTGRES_PASSWORD=$YU_POSTGRESQL_PASSWORD
+      - YU_SPOTIFY_CLIENT_ID=$YU_SPOTIFY_CLIENT_ID
+      - YU_SPOTIFY_CLIENT_SECRET=$YU_SPOTIFY_CLIENT_SECRET
     image: yliang/spotify-experiment-framework:latest
     deploy:
       mode: replicated

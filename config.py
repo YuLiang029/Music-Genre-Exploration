@@ -1,5 +1,8 @@
 # Define the application directory
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Statement for enabling the development environment
 DEBUG = True

@@ -17,8 +17,8 @@ import hashlib
 spotify_basic_bp = Blueprint('spotify_basic_bp', __name__)
 
 oauth = OAuth(spotify_basic_bp)
-keys = {"CLIENT_ID": os.environ['YU_SPOTIFY_CLIENT_ID'],
-        "CLIENT_SECRET_ID": os.environ['YU_SPOTIFY_CLIENT_SECRET']}
+# keys = {"CLIENT_ID": os.environ['YU_SPOTIFY_CLIENT_ID'],
+#         "CLIENT_SECRET_ID": os.environ['YU_SPOTIFY_CLIENT_SECRET']}
 
 # try:
 #     keys = json.load(open('keys.json', 'r'))
@@ -28,8 +28,8 @@ keys = {"CLIENT_ID": os.environ['YU_SPOTIFY_CLIENT_ID'],
 
 spotify = oauth.remote_app(
     'spotify',
-    consumer_key=os.environ.get('SPOTIFY_CLIENT_ID', keys["CLIENT_ID"]),
-    consumer_secret=os.environ.get('SPOTIFY_CLIENT_SECRET', keys["CLIENT_SECRET_ID"]),
+    consumer_key=os.environ.get('YU_SPOTIFY_CLIENT_ID'),
+    consumer_secret=os.environ.get('YU_SPOTIFY_CLIENT_SECRET'),
     base_url='https://api.spotify.com/',
     request_token_url=None,
     access_token_url='https://accounts.spotify.com/api/token',

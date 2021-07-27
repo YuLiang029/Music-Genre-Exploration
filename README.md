@@ -1,3 +1,4 @@
+[![Build Status](https://jenkins.tuneblendr.com/job/argueview-js/job/master/42/badge/icon)](https://jenkins.tuneblendr.com/job/argueview-js/job/master/42/)
 ## Study Framework for Music Genre Exploration
 This repository includes the several projects for music genre exploration.
 

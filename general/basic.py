@@ -17,8 +17,8 @@ import hashlib
 spotify_basic_bp = Blueprint('spotify_basic_bp', __name__)
 
 oauth = OAuth(spotify_basic_bp)
-# keys = {"CLIENT_ID": os.environ['YU_SPOTIFY_CLIENT_ID'],
-#         "CLIENT_SECRET_ID": os.environ['YU_SPOTIFY_CLIENT_SECRET']}
+keys = {"CLIENT_ID": os.environ['YU_SPOTIFY_CLIENT_ID'],
+        "CLIENT_SECRET_ID": os.environ['YU_SPOTIFY_CLIENT_SECRET']}
 
 # try:
 #     keys = json.load(open('keys.json', 'r'))
@@ -515,34 +515,34 @@ def msi_survey():
         survey = {
             "showProgressBar": "top",
             "pages": [
-                {
-                    "questions": [{
-                        "name": "email",
-                        "type": "text",
-                        "inputType": "email",
-                        "title": "Your contact email:",
-                        "isRequired": "true",
-                        "validators": [{
-                            "type": "email"
-                        }]
-                    }, {
-                        "name": "age",
-                        "type": "text",
-                        "title": "Your age (years):",
-                        "isRequired": "true"
-                    }, {
-                        "name": "gender",
-                        "type": "dropdown",
-                        "title": "Your gender:",
-                        "isRequired": "true",
-                        "colCount": 0,
-                        "choices": [
-                            "male",
-                            "female",
-                            "other"
-                        ]
-                    }]
-                },
+                # {
+                #     "questions": [{
+                #         "name": "email",
+                #         "type": "text",
+                #         "inputType": "email",
+                #         "title": "Your contact email:",
+                #         "isRequired": "true",
+                #         "validators": [{
+                #             "type": "email"
+                #         }]
+                #     }, {
+                #         "name": "age",
+                #         "type": "text",
+                #         "title": "Your age (years):",
+                #         "isRequired": "true"
+                #     }, {
+                #         "name": "gender",
+                #         "type": "dropdown",
+                #         "title": "Your gender:",
+                #         "isRequired": "true",
+                #         "colCount": 0,
+                #         "choices": [
+                #             "male",
+                #             "female",
+                #             "other"
+                #         ]
+                #     }]
+                # },
 
                 {
                     "questions": [
@@ -633,8 +633,8 @@ def msi_survey():
                             {"value": "14",
                              "text": "I am able to talk about the emotions that a piece of music evokes for me."},
                             {"value": "15", "text": "Music can evoke my memories of past people and places."},
-                            {"value": "16", "text": "It is important that you pay attention to this study. "
-                                                    "Please tick 'Completely Agree'"}
+                            # {"value": "16", "text": "It is important that you pay attention to this study. "
+                            #                         "Please tick 'Completely Agree'"}
                         ]
                     }]
                 }
@@ -646,8 +646,8 @@ def msi_survey():
             'title': 'Musical sophistication survey',
             'description': 'The music sophistication survey makes us know your music expertise better.',
             # 'next_url': url_for(redirect_path)
-            # 'next_url': url_for("nudge_bp.select_genre2")
-            'next_url': url_for("dbdw_bp.event_explore")
+            'next_url': url_for("nudge_bp.select_genre2")
+            # 'next_url': url_for("dbdw_bp.event_explore")
         }
 
         print(surveydata)

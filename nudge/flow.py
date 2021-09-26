@@ -17,9 +17,9 @@ def index():
 
 @nudge_bp.route('/inform_consent')
 def inform_consent():
-    if request.args.get("prolific_pid"):
-        session["prolific_pid"] = request.args.get("prolific_pid")
-        print(session["prolific_pid"])
+    if request.args.get("subject_id"):
+        session["subject_id"] = request.args.get("subject_id")
+        print(session["subject_id"])
         return render_template('informed_consent.html')
 
     return redirect(url_for("nudge_bp.error_page"))
@@ -30,11 +30,16 @@ def register():
     if request.args.get("consent") == "False":
         return redirect(url_for("nudge_bp.disagree_informed_consent"))
 
-    if 'prolific_pid' in session:
+    if 'subject_id' in session:
         session["share"] = request.args.get("share")
         return redirect(url_for('spotify_basic_bp.login', next_url='nudge_bp.redirect_from_main2'))
     else:
         return redirect(url_for("nudge_bp.error_page"))
+
+
+@nudge_bp.route('/register_without_subjectid')
+def register_without_subjectid():
+    return redirect(url_for('spotify_basic_bp.login', next_url='nudge_bp.redirect_from_main2'))
 
 
 @nudge_bp.route('/redirect_from_main2')
@@ -42,9 +47,10 @@ def redirect_from_main2():
     # assign study condition
     user_condition = UserCondition.query.filter_by(user_id=session["userid"]).first()
     if not user_condition:
-        condition = random.randint(0, 5)
-
+        # condition = random.randint(0, 5)
+        # set condition to explore and representative
         condition_text = "explore, representative"
+        condition = 0
 
         if condition == 1:
             condition_text = "explore, mixed"
@@ -63,7 +69,8 @@ def redirect_from_main2():
         db.session.add(user_condition_new)
         db.session.commit()
 
-    return redirect('msi_survey2')
+    # return redirect('msi_survey2')
+    return redirect('select_genre2')
 
 
 @nudge_bp.route('/msi_survey2')

@@ -42,9 +42,10 @@ keywords = {mood, user study, recommender system, visualization, music, interact
 location = {College Station, TX, USA},
 series = {IUI '21}
 }
-
+```
 [Yu Liang and Martijn C. Willemsen. 2021. The role of preference consistency, defaults and musical expertise in users’ exploration 
 behavior in a genre exploration recommender (Recsys 2021)](https://doi.org/10.1145/3460231.3474253)
+
 ```
 @inproceedings{10.1145/3460231.3474253,
 author = {Liang, Yu and Willemsen, Martijn C.},

@@ -6,11 +6,6 @@ from genre_exploration.flow import genre_explore_bp
 from dbdw.flow import dbdw_bp
 from nudge.flow import nudge_bp
 import os
-# from rq import Queue
-# from worker import conn
-# from Utility.utility import scrape_genre_artist, scrape_genre_artist_next_level, \
-#     get_artist_top_tracks, import_tracks_from_csv
-from flask_debugtoolbar import DebugToolbarExtension
 
 
 # Force HTTPS connection on server
@@ -38,19 +33,13 @@ app.register_blueprint(spotify_basic_bp)
 app.register_blueprint(recommendation_bp)
 
 # Register blueprint for Basic Genre Exploration app
-# app.register_blueprint(genre_explore_bp)
+app.register_blueprint(genre_explore_bp)
 
 # Register blueprint for the DBDW app
-app.register_blueprint(dbdw_bp)
+# app.register_blueprint(dbdw_bp)
 
 # Register blueprint for the nudge study
 # app.register_blueprint(nudge_bp)
-
-# Debug tool
-# toolbar = DebugToolbarExtension(app)
-
-# Initialize queue for worker
-# q = Queue(connection=conn, default_timeout=6000)
 
 with app.app_context():
     db.create_all()
@@ -76,6 +65,21 @@ def shutdown_session(exception=None):
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('404NotFound.html', title='404'), 404
+
+# pacakge for development run
+# from flask_debugtoolbar import DebugToolbarExtension
+# from rq import Queue
+# from worker import conn
+
+# Debug tool
+# toolbar = DebugToolbarExtension(app)
+
+# Initialize queue for worker
+# q = Queue(connection=conn, default_timeout=6000)
+
+
+# from Utility.utility import scrape_genre_artist, scrape_genre_artist_next_level, \
+#     get_artist_top_tracks, import_tracks_from_csv
 
 # Function that can run in the background
 # @app.route('/run_background')

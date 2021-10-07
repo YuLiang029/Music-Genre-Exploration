@@ -5,33 +5,23 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Statement for enabling the development environment
-DEBUG = True
+# DEBUG = True
 
-# Define the database - we are working with
-# SQLite for this example
+# Define the database - we are working with SQLite for this example
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 
 # Database configuration for low level HEROKU database and local sqlite database
 SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL',
-                                         'sqlite:///' + os.path.join(BASE_DIR, 'test_new.db')).replace("mysql://",
-                                                                                                   "mysql+pymysql://")
-
-# Database configuration for low level HEROKU database and local postgresql database
-# SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL',
-#                                          'postgresql://yu:'+os.environ.get('YU_POSTGRESQL_PASSWORD')+
-#                                          '@postgresql/explore_test')
-#SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace("://", "ql://", 1)
+                                         'sqlite:///' + os.path.join(BASE_DIR, 'test.db')).replace("://", "ql://", 1)
 
 # Database configuration for upgraded HEROKU database
 # SQLALCHEMY_DATABASE_URI = os.environ.get('HEROKU_POSTGRESQL_MAROON_URL').replace("://", "ql://", 1)
 
 DATABASE_CONNECT_OPTIONS = {}
 
-# Application threads. A common general assumption is
-# using 2 per available processor cores - to handle
-# incoming requests using one and performing background
-# operations using the other.
+# Application threads. A common general assumption is using 2 per available processor cores - to handle
+# incoming requests using one and performing background operations using the other.
 THREADS_PER_PAGE = 2
 
 # Enable protection agains *Cross-site Request Forgery (CSRF)*

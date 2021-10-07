@@ -38,16 +38,15 @@ app.register_blueprint(spotify_basic_bp)
 app.register_blueprint(recommendation_bp)
 
 # Register blueprint for Basic Genre Exploration app
-# app.register_blueprint(genre_explore_bp)
+app.register_blueprint(genre_explore_bp)
 
 # Register blueprint for the DBDW app
-app.register_blueprint(dbdw_bp)
+# app.register_blueprint(dbdw_bp)
 
 # Register blueprint for the nudge study
-# app.register_blueprint(nudge_bp)
+app.register_blueprint(nudge_bp)
 
-# Debug tool
-# toolbar = DebugToolbarExtension(app)
+toolbar = DebugToolbarExtension(app)
 
 # Initialize queue for worker
 # q = Queue(connection=conn, default_timeout=6000)

@@ -3,7 +3,7 @@ import pandas as pd
 from database import db
 from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy import Spotify
-import json
+import os
 from Utility import GenreArtist, GenreTracks
 
 
@@ -12,8 +12,8 @@ def client_credentials_manager():
     set up client credential manager
     :return: Spotify client credential manager
     """
-    keys = json.load(open('keys_scrape.json', 'r'))
-    ccm = SpotifyClientCredentials(client_id=keys["CLIENT_ID"], client_secret=keys["CLIENT_SECRET_ID"])
+    ccm = SpotifyClientCredentials(client_id=os.environ.get('SPOTIFY_SCRAPE_CLIENT_ID'),
+                                   client_secret=os.environ.get('SPOTIFY_SCRAPE_CLIENT_SECRET'))
     sp = Spotify(client_credentials_manager=ccm)
     sp.trace = False
     return sp

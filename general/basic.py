@@ -18,8 +18,8 @@ spotify_basic_bp = Blueprint('spotify_basic_bp', __name__)
 oauth = OAuth(spotify_basic_bp)
 spotify = oauth.remote_app(
     'spotify',
-    consumer_key=os.environ.get('YU_SPOTIFY_CLIENT_ID'),
-    consumer_secret=os.environ.get('YU_SPOTIFY_CLIENT_SECRET'),
+    consumer_key=os.environ.get('SPOTIFY_CLIENT_ID'),
+    consumer_secret=os.environ.get('SPOTIFY_CLIENT_SECRET'),
     base_url='https://api.spotify.com/',
     request_token_url=None,
     access_token_url='https://accounts.spotify.com/api/token',
@@ -319,7 +319,7 @@ def get_refresh_token(refresh_token):
     """
     payload = {'refresh_token': refresh_token, 'grant_type': 'refresh_token'}
 
-    headers = make_refresh_token_headers(os.environ['YU_SPOTIFY_CLIENT_ID'], os.environ['YU_SPOTIFY_CLIENT_SECRET'])
+    headers = make_refresh_token_headers(os.environ['SPOTIFY_CLIENT_ID'], os.environ['SPOTIFY_CLIENT_SECRET'])
     resp = requests.post(spotify.access_token_url, data=payload, headers=headers)
 
     if resp.status_code != 200:

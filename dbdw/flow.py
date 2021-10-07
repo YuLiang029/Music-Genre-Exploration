@@ -58,7 +58,7 @@ def event_explore():
 def event_recommendation():
     dbdw_data_path = os.path.join(
         os.path.join(os.path.dirname(dbdw_bp.root_path),
-                     'dbdw'), "dbdw_music2.csv")
+                     'dbdw'), "dbdw_music.csv")
 
     track_df = pd.read_csv(dbdw_data_path, delimiter=";")
 

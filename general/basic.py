@@ -5,7 +5,6 @@ from database import db
 import uuid
 
 from flask_oauthlib.client import OAuth
-import json
 import os
 import six
 import base64
@@ -17,15 +16,6 @@ import hashlib
 spotify_basic_bp = Blueprint('spotify_basic_bp', __name__)
 
 oauth = OAuth(spotify_basic_bp)
-keys = {"CLIENT_ID": os.environ['YU_SPOTIFY_CLIENT_ID'],
-        "CLIENT_SECRET_ID": os.environ['YU_SPOTIFY_CLIENT_SECRET']}
-
-# try:
-#     keys = json.load(open('keys.json', 'r'))
-# except Exception as e:
-#     print(e)
-
-
 spotify = oauth.remote_app(
     'spotify',
     consumer_key=os.environ.get('YU_SPOTIFY_CLIENT_ID'),
@@ -259,7 +249,6 @@ def track_scrape(limit=50):
                                                          time_period=term,
                                                          timestamp=str(ts),
                                                          track=track)
-                            # db.session.add(new_toptrack_obj)
                             l_top_tracks.append(new_toptrack_obj)
                     else:
                         new_track_obj = Track(
@@ -275,7 +264,6 @@ def track_scrape(limit=50):
                                                      track_id=x.id, time_period=term,
                                                      timestamp=str(ts), track=new_track_obj)
                         l_top_tracks.append(new_toptrack_obj)
-                        # db.session.add(new_toptrack_obj)
                 db.session.add_all(l_top_tracks)
                 db.session.commit()
         except Exception as e:
@@ -331,7 +319,7 @@ def get_refresh_token(refresh_token):
     """
     payload = {'refresh_token': refresh_token, 'grant_type': 'refresh_token'}
 
-    headers = make_refresh_token_headers(keys["CLIENT_ID"], keys["CLIENT_SECRET_ID"])
+    headers = make_refresh_token_headers(os.environ['YU_SPOTIFY_CLIENT_ID'], os.environ['YU_SPOTIFY_CLIENT_SECRET'])
     resp = requests.post(spotify.access_token_url, data=payload, headers=headers)
 
     if resp.status_code != 200:
@@ -493,9 +481,8 @@ def scrape_artist_tracks(artist_id):
         db.session.commit()
 
 
-# @spotify_basic_bp.route('/msi_survey/<redirect_path>', methods=["GET", "POST"])
-@spotify_basic_bp.route('/msi_survey', methods=["GET", "POST"])
-def msi_survey():
+@spotify_basic_bp.route('/msi_survey/<redirect_path>', methods=["GET", "POST"])
+def msi_survey(redirect_path):
     if request.method == "GET":
         responses = User.query.filter_by(id=session["userid"]).first().msi_response
         surveydata = {}
@@ -566,11 +553,13 @@ def msi_survey():
                                 {"value": "2", "text": "I enjoy writing about music, for example on blogs and forums."},
                                 {"value": "3", "text": "I'm intrigued by musical styles I'm not familiar with and want "
                                                        "to find out more."},
-                                {"value": "4", "text": "I often read or search the internet for things related to music."},
+                                {"value": "4", "text": "I often read or search the internet "
+                                                       "for things related to music."},
                                 {"value": "5", "text": "I don't spend much of my disposable income on music."},
-                                {"value": "6", "text": "Music is kind of an addiction for me - I couldn't live without it."},
-                                {"value": "7", "text": "I keep track of new of music that I come across (e.g. new artists "
-                                                       "or recordings)."}
+                                {"value": "6", "text": "Music is kind of an addiction for me - "
+                                                       "I couldn't live without it."},
+                                {"value": "7", "text": "I keep track of new of music that I come across "
+                                                       "(e.g. new artists or recordings)."}
                             ]
                         },
                         {
@@ -645,8 +634,8 @@ def msi_survey():
         survey_config = {
             'title': 'Musical sophistication survey',
             'description': 'The music sophistication survey makes us know your music expertise better.',
-            # 'next_url': url_for(redirect_path)
-            'next_url': url_for("nudge_bp.select_genre2")
+            'next_url': url_for(redirect_path)
+            # 'next_url': url_for("nudge_bp.select_genre2")
             # 'next_url': url_for("dbdw_bp.event_explore")
         }
 

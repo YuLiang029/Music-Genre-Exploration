@@ -4,5 +4,4 @@
 *.npy
 venv/
 .DS_store
-genre_artists/
 *.env

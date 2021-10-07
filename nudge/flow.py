@@ -12,7 +12,7 @@ nudge_bp = Blueprint('nudge_bp', __name__, template_folder='templates')
 
 @nudge_bp.route('/')
 def index():
-    return render_template('main2.html')
+    return render_template('main.html')
 
 
 @nudge_bp.route('/inform_consent')
@@ -32,18 +32,18 @@ def register():
 
     if 'subject_id' in session:
         session["share"] = request.args.get("share")
-        return redirect(url_for('spotify_basic_bp.login', next_url='nudge_bp.redirect_from_main2'))
+        return redirect(url_for('spotify_basic_bp.login', next_url='nudge_bp.redirect_from_main'))
     else:
         return redirect(url_for("nudge_bp.error_page"))
 
 
-@nudge_bp.route('/register_without_subjectid')
-def register_without_subjectid():
-    return redirect(url_for('spotify_basic_bp.login', next_url='nudge_bp.redirect_from_main2'))
+@nudge_bp.route('/register_without_subject_id')
+def register_without_subject_id():
+    return redirect(url_for('spotify_basic_bp.login', next_url='nudge_bp.redirect_from_main'))
 
 
-@nudge_bp.route('/redirect_from_main2')
-def redirect_from_main2():
+@nudge_bp.route('/redirect_from_main')
+def redirect_from_main():
     # assign study condition
     user_condition = UserCondition.query.filter_by(user_id=session["userid"]).first()
     if not user_condition:
@@ -69,24 +69,19 @@ def redirect_from_main2():
         db.session.add(user_condition_new)
         db.session.commit()
 
-    # return redirect('msi_survey2')
-    return redirect('select_genre2')
+    return redirect(url_for("spotify_basic_bp.msi_survey", redirect_path="nudge_bp.select_genre"))
+    # return redirect(url_for("spotify_basic_bp.msi_survey"))
+    # return redirect('select_genre')
 
 
-@nudge_bp.route('/msi_survey2')
-def msi_survey2():
-    # return redirect(url_for("spotify_basic_bp.msi_survey", redirect_path="nudge_bp.select_genre2"))
-    return redirect(url_for("spotify_basic_bp.msi_survey"))
-
-
-@nudge_bp.route('/select_genre2')
-def select_genre2():
+@nudge_bp.route('/select_genre')
+def select_genre():
     user_condition = UserCondition.query.filter_by(user_id=session["userid"]).first()
-    return render_template("select_genre2.html", condition=user_condition.condition)
+    return render_template("select_genre.html", condition=user_condition.condition)
 
 
-@nudge_bp.route('/explore_genre2')
-def explore_genre2():
+@nudge_bp.route('/explore_genre')
+def explore_genre():
     # infer the experimental condition
     user_condition = UserCondition.query.filter_by(user_id=session["userid"]).first()
     user_condition_num = user_condition.condition
@@ -97,15 +92,15 @@ def explore_genre2():
     if user_condition_num == 2 or user_condition_num == 5:
         weight = 1
 
-    return render_template('explore_genre2.html',
+    return render_template('explore_genre.html',
                            genre=request.args.get('genre'),
                            weight=weight)
 
 
 @nudge_bp.route('/last_step')
 def last_step():
-    return redirect("https://app.prolific.co/submissions/complete?cc=47904236")
-    # return render_template("general_last_page.html")
+    # return redirect("https://app.prolific.co/submissions/complete?cc=47904236")
+    return render_template("general_last_page.html")
 
 
 @nudge_bp.route('/post_task_survey', methods=["GET", "POST"])

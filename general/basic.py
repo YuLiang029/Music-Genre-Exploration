@@ -502,34 +502,38 @@ def msi_survey(redirect_path):
         survey = {
             "showProgressBar": "top",
             "pages": [
-                # {
-                #     "questions": [{
-                #         "name": "email",
-                #         "type": "text",
-                #         "inputType": "email",
-                #         "title": "Your contact email:",
-                #         "isRequired": "true",
-                #         "validators": [{
-                #             "type": "email"
-                #         }]
-                #     }, {
-                #         "name": "age",
-                #         "type": "text",
-                #         "title": "Your age (years):",
-                #         "isRequired": "true"
-                #     }, {
-                #         "name": "gender",
-                #         "type": "dropdown",
-                #         "title": "Your gender:",
-                #         "isRequired": "true",
-                #         "colCount": 0,
-                #         "choices": [
-                #             "male",
-                #             "female",
-                #             "other"
-                #         ]
-                #     }]
-                # },
+                {
+                    "questions": [
+                        {
+                            "name": "email",
+                            "type": "text",
+                            "inputType": "email",
+                            "title": "Your contact email:",
+                            "isRequired": "true",
+                            "validators": [{
+                                "type": "email"
+                            }]
+                        },
+                        # {
+                        #     "name": "age",
+                        #     "type": "text",
+                        #     "title": "Your age (years):",
+                        #     "isRequired": "true"
+                        # },
+                        # {
+                        #     "name": "gender",
+                        #     "type": "dropdown",
+                        #     "title": "Your gender:",
+                        #     "isRequired": "true",
+                        #     "colCount": 0,
+                        #     "choices": [
+                        #         "male",
+                        #         "female",
+                        #         "other"
+                        #     ]
+                        # }
+                    ]
+                },
 
                 {
                     "questions": [
@@ -635,8 +639,6 @@ def msi_survey(redirect_path):
             'title': 'Musical sophistication survey',
             'description': 'The music sophistication survey makes us know your music expertise better.',
             'next_url': url_for(redirect_path)
-            # 'next_url': url_for("nudge_bp.select_genre2")
-            # 'next_url': url_for("dbdw_bp.event_explore")
         }
 
         print(surveydata)

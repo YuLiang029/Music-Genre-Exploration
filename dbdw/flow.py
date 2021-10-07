@@ -20,10 +20,9 @@ def index():
     return render_template("main.html")
 
 
-@dbdw_bp.route('/app_msi_survey')
-def app_msi_survey():
-    # specify redirect path as parameters
-    return redirect(url_for("spotify_basic_bp.msi_survey"))
+@dbdw_bp.route('/inform_consent')
+def inform_consent():
+    return render_template("form_consent.html")
 
 
 @dbdw_bp.route('/assign_condition')
@@ -33,16 +32,16 @@ def assign_condition():
         # randomly assign a user to a condition
         condition = random.randint(0, 1)
 
-        default = "not rec"
+        default = "close"
         if condition == 1:
-            default = "rec"
+            default = "distant"
 
         user_condition_new = UserCondition(user_id=session["userid"],
                                            timestamp=time.time(),
                                            condition=condition, default=default)
         db.session.add(user_condition_new)
         db.session.commit()
-    return render_template("form_consent.html")
+    return redirect(url_for("spotify_basic_bp.msi_survey", redirect_path="dbdw_bp.event_explore"))
 
 
 @dbdw_bp.route('/event_explore')

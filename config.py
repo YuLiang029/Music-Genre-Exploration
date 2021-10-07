@@ -13,26 +13,16 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 
 # Database configuration for low level HEROKU database and local sqlite database
-<<<<<<< HEAD
-# SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL',
-#                                          'sqlite:///' + os.path.join(BASE_DIR, 'test.db')).replace("mysql://",
-#                                                                                                    "mysql+pymysql://")
-=======
-# SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL',
-#                                          'sqlite:///' + os.path.join(BASE_DIR, 'test_new.db')).replace("mysql://",
-#                                                                                                    "mysql+pymysql://")
+SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL',
+                                         'sqlite:///' + os.path.join(BASE_DIR, 'test_new.db')).replace("mysql://",
+                                                                                                   "mysql+pymysql://")
 
 # Database configuration for low level HEROKU database and local postgresql database
 # SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL',
 #                                          'postgresql://yu:'+os.environ.get('YU_POSTGRESQL_PASSWORD')+
 #                                          '@postgresql/explore_test')
-SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace("://", "ql://", 1)
->>>>>>> parent of 85953fa... update the flow for dbdw
+#SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace("://", "ql://", 1)
 
-# Database configuration for low level HEROKU database and local postgresql database
-SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL',
-                                         'postgresql://yu:'+os.environ.get('YU_POSTGRESQL_PASSWORD')+
-                                         '@postgresql/explore_test')
 # Database configuration for upgraded HEROKU database
 # SQLALCHEMY_DATABASE_URI = os.environ.get('HEROKU_POSTGRESQL_MAROON_URL').replace("://", "ql://", 1)
 

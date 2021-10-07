@@ -3,7 +3,7 @@
 {% block content %}
 
     <h2>
-        Welcome to the study ‘Music genre exploration’
+        Welcome to the demo app ‘Music genre exploration’
     </h2>
 
     <p class="lead text-justify">
@@ -12,19 +12,27 @@
     </p>
 
     <p class="lead text-justify">
+    To use this app, you are required to login with your active Spotify account.
+        This will allow us to get your Spotify top listened tracks to personalise the recommendations and it allows
+        you to store the list to your Spotify account if you would like.
+        The information that we collect with this app is securely stored and will only be used for scientific research,
+        for which your data will be kept anonymous. We can only access your Spotify data only when you are using this app.
+    </p>
+
+    <p class="lead text-justify">
         <span class="font-weight-bold">Note:</span> If you are using a mobile phone or tablet, please switch to a computer or laptop.
         Please use Chrome, Firefox, Microsoft Edge or Safari, as other browsers are not supported.
     </p>
 
     <p class="lead">
-        By clicking the <span class="font-weight-bold">continue</span> button, we proceed you to the informed consent.
+        By clicking the <span class="font-weight-bold">continue</span> button, you agree to login with your Spotify account.
     </p>
 
     <br>
 
     <div class="text-right">
-        <a class="btn btn-primary" id="action_continue" href="/inform_consent">
-            Continue to the informed consent<i class="fas fa-arrow-right"></i>
+        <a class="btn btn-primary" id="action_continue" href="/register_without_subjectid">
+            Continue and login with my Spotify account<i class="fas fa-arrow-right"></i>
         </a>
     </div>
 
@@ -32,16 +40,16 @@
 
 {% block scripts %}
     <script>
-    $(function () {
+    /*$(function () {
         var url = window.location.href;
 
-        if (url.includes("?PROLIFIC_PID=")){
+        if (url.includes("?subject_id=")){
             var prolific_pid = url.substring(url.indexOf("=")+1, url.length);
             console.log(prolific_pid);
-            $('#action_continue').attr('href', '/inform_consent?prolific_pid=' + prolific_pid);
+            $('#action_continue').attr('href', '/inform_consent?subject_id=' + prolific_pid);
         }
 
-    });
+    });*/
 
     </script>
 {% endblock %}

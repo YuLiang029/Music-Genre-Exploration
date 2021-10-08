@@ -49,7 +49,7 @@ def event_explore():
     user_condition = UserCondition.query.filter_by(user_id=session["userid"]).first()
 
     print(user_condition.condition)
-    return render_template("explore_event.html",
+    return render_template("explore_performance.html",
                            condition=user_condition.condition,
                            default=user_condition.default)
 

@@ -24,8 +24,8 @@
         </div>
     </div>
 
-    <div class="mb-3 make-sticky-later">
-        <div id="contour_viz" class="show-on-success" data-intro="In this graph, you can see how the
+    <div class="mb-3 row">
+        <div id="contour_viz" class="show-on-success col-sm-6" data-intro="In this graph, you can see how the
             songs that match your preference (blue dots) together with the songs that are more out of your bubble (green dots)
             relate to your music taste (orange outline). The graphs shows two features of the songs: energy (the excitement of the song)
             and valence (the positiveness of the song) for the 4 different sessions: Sing-Songwriter, Harpist, Pop musicican, and Jazz musician" data-step='3'>
@@ -35,6 +35,17 @@
             relate to your taste (orange outline) and the typical songs of the genre
             (green outline). The graphs shows two features of the songs: energy (the excitement of the song)
             and valence (the positiveness of the song).">
+                <i class="fas fa-question-circle text-info"></i>
+            </span>
+        </div>
+
+        <div id="contour_viz2" class="show-on-success col-sm-6"
+             data-intro="This graphs shows two features of the songs: danceability (how danceable a song is)
+             and acousticness (how acoustic a song is)">
+            <span class="help" data-toggle="tooltip" data-placement="top"
+                  style="position:absolute;right:20px;top:10px;"
+                  title="This graph shows two features of the songs: danceability (how danceable a song is)
+                  and acousticness (how acoustic a song is)">
                 <i class="fas fa-question-circle text-info"></i>
             </span>
         </div>
@@ -150,12 +161,7 @@
         "playlist-background": "#ffffff00",
     };
 
-    function fillPlaylist_new(
-        visible_recommendations1,
-        visible_recommendations2,
-        visible_recommendations3,
-        visible_recommendations4,
-    ){
+    function fillPlaylist(){
 
         let $playlist1 = $("#playlist1");
         $playlist1
@@ -332,29 +338,20 @@
 
 
     /* Contour plot visualisation ------------------------------------------------------------------------------------*/
-    function ContourPlot(visible_recommendations1,
-                         visible_recommendations2,
-                         visible_recommendations3,
-                         visible_recommendations4,
-                         event1,
-                         event2,
-                         event3,
-                         event4,
-                         user_top_tracks) {
-
-        this.visible_recommendations1 = visible_recommendations1;
-        this.visible_recommendations2 = visible_recommendations2;
-        this.visible_recommendations3 = visible_recommendations3;
-        this.visible_recommendations4 = visible_recommendations4;
+    function ContourPlot(contour_viz, user_top_tracks, feature1, feature2)
+    {
+        this.contour_viz = contour_viz;
         this.user_top_tracks = user_top_tracks;
+        this.feature1 = feature1;
+        this.feature2 = feature2;
 
         // set the dimensions and margins of the graph
-        const margin = {top: 20, right: 80, bottom: 30, left: 80},
-            width = 460 - margin.left - margin.right,
+        const margin = {top: 20, right: 120, bottom: 30, left: 120},
+            width = 540 - margin.left - margin.right,
             height = 400 - margin.top - margin.bottom;
 
         // append the svg object to the body of the page
-        this.svg = d3.select("#contour_viz")
+        this.svg = d3.select(contour_viz)
             .append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
@@ -380,10 +377,12 @@
             .attr("opacity", ".5")
             .call(d3.axisLeft(y).tickValues([]).tickSizeOuter(0));
 
-        let compute_density_estimate = data => {
+        let compute_density_estimate;
+
+        compute_density_estimate = data => {
             return d3.contourDensity()
-                .x(function(d) { return x(d.valence); })   // x and y = column name in input data
-                .y(function(d) { return y(d.energy); })
+                .x(function(d) { return x(d[feature1]); })   // x and y = column name in input data
+                .y(function(d) { return y(d[feature2]); })
                 .size([width, height])
                 .bandwidth(25)    // smaller = more precision in lines = more lines
                 (data);
@@ -391,10 +390,6 @@
 
         // compute the density data for genre and user profile
         let user_density = compute_density_estimate(this.user_top_tracks);
-        let event1_density = compute_density_estimate(this.visible_recommendations1);
-        let event2_density = compute_density_estimate(this.visible_recommendations2);
-        let event3_density = compute_density_estimate(this.visible_recommendations3);
-        let event4_density = compute_density_estimate(this.visible_recommendations4);
 
         let opacity_scale = (density_estimate) => {
             return d3.scalePow()
@@ -406,7 +401,7 @@
 
         this.add_contour_plot = (density_estimate, color) => {
             this.svg.append("g")
-                .selectAll("circle")
+                .selectAll("path")
                 .data(density_estimate)
                     .enter()
                     .append("path")
@@ -419,10 +414,6 @@
 
         // Add the contour plot for the genre
         this.add_contour_plot(user_density, colors.user_profile);
-        //this.add_contour_plot(event1_density, colors.event1);
-        //this.add_contour_plot(event2_density, colors.event2);
-        //this.add_contour_plot(event3_density, colors.event3);
-        //this.add_contour_plot(event4_density, colors.event4);
 
         this.add_scatter_plot = (data, color, shape, shape_big, shape_text, classname) => {
             this.svg.append("g")
@@ -432,7 +423,7 @@
                 .selectAll("path")
                 .data(data)
                     .enter().append("path")
-                    .attr("transform", function(d) { return "translate(" + x(d.valence) + "," + y(d.energy) + ")"; })
+                    .attr("transform", function(d) { return "translate(" + x(d[feature1]) + "," + y(d[feature2]) + ")"; })
                     .attr("data-track-id", d => d.id)
                     .attr("d", shape)
                     .attr("shape_text", shape_text)
@@ -476,14 +467,57 @@
 
 
         // Add a scatter plot for the recommendations1
-        this.add_scatter_plot(this.visible_recommendations1, colors.event1, circle,
+        this.add_scatter_plot(visible_recommendations1, colors.event1, circle,
             circle_big, "circle", "rec_scatter");
-        this.add_scatter_plot(this.visible_recommendations2, colors.event2, triangleU,
+        this.add_scatter_plot(visible_recommendations2, colors.event2, triangleU,
             triangleU_big, "triangle", "rec_scatter");
-        this.add_scatter_plot(this.visible_recommendations3, colors.event3, cross,
+        this.add_scatter_plot(visible_recommendations3, colors.event3, cross,
             cross_big, "cross", "rec_scatter");
-        this.add_scatter_plot(this.visible_recommendations4, colors.event4, diamond,
+        this.add_scatter_plot(visible_recommendations4, colors.event4, diamond,
             diamond_big, "diamond", "rec_scatter");
+
+        let x_negative;
+        let x_positive;
+        let y_negative;
+        let y_positive;
+
+        switch (feature1) {
+            case "valence":
+                x_negative = "Negative";
+                x_positive = "Positive";
+                break;
+            case "energy":
+                x_negative = "Calming";
+                x_positive = "Exciting";
+                break;
+            case "danceability":
+                x_negative = "Less danceable";
+                x_positive = "More danceable";
+                break;
+            case "acousticness":
+                x_negative = "Less acoustic";
+                x_positive = "More acoustic";
+                break;
+        }
+
+        switch (feature2) {
+            case "valence":
+                y_negative = "Negative";
+                y_positive = "Positive";
+                break;
+            case "energy":
+                y_negative = "Calming";
+                y_positive = "Exciting";
+                break;
+            case "danceability":
+                y_negative = "Less danceable";
+                y_positive = "More danceable";
+                break;
+            case "acousticness":
+                y_negative = "Less acoustic";
+                y_positive = "More acoustic";
+                break;
+        }
 
         // Add labels
         this.svg.append("text")
@@ -492,27 +526,27 @@
             .attr("alignment-baseline", "central")
             .attr("x", -1)
             .attr("y", height/2)
-            .text("Negative");
+            .text(x_negative);
         this.svg.append("text")
             .attr("class", "x label")
             .attr("text-anchor", "start")
             .attr("alignment-baseline", "central")
             .attr("x", width+1)
             .attr("y", height/2)
-            .text("Positive");
+            .text(x_positive);
         this.svg.append("text")
             .attr("class", "y label")
             .attr("text-anchor", "middle")
             .attr("x", width/2)
             .attr("y", -1)
-            .text("Exciting");
+            .text(y_positive);
         this.svg.append("text")
             .attr("class", "y label")
             .attr("text-anchor", "middle")
             .attr("alignment-baseline", "hanging")
             .attr("x", width/2)
             .attr("y", height+1)
-            .text("Calming");
+            .text(y_negative);
 
         // Add legend
         this.svg.append("g")
@@ -594,37 +628,19 @@
         }
 
         // Initialise playlist and visualisation
-        {#fillPlaylist(recommendations);#}
-        if ("{{ condition }}" === "1"){
-            visible_recommendations1 = recommendations[0].tracks;
-            visible_recommendations2 = recommendations[1].tracks;
-            visible_recommendations3 = recommendations[2].tracks;
-            visible_recommendations4 = recommendations[3].tracks;
-            event1 = recommendations[0].event;
-            event2 = recommendations[1].event;
-            event3 = recommendations[2].event;
-            event4 = recommendations[3].event;
+        visible_recommendations1 = recommendations[0].tracks;
+        visible_recommendations2 = recommendations[1].tracks;
+        visible_recommendations3 = recommendations[2].tracks;
+        visible_recommendations4 = recommendations[3].tracks;
+        event1 = recommendations[0].event;
+        event2 = recommendations[1].event;
+        event3 = recommendations[2].event;
+        event4 = recommendations[3].event;
 
-            $("#perform_1").html("More matching your preferences: " + event1);
-            $("#perform_4").html("More out of your bubbles: <br>" + event4);
-
-        } else{
-            visible_recommendations1 = recommendations[3].tracks;
-            visible_recommendations2 = recommendations[2].tracks;
-            visible_recommendations3 = recommendations[1].tracks;
-            visible_recommendations4 = recommendations[0].tracks;
-
-            event1 = recommendations[3].event;
-            event2 = recommendations[2].event;
-            event3 = recommendations[1].event;
-            event4 = recommendations[0].event;
-
-            $("#perform_1").html("More out of your bubbles: <br>" + event1);
-            $("#perform_4").html("More matching your preferences: " + event4);
-        }
-
+        $("#perform_1").html("More matching your preferences: " + event1);
         $("#perform_2").html(event2);
         $("#perform_3").html(event3);
+        $("#perform_4").html("More out of your bubbles: <br>" + event4);
 
         $('#perform_1').click(function () {
             $('#playlist_block1').css("background-color", colors.event1_highlight);
@@ -648,7 +664,7 @@
             $('#playlist_block2').css("background-color", colors["playlist-background"]);
             $('#playlist_block3').css("background-color", colors.event3_highlight);
             $('#playlist_block4').css("background-color", colors["playlist-background"]);
-            $('#continue').attr('href', '/save_selected_stream?stream=' + event2);
+            $('#continue').attr('href', '/save_selected_stream?stream=' + event3);
         });
 
         $('#perform_4').click(function () {
@@ -656,30 +672,13 @@
             $('#playlist_block2').css("background-color", colors["playlist-background"]);
             $('#playlist_block3').css("background-color", colors["playlist-background"]);
             $('#playlist_block4').css("background-color", colors.event4_highlight);
-            $('#continue').attr('href', '/save_selected_stream?stream=' + event2);
+            $('#continue').attr('href', '/save_selected_stream?stream=' + event4);
         });
 
-        fillPlaylist_new(
-            visible_recommendations1,
-            visible_recommendations2,
-            visible_recommendations3,
-            visible_recommendations4,
-            event1,
-            event2,
-            event3,
-            event4);
+        fillPlaylist();
 
-        contour_plot = new ContourPlot(
-            visible_recommendations1,
-            visible_recommendations2,
-            visible_recommendations3,
-            visible_recommendations4,
-            event1,
-            event2,
-            event3,
-            event4,
-            user_top_tracks);
-
+        contour_plot = new ContourPlot("#contour_viz", user_top_tracks, "valence", "energy");
+        contour_plot2 = new ContourPlot("#contour_viz2", user_top_tracks, "acousticness", "danceability");
 
         // Hide loading indicator and show results
         $('.hide-on-success').hide();

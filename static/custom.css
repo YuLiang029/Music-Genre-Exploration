@@ -379,17 +379,66 @@ table.sv_q_matrix th {
 
 #playlist_block1 {
     /*border: thick solid #007bff;*/
-    background: #0056b3;
+    background: #7D3C98;
     border-radius: 5px;
 
 }
 
 #playlist_block2 {
-    background: white;
+    background: #ffffff00;
     border-radius: 5px;
+}
+
+#playlist_block3 {
+    background: #ffffff00;
+    border-radius: 5px;
+}
+
+#playlist_block4 {
+    background: #ffffff00;
+    border-radius: 5px;
+}
+
+#perform_1 {
+    background-color: #8E44AD;
+    color: white;
+}
+
+#perform_2 {
+    background-color: #2471A3;
+    color: white;
+}
+
+#perform_3 {
+    background-color: #229954;
+    color: white;
+}
+
+#perform_4 {
+    background-color: #D4AC0D;
+    color: white;
 }
 
 input[type=radio].scale_radio{
   transform:scale(1.5);
 }
 
+.track--highlighted-1 {
+    outline-color: Magenta;
+    outline-width: 10px;
+}
+
+.track--highlighted-2 {
+    outline-color: Aqua;
+    outline-width: 10px;
+}
+
+.track--highlighted-3 {
+    outline-color: GreenYellow;
+    outline-width: 10px;
+}
+
+.track--highlighted-4 {
+    outline-color: Yellow;
+    outline-width: 10px;
+}

@@ -32,9 +32,11 @@ def assign_condition():
         # randomly assign a user to a condition
         condition = random.randint(0, 1)
 
-        default = "close"
+        # 0: nudge for distant performance
+        # 1: nudge for close performance
+        default = "distant"
         if condition == 1:
-            default = "distant"
+            default = "close"
 
         user_condition_new = UserCondition(user_id=session["userid"],
                                            timestamp=time.time(),

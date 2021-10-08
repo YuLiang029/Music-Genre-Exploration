@@ -24,51 +24,55 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-sm-6 order-sm-3">
-            <div class="mb-3 make-sticky-later">
-
-                <div id="contour_viz" class="show-on-success" data-intro="In this graph, you can see how the
-                    songs that match your preference (blue dots) together with the songs that are more out of your bubble (green dots)
-                    relate to your music taste (orange outline). The graphs shows two features of the songs: energy (the excitement of the song)
-                    and valence (the positiveness of the song) for the 4 different sessions: Sing-Songwriter, Harpist, Pop musicican, and Jazz musician" data-step='3'>
-                    <span class="help" data-toggle="tooltip" data-placement="top" style="position:absolute;right:20px;top:20px;"
-                          title="In this graph, you can see how the
-                    recommendations (blue dots)
-                    relate to your taste (orange outline) and the typical songs of the genre
-                    (green outline). The graphs shows two features of the songs: energy (the excitement of the song)
-                    and valence (the positiveness of the song).">
-                        <i class="fas fa-question-circle text-info"></i>
-                    </span>
-                </div>
-            </div>
+    <div class="mb-3 make-sticky-later">
+        <div id="contour_viz" class="show-on-success" data-intro="In this graph, you can see how the
+            songs that match your preference (blue dots) together with the songs that are more out of your bubble (green dots)
+            relate to your music taste (orange outline). The graphs shows two features of the songs: energy (the excitement of the song)
+            and valence (the positiveness of the song) for the 4 different sessions: Sing-Songwriter, Harpist, Pop musicican, and Jazz musician" data-step='3'>
+            <span class="help" data-toggle="tooltip" data-placement="top" style="position:absolute;right:20px;top:20px;"
+                  title="In this graph, you can see how the
+            recommendations (blue dots)
+            relate to your taste (orange outline) and the typical songs of the genre
+            (green outline). The graphs shows two features of the songs: energy (the excitement of the song)
+            and valence (the positiveness of the song).">
+                <i class="fas fa-question-circle text-info"></i>
+            </span>
         </div>
+    </div>
 
+    <div class="row">
         <div class="col-sm-3 order-sm-1 show-on-success" id="playlist_block1"
-             data-intro="This column represents the pre-selected stream, which matches your preference the most."
+             data-intro="This column represents the pre-selected playlist, which matches your preference the most."
              data-step='1'>
                     <br>
-                    <button class="btn btn btn-primary btn-block
-                    show-on-success" id="stream_1"></button>
+                    <button class="btn btn-block
+                    show-on-success" id="perform_1"></button>
                     <div id="playlist1" class="playlist_new"></div>
-                    <div id="playlist2" class="playlist_new"></div>
-
         </div>
 
-        <div class="col-sm-3 order-sm-2 show-on-success" id="playlist_block2"
-             data-intro="This column represents the stream that is more out of your bubble. Click the button to choose this stream."
-             data-step='2'>
-
-
+        <div class="col-sm-3 order-sm-2 show-on-success" id="playlist_block2">
             <br>
-            <button class="btn btn btn-success btn-block
-            show-on-success" id="stream_2"></button>
-            <div id="playlist3" class="playlist_new"></div>
-            <div id="playlist4" class="playlist_new"></div>
+            <button class="btn btn-block
+            show-on-success" id="perform_2"></button>
+            <div id="playlist2" class="playlist_new"></div>
+        </div>
 
+        <div class="col-sm-3 order-sm-2  show-on-success" id="playlist_block3">
+            <br>
+            <button class="btn btn-block
+            show-on-success" id="perform_3"></button>
+            <div id="playlist3" class="playlist_new"></div>
+        </div>
+
+        <div class="col-sm-3 order-sm-2 show-on-success" id="playlist_block4">
+            <br>
+            <button class="btn btn-block
+            show-on-success" id="perform_4"></button>
+            <div id="playlist4" class="playlist_new"></div>
         </div>
     </div>
     <br>
+
     <div class="row">
         <div class="col-sm-3">
             <button class="show-on-success btn btn-secondary save_playlist" id="save_playlist1"
@@ -78,18 +82,30 @@
         </div>
 
         <div class="col-sm-3">
-            <button class="show-on-success btn btn-secondary save_playlist" id="save_playlist2"
-                    data-intro="If you'd like, you can save this playlist to your Spotify account." data-step='5'>
+            <button class="show-on-success btn btn-secondary save_playlist" id="save_playlist2">
                 <i class="fas fa-download"></i> Save this playlist to my Spotify
             </button>
         </div>
 
-        <div class="col-sm text-right">
-            <a class="show-on-success btn btn-outline-success" id="continue" href="/save_selected_stream"
-               data-intro="After selecting the stream you want to listen to during the concert, click the button to continue" data-step='6'>
-                Continue <i class="fas fa-arrow-right"></i>
-            </a>
+        <div class="col-sm-3">
+            <button class="show-on-success btn btn-secondary save_playlist" id="save_playlist3">
+                <i class="fas fa-download"></i> Save this playlist to my Spotify
+            </button>
         </div>
+
+        <div class="col-sm-3">
+            <button class="show-on-success btn btn-secondary save_playlist" id="save_playlist4"
+                    data-intro="If you'd like, you can save this playlist to your Spotify account." data-step='5'>
+                <i class="fas fa-download"></i> Save this playlist to my Spotify
+            </button>
+        </div>
+    </div>
+    <br>
+    <div class="col-sm text-right">
+        <a class="show-on-success btn btn-outline-success" id="continue" href="/save_selected_stream"
+           data-intro="After selecting the performance you want to listen to during the concert, click the button to continue" data-step='6'>
+            Continue <i class="fas fa-arrow-right"></i>
+        </a>
     </div>
 
 {% endblock %}
@@ -106,8 +122,10 @@
         visible_recommendations3,
         visible_recommendations4;
 
-    let stream_1,
-        stream_2;
+    let event1,
+        event2,
+        event3,
+        event4;
 
     const circle = d3.symbol().type(d3.symbolCircle)(),
         triangleU = d3.symbol().type(d3.symbolTriangle)(),
@@ -120,11 +138,16 @@
         diamond_big = d3.symbol().size(200).type(d3.symbolDiamond);
 
     const colors = {
-        "energy": "#66a61e",
-        "valence": "#7570b3",
-        "recommendations1": "#007bff",
-        "user_profile": "#d95f02",
-        "unrecommended": "#1b9e77"
+        "user_profile": "#CB4335",
+        "event1": "#8E44AD",
+        "event1_highlight": "#7D3C98",
+        "event2": "#2471A3",
+        "event2_highlight": "#2E86C1",
+        "event3": "#229954",
+        "event3_highlight": "#28B463",
+        "event4": "#D4AC0D",
+        "event4_highlight": "#D68910",
+        "playlist-background": "#ffffff00",
     };
 
     function fillPlaylist_new(
@@ -132,17 +155,12 @@
         visible_recommendations2,
         visible_recommendations3,
         visible_recommendations4,
-        stream_1,
-        stream_2,
-        event1, event2, event3, event4){
+    ){
 
         let $playlist1 = $("#playlist1");
-        $playlist1.append("<p><b>" + event1 + "</b></p>");
-
         $playlist1
             .append($("<ul>"));
         let $playlist1_ul = $("#playlist1 ul");
-
         let i = 0;
 
         visible_recommendations1.forEach(function (track) {
@@ -160,14 +178,11 @@
 
             $playlist1_ul.append($newElement);
             ++i;
-            $('#continue').attr('href', '/save_selected_stream?stream=' + stream_1);
         });
 
         let $playlist2 = $("#playlist2");
-        $playlist2.append("<p><b>" + event2 + "</b></p>");
         $playlist2
             .append($("<ul>"));
-
         let $playlist2_ul = $("#playlist2 ul");
 
         visible_recommendations2.forEach(function (track) {
@@ -189,8 +204,6 @@
 
 
         let $playlist3 = $("#playlist3");
-        $playlist3.append("<p><b>" + event3 + "</b></p>");
-
         $playlist3
             .append($("<ul>"));
         let $playlist3_ul = $("#playlist3 ul");
@@ -214,8 +227,6 @@
 
 
         let $playlist4 = $("#playlist4");
-        $playlist4.append("<p><b>" + event4 + "</b></p>");
-
         $playlist4
             .append($("<ul>"));
         let $playlist4_ul = $("#playlist4 ul");
@@ -247,23 +258,26 @@
                 for (let i = 0; i < visible_recommendations1.length; i++) {
                     trackString = trackString + "," + visible_recommendations1[i].id;
                 }
+                playlistname = "DBDW: " + event1
 
+            }else if ($(this).attr("id") === "save_playlist2"){
                 for (let i = 0; i < visible_recommendations2.length; i++) {
                     trackString = trackString + "," + visible_recommendations2[i].id;
                 }
-                playlistname = "DBDW: " + stream_1
+                playlistname = "DBDW: " + event2
 
-            }else{
+            }else if ($(this).attr("id") === "save_playlist3"){
                 for (let i = 0; i < visible_recommendations3.length; i++) {
                     trackString = trackString + "," + visible_recommendations3[i].id;
                 }
+                playlistname = "DBDW: " + event3
 
+            }else{
                 for (let i = 0; i < visible_recommendations4.length; i++) {
                     trackString = trackString + "," + visible_recommendations4[i].id;
                 }
-                playlistname = "DBDW: " + stream_2
+                playlistname = "DBDW: " + event4
             }
-
 
             $.ajax({
                 url: "/generate_playlist_spotify/" + playlistname + "?tracks=" + trackString.substring(1,) + "",
@@ -322,8 +336,10 @@
                          visible_recommendations2,
                          visible_recommendations3,
                          visible_recommendations4,
-                         stream_1,
-                         stream_2, event1, event2, event3, event4,
+                         event1,
+                         event2,
+                         event3,
+                         event4,
                          user_top_tracks) {
 
         this.visible_recommendations1 = visible_recommendations1;
@@ -403,10 +419,10 @@
 
         // Add the contour plot for the genre
         this.add_contour_plot(user_density, colors.user_profile);
-        //this.add_contour_plot(event1_density, colors.recommendations1);
-        //this.add_contour_plot(event2_density, colors.recommendations1);
-        //this.add_contour_plot(event3_density, colors.unrecommended);
-        //this.add_contour_plot(event4_density, colors.unrecommended);
+        //this.add_contour_plot(event1_density, colors.event1);
+        //this.add_contour_plot(event2_density, colors.event2);
+        //this.add_contour_plot(event3_density, colors.event3);
+        //this.add_contour_plot(event4_density, colors.event4);
 
         this.add_scatter_plot = (data, color, shape, shape_big, shape_text, classname) => {
             this.svg.append("g")
@@ -425,9 +441,13 @@
                         .attr('d', shape_big);
                     let current_track = $(".trackid[value=" + d.id + "]");
                     if (current_track.parent().parent().parent().parent().attr("id") === "playlist_block1"){
-                        current_track.parent().addClass("track--highlighted1");
+                        current_track.parent().addClass("track--highlighted-1");
+                    }else if (current_track.parent().parent().parent().parent().attr("id") === "playlist_block2"){
+                        current_track.parent().addClass("track--highlighted-2");
+                    }else if (current_track.parent().parent().parent().parent().attr("id") === "playlist_block3"){
+                        current_track.parent().addClass("track--highlighted-3");
                     }else{
-                        current_track.parent().addClass("track--highlighted2");
+                        current_track.parent().addClass("track--highlighted-4");
                     }
 
                 })
@@ -437,9 +457,13 @@
 
                     let current_track = $(".trackid[value=" + d.id + "]");
                     if (current_track.parent().parent().parent().parent().attr("id") === "playlist_block1"){
-                        current_track.parent().removeClass("track--highlighted1");
+                        current_track.parent().removeClass("track--highlighted-1");
+                    }else if (current_track.parent().parent().parent().parent().attr("id") === "playlist_block2"){
+                        current_track.parent().removeClass("track--highlighted-2");
+                    }else if (current_track.parent().parent().parent().parent().attr("id") === "playlist_block3"){
+                        current_track.parent().removeClass("track--highlighted-3");
                     }else{
-                        current_track.parent().removeClass("track--highlighted2");
+                        current_track.parent().removeClass("track--highlighted-4");
                     }
 
                 })
@@ -452,13 +476,13 @@
 
 
         // Add a scatter plot for the recommendations1
-        this.add_scatter_plot(this.visible_recommendations1, colors.recommendations1, circle,
+        this.add_scatter_plot(this.visible_recommendations1, colors.event1, circle,
             circle_big, "circle", "rec_scatter");
-        this.add_scatter_plot(this.visible_recommendations2, colors.recommendations1, triangleU,
+        this.add_scatter_plot(this.visible_recommendations2, colors.event2, triangleU,
             triangleU_big, "triangle", "rec_scatter");
-        this.add_scatter_plot(this.visible_recommendations3, colors.unrecommended, cross,
+        this.add_scatter_plot(this.visible_recommendations3, colors.event3, cross,
             cross_big, "cross", "rec_scatter");
-        this.add_scatter_plot(this.visible_recommendations4, colors.unrecommended, diamond,
+        this.add_scatter_plot(this.visible_recommendations4, colors.event4, diamond,
             diamond_big, "diamond", "rec_scatter");
 
         // Add labels
@@ -496,8 +520,8 @@
             .attr("transform", "translate(-75,0)");
 
         let ordinal = d3.scaleOrdinal()
-            .domain(["Your taste", stream_1, stream_2])
-            .range([colors.user_profile, colors.recommendations1, colors.unrecommended]);
+            .domain(["Your taste", event1, event2, event3, event4])
+            .range([colors.user_profile, colors.event1, colors.event2, colors.event3, colors.event4]);
 
         this.svg.append("g")
           .attr("class", "legendOrdinal")
@@ -551,7 +575,7 @@
 
     /* Read data -----------------------------------------------------------------------------------------------------*/
     Promise.all([
-        d3.json("/event_recommendation/stream"),
+        d3.json("/event_recommendation/performance"),
         d3.json("/user_top_tracks"),
     ]).then(function(data) {
         // Extract data from promises
@@ -572,89 +596,88 @@
         // Initialise playlist and visualisation
         {#fillPlaylist(recommendations);#}
         if ("{{ condition }}" === "1"){
-            // check stream because stream has different length
-            stream_1 = recommendations[0].stream;
-            stream_2 = recommendations[1].stream;
+            visible_recommendations1 = recommendations[0].tracks;
+            visible_recommendations2 = recommendations[1].tracks;
+            visible_recommendations3 = recommendations[2].tracks;
+            visible_recommendations4 = recommendations[3].tracks;
+            event1 = recommendations[0].event;
+            event2 = recommendations[1].event;
+            event3 = recommendations[2].event;
+            event4 = recommendations[3].event;
 
-            if (stream_1 === "stream a"){
-                visible_recommendations1 = recommendations[0].tracks.slice(0, 4);
-                visible_recommendations2 = recommendations[0].tracks.slice(4, 10);
-                visible_recommendations3 = recommendations[1].tracks.slice(0, 6);
-                visible_recommendations4 = recommendations[1].tracks.slice(6, 11);
-            }else{
-                visible_recommendations1 = recommendations[0].tracks.slice(0, 6);
-                visible_recommendations2 = recommendations[0].tracks.slice(6, 11);
-                visible_recommendations3 = recommendations[1].tracks.slice(0, 4);
-                visible_recommendations4 = recommendations[1].tracks.slice(4, 10);
-            }
-
-
-            $("#stream_1").html("More matching your preferences: " + stream_1);
-            $("#stream_2").html("More out of your bubbles: <br>" + stream_2);
+            $("#perform_1").html("More matching your preferences: " + event1);
+            $("#perform_4").html("More out of your bubbles: <br>" + event4);
 
         } else{
+            visible_recommendations1 = recommendations[3].tracks;
+            visible_recommendations2 = recommendations[2].tracks;
+            visible_recommendations3 = recommendations[1].tracks;
+            visible_recommendations4 = recommendations[0].tracks;
 
-            stream_1 = recommendations[1].stream;
-            stream_2 = recommendations[0].stream;
+            event1 = recommendations[3].event;
+            event2 = recommendations[2].event;
+            event3 = recommendations[1].event;
+            event4 = recommendations[0].event;
 
-            if (stream_1 === "stream a"){
-                visible_recommendations1 = recommendations[1].tracks.slice(0, 4);
-                visible_recommendations2 = recommendations[1].tracks.slice(4, 10);
-                visible_recommendations3 = recommendations[0].tracks.slice(0, 6);
-                visible_recommendations4 = recommendations[0].tracks.slice(6, 11);
-            }else{
-                visible_recommendations1 = recommendations[1].tracks.slice(0, 6);
-                visible_recommendations2 = recommendations[1].tracks.slice(6, 11);
-                visible_recommendations3 = recommendations[0].tracks.slice(0, 4);
-                visible_recommendations4 = recommendations[0].tracks.slice(4, 10);
-            }
-
-            $("#stream_1").html("More out of your bubbles: <br>" + stream_1);
-            $("#stream_2").html("More matching your preferences: " + stream_2);
+            $("#perform_1").html("More out of your bubbles: <br>" + event1);
+            $("#perform_4").html("More matching your preferences: " + event4);
         }
 
-        $('#stream_1').click(function () {
-            $('#playlist_block2').css("background-color", "#ffffff00");
-            $('#playlist_block1').css("background-color", "#0056b3");
-            $('#playlist1').css("color", "white");
-            $('#playlist2').css("color", "white");
-            $('#playlist3').css("color", "#1b9177");
-            $('#playlist4').css("color", "#1b9177");
-            $('#continue').attr('href', '/save_selected_stream?stream=' + stream_1);
+        $("#perform_2").html(event2);
+        $("#perform_3").html(event3);
+
+        $('#perform_1').click(function () {
+            $('#playlist_block1').css("background-color", colors.event1_highlight);
+            $('#playlist_block2').css("background-color", colors["playlist-background"]);
+            $('#playlist_block3').css("background-color", colors["playlist-background"]);
+            $('#playlist_block4').css("background-color", colors["playlist-background"]);
+
+            $('#continue').attr('href', '/save_selected_stream?stream=' + event1);
         });
 
-        $('#stream_2').click(function () {
-            $('#playlist_block1').css("background-color", "#ffffff00");
-            $('#playlist_block2').css("background-color", "#1b9177");
-            $('#playlist1').css("color", "#0056b3");
-            $('#playlist2').css("color", "#0056b3");
-            $('#playlist3').css("color", "white");
-            $('#playlist4').css("color", "white");
-            $('#continue').attr('href', '/save_selected_stream?stream=' + stream_2);
+        $('#perform_2').click(function () {
+            $('#playlist_block1').css("background-color", colors["playlist-background"]);
+            $('#playlist_block2').css("background-color", colors.event2_highlight);
+            $('#playlist_block3').css("background-color", colors["playlist-background"]);
+            $('#playlist_block4').css("background-color", colors["playlist-background"]);
+            $('#continue').attr('href', '/save_selected_stream?stream=' + event2);
         });
 
-        let event1 = visible_recommendations1[0].event,
-            event2 = visible_recommendations2[0].event,
-            event3 = visible_recommendations3[0].event,
-            event4 = visible_recommendations4[0].event;
+        $('#perform_3').click(function () {
+            $('#playlist_block1').css("background-color", colors["playlist-background"]);
+            $('#playlist_block2').css("background-color", colors["playlist-background"]);
+            $('#playlist_block3').css("background-color", colors.event3_highlight);
+            $('#playlist_block4').css("background-color", colors["playlist-background"]);
+            $('#continue').attr('href', '/save_selected_stream?stream=' + event2);
+        });
+
+        $('#perform_4').click(function () {
+            $('#playlist_block1').css("background-color", colors["playlist-background"]);
+            $('#playlist_block2').css("background-color", colors["playlist-background"]);
+            $('#playlist_block3').css("background-color", colors["playlist-background"]);
+            $('#playlist_block4').css("background-color", colors.event4_highlight);
+            $('#continue').attr('href', '/save_selected_stream?stream=' + event2);
+        });
 
         fillPlaylist_new(
             visible_recommendations1,
             visible_recommendations2,
             visible_recommendations3,
             visible_recommendations4,
-            stream_1,
-            stream_2,
-            event1, event2, event3, event4);
+            event1,
+            event2,
+            event3,
+            event4);
 
         contour_plot = new ContourPlot(
             visible_recommendations1,
             visible_recommendations2,
             visible_recommendations3,
             visible_recommendations4,
-            stream_1,
-            stream_2,
-            event1, event2, event3, event4,
+            event1,
+            event2,
+            event3,
+            event4,
             user_top_tracks);
 
 

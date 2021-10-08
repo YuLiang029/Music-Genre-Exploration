@@ -551,7 +551,7 @@
 
     /* Read data -----------------------------------------------------------------------------------------------------*/
     Promise.all([
-        d3.json("/event_recommendation"),
+        d3.json("/event_recommendation/stream"),
         d3.json("/user_top_tracks"),
     ]).then(function(data) {
         // Extract data from promises

@@ -514,24 +514,36 @@ def msi_survey(redirect_path):
                                 "type": "email"
                             }]
                         },
-                        # {
-                        #     "name": "age",
-                        #     "type": "text",
-                        #     "title": "Your age (years):",
-                        #     "isRequired": "true"
-                        # },
-                        # {
-                        #     "name": "gender",
-                        #     "type": "dropdown",
-                        #     "title": "Your gender:",
-                        #     "isRequired": "true",
-                        #     "colCount": 0,
-                        #     "choices": [
-                        #         "male",
-                        #         "female",
-                        #         "other"
-                        #     ]
-                        # }
+                        {
+                            "name": "age",
+                            "type": "text",
+                            "title": "Your age (years):",
+                            "isRequired": "true"
+                        },
+                        {
+                            "name": "gender",
+                            "type": "dropdown",
+                            "title": "Your gender:",
+                            "isRequired": "true",
+                            "colCount": 0,
+                            "choices": [
+                                "male",
+                                "female",
+                                "other"
+                            ]
+                        },
+                        {
+                            "name": "ticketnum",
+                            "type": "dropdown",
+                            "title": "How many tickets would you like to register?"
+                                     "(You can register one ticket for your self and one for your accompany)",
+                            "isRequired": "true",
+                            "colCount": 0,
+                            "choices": [
+                                1,
+                                2
+                            ]
+                        }
                     ]
                 },
 
@@ -630,7 +642,7 @@ def msi_survey(redirect_path):
                             #                         "Please tick 'Completely Agree'"}
                         ]
                     }]
-                }
+                },
             ],
             "completedHtml": "Redirecting to the next page..."
         }

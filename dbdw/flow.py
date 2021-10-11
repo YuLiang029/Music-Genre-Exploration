@@ -346,7 +346,7 @@ def post_task_survey():
         survey_config = {
             'title': 'Survey about your experience with the recommendations and interface',
             'description': 'Before receiving the link to your chosen concert, please fill in this survey.',
-            'next_url': url_for('dbdw_bp.rating')
+            'next_url': url_for('dbdw_bp.registration_overview')
         }
 
         return render_template('survey.html', survey=survey, surveydata=surveydata, survey_config=survey_config)
@@ -377,6 +377,21 @@ def final_step():
     print(selected_stream_strip)
 
     return render_template("last_page.html", email_address=email_address, selected_stream=selected_stream_strip)
+
+
+@dbdw_bp.route('/registration_overview')
+def registration_overview():
+
+    email_address = MsiResponse.query.filter_by(user_id=session["userid"],
+                                                item_id="email").first().value
+
+    selected_event = SelectedEvent.query.filter_by(rec_id=session["rec_id"])
+    event1 = selected_event[0].event_name
+    event2 = selected_event[1].event_name
+    return render_template("last_page_2021.html",
+                           email_address=email_address,
+                           event1=event1,
+                           event2=event2)
 
 
 @dbdw_bp.route('/rating')

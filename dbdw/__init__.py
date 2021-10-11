@@ -55,6 +55,13 @@ class SelectedEvent (db.Model):
         return '<SelectedEvent %r-%r>' % (self.user_id, self.event_name)
 
 
+class Events (db.Model):
+    __tablename__ = 'events'
+    event_id = db.Column(db.INTEGER, primary_key=True, autoincrement=True)
+    event_name = db.Column(db.VARCHAR)
+    event_timeslot = db.Column(db.VARCHAR)
+    spots_available = db.Column(db.INTEGER)
+
 # class RegisterEvent(db.Model):
 #     __tablename__ = 'register_event'
 #     user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'))
@@ -66,6 +73,7 @@ class SelectedEvent (db.Model):
 #
 #     def __repr__(self):
 #         return '<RegisterEvent %r-%r>' % (self.user_id, self.event_id)
+
 
 class ImgRatings(db.Model):
     __tablename__ = 'img_ratings'

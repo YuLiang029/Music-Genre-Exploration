@@ -6,9 +6,10 @@
         <h2 id="rec_header" class="col-12 show-on-success">Choose your OWN concert! </h2>
 
         <p class="show-on-success col-12 text-justify lead">
-            Take your time to listen to songs that match your preference and to the songs
-            that are more out of your comfort zone.
-            After listening to the playlist, you are asked to fill
+            Take your time to listen to songs and select
+            <strong>two performance</strong>
+            that you would like to go.
+            After listening to the playlist, you will be asked to fill
             in a survey about your experience with the recommendations and the interface. Hover over the
             <i class="fas fa-question-circle text-muted"></i> icons to get an explanation on the user interface.</p>
 
@@ -26,22 +27,25 @@
 
     <div class="mb-3 row">
         <div id="contour_viz" class="show-on-success col-sm-6" data-intro="In this graph, you can see how the
-            songs that match your preference (blue dots) together with the songs that are more out of your bubble (green dots)
-            relate to your music taste (orange outline). The graphs shows two features of the songs: energy (the excitement of the song)
-            and valence (the positiveness of the song) for the 4 different sessions: Sing-Songwriter, Harpist, Pop musicican, and Jazz musician" data-step='3'>
+            songs from different performance
+            relate to your music taste (orange outline).
+            This graph shows two features of the songs: energy (the excitement of the song)
+            and valence (the positiveness of the song) for the 4 different performance:
+            Sing-Songwriter, Harpist, Pop musicican, and Jazz musician" data-step='2'>
             <span class="help" data-toggle="tooltip" data-placement="top" style="position:absolute;right:20px;top:20px;"
                   title="In this graph, you can see how the
-            recommendations (blue dots)
-            relate to your taste (orange outline) and the typical songs of the genre
-            (green outline). The graphs shows two features of the songs: energy (the excitement of the song)
-            and valence (the positiveness of the song).">
+            songs from different events
+            relate to your music taste (orange outline).
+            This graph shows two features of the songs: energy (the excitement of the song)
+            and valence (the positiveness of the song) for the 4 different performance:
+            Sing-Songwriter, Harpist, Pop musicican, and Jazz musician">
                 <i class="fas fa-question-circle text-info"></i>
             </span>
         </div>
 
         <div id="contour_viz2" class="show-on-success col-sm-6"
              data-intro="This graphs shows two features of the songs: danceability (how danceable a song is)
-             and acousticness (how acoustic a song is)">
+             and acousticness (how acoustic a song is)" data-step='3'>
             <span class="help" data-toggle="tooltip" data-placement="top"
                   style="position:absolute;right:20px;top:10px;"
                   title="This graph shows two features of the songs: danceability (how danceable a song is)
@@ -52,9 +56,7 @@
     </div>
 
     <div class="row">
-        <div class="col-sm-3 order-sm-1 show-on-success playlist-unselect" id="playlist_block1"
-             data-intro="This column represents the pre-selected playlist, which matches your preference the most."
-             data-step='1'>
+        <div class="col-sm-3 order-sm-1 show-on-success playlist-unselect" id="playlist_block1">
                     <br>
                     <button class="btn btn-block perform_1-unselect show-on-success " id="perform_1"></button>
                     <div id="playlist1" class="playlist_new"></div>
@@ -101,8 +103,7 @@
         </div>
 
         <div class="col-sm-3">
-            <button class="show-on-success btn btn-secondary save_playlist" id="save_playlist4"
-                    data-intro="If you'd like, you can save this playlist to your Spotify account." data-step='5'>
+            <button class="show-on-success btn btn-secondary save_playlist" id="save_playlist4">
                 <i class="fas fa-download"></i> Save this playlist to my Spotify
             </button>
         </div>
@@ -110,7 +111,7 @@
     <br>
     <div class="col-sm text-right">
         <a class="show-on-success btn btn-outline-success" id="continue" href="/save_selected_stream"
-           data-intro="After selecting the performance you want to listen to during the concert, click the button to continue" data-step='6'>
+           data-intro="After selecting two performance you want to listen to during the concert, click the button to continue" data-step='5'>
             Continue <i class="fas fa-arrow-right"></i>
         </a>
     </div>
@@ -614,15 +615,23 @@
             $('#playlist_block4')
                 .removeClass('playlist-unselect')
                 .addClass('playlist4-select')
+                .attr('data-intro', 'We pre-selected the performance ' + event4 + ' for you. ' +
+                    'This performance is more out of your bubble')
+                .attr('data-step', '1')
             $('#perform_4')
                 .removeClass('perform_4-unselect')
                 .addClass('perform_4-select')
+
+            $('#')
 
             $('#continue').attr('href', '/save_selected_stream?stream=' + event4);
         }else {
             $('#playlist_block1')
                 .removeClass('playlist-unselect')
                 .addClass('playlist1-select')
+                .attr('data-intro', 'We pre-selected the performance ' + event1 + ' for you. ' +
+                    'This performance matches your preferences the most')
+                .attr('data-step', '1')
 
             $('#perform_1')
                 .removeClass('perform_1-unselect')

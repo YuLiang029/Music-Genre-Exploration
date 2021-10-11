@@ -110,8 +110,8 @@
     </div>
     <br>
     <div class="col-sm text-right">
-        <a class="show-on-success btn btn-outline-success" id="continue" href="/save_selected_stream"
-           data-intro="After selecting two performance you want to listen to during the concert, click the button to continue" data-step='5'>
+        <a class="show-on-success btn btn-outline-success" id="continue" href="#"
+           data-intro="After selecting two performance you want to go to for the concert, click the button to continue" data-step='5'>
             Continue <i class="fas fa-arrow-right"></i>
         </a>
     </div>
@@ -134,6 +134,7 @@
         event2,
         event3,
         event4;
+    let selected_events = new Array(2)
 
     const circle = d3.symbol().type(d3.symbolCircle)(),
         triangleU = d3.symbol().type(d3.symbolTriangle)(),
@@ -615,20 +616,21 @@
             $('#playlist_block4')
                 .removeClass('playlist-unselect')
                 .addClass('playlist4-select')
+                .addClass('playlist-select')
                 .attr('data-intro', 'We pre-selected the performance ' + event4 + ' for you. ' +
                     'This performance is more out of your bubble')
                 .attr('data-step', '1')
+
             $('#perform_4')
                 .removeClass('perform_4-unselect')
                 .addClass('perform_4-select')
 
-            $('#')
-
-            $('#continue').attr('href', '/save_selected_stream?stream=' + event4);
         }else {
             $('#playlist_block1')
                 .removeClass('playlist-unselect')
                 .addClass('playlist1-select')
+                .addClass('playlist-select')
+
                 .attr('data-intro', 'We pre-selected the performance ' + event1 + ' for you. ' +
                     'This performance matches your preferences the most')
                 .attr('data-step', '1')
@@ -636,8 +638,6 @@
             $('#perform_1')
                 .removeClass('perform_1-unselect')
                 .addClass('perform_1-select')
-
-            $('#continue').attr('href', '/save_selected_stream?stream=' + event1);
         }
 
         $('#perform_1')
@@ -645,6 +645,8 @@
             .click(function () {
                 if ($(this).parent().hasClass("playlist1-select")) {
                     $(this).parent().removeClass("playlist1-select");
+                    $(this).parent().removeClass("playlist-select");
+
                     $(this).parent().addClass("playlist-unselect");
 
                     $(this).removeClass("perform_1-select")
@@ -653,6 +655,7 @@
                 } else {
                     $(this).parent().removeClass("playlist-unselect");
                     $(this).parent().addClass("playlist1-select");
+                    $(this).parent().addClass("playlist-select");
 
                     $(this).removeClass("perform_1-unselect")
                     $(this).addClass("perform_1-select")
@@ -664,6 +667,8 @@
             .click(function () {
                 if ($(this).parent().hasClass("playlist2-select")) {
                     $(this).parent().removeClass("playlist2-select");
+                    $(this).parent().removeClass("playlist-select");
+
                     $(this).parent().addClass("playlist-unselect");
 
                     $(this).removeClass("perform_2-select")
@@ -672,6 +677,7 @@
                 } else {
                     $(this).parent().removeClass("playlist-unselect");
                     $(this).parent().addClass("playlist2-select");
+                    $(this).parent().addClass("playlist-select");
 
                     $(this).removeClass("perform_2-unselect")
                     $(this).addClass("perform_2-select")
@@ -683,6 +689,8 @@
             .click(function () {
                 if ($(this).parent().hasClass("playlist3-select")) {
                     $(this).parent().removeClass("playlist3-select");
+                    $(this).parent().removeClass("playlist-select");
+
                     $(this).parent().addClass("playlist-unselect");
 
                     $(this).removeClass("perform_3-select")
@@ -691,6 +699,7 @@
                 } else {
                     $(this).parent().removeClass("playlist-unselect");
                     $(this).parent().addClass("playlist3-select");
+                    $(this).parent().addClass("playlist-select");
 
                     $(this).removeClass("perform_3-unselect")
                     $(this).addClass("perform_3-select")
@@ -702,17 +711,63 @@
             .click(function () {
                 if ($(this).parent().hasClass("playlist4-select")) {
                     $(this).parent().removeClass("playlist4-select");
+                    $(this).parent().removeClass("playlist-select");
+
                     $(this).parent().addClass("playlist-unselect");
+
                     $(this).removeClass("perform_4-select")
                     $(this).addClass("perform_4-unselect")
 
                 } else {
                     $(this).parent().removeClass("playlist-unselect");
                     $(this).parent().addClass("playlist4-select");
+                    $(this).parent().addClass("playlist-select");
 
                     $(this).removeClass("perform_4-unselect")
                     $(this).addClass("perform_4-select")
                 }
+        });
+
+        $('#continue')
+            .click(function (e) {
+                var num_selected = $('.playlist-select').length;
+                e.preventDefault();
+
+                if (num_selected > 2){
+                    alert("You can only select 2 performance")
+                }else if (num_selected < 2){
+                    alert("You need to select 2 performance")
+                }else{
+                    $( ".playlist-select" ).each(function(index) {
+                        switch ($(this).attr("id")){
+                            case "playlist_block1":
+                                selected_events[index] = event1;
+                                break;
+                            case "playlist_block2":
+                                selected_events[index] = event2;
+                                break;
+                            case "playlist_block3":
+                                selected_events[index] = event3;
+                                break;
+                            case "playlist_block4":
+                                selected_events[index] = event4;
+                                break;
+                        }
+                    });
+
+                    $.ajax({
+                        url: "/save_selected_event?event=" + selected_events[0] + "&event=" + selected_events[1],
+                        global: false
+                    }).done(function (data){
+                        if (data === "done"){
+                            window.location.href = "/post_task_survey";
+                        }else if (data === "no enough spots"){
+                            alert("There are not enough spots for this combination of performance");
+                        }
+                    });
+
+                }
+
         });
 
         fillPlaylist();

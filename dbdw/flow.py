@@ -6,7 +6,7 @@ from recommendation import RecommendationLog
 from database import db
 from recommendation.recommendation import get_genre_recommendation_by_preference
 from recommendation import RecTracks, SurveyResponse
-from dbdw import RecStream, SelectedStream, ImgRatings, RecEvent
+from dbdw import RecStream, SelectedStream, ImgRatings, RecEvent, SelectedEvent
 import random
 import re
 from general import MsiResponse, UserCondition
@@ -255,15 +255,34 @@ def event_recommendation(perform_type):
 def save_selected_stream():
     stream = request.args.get('stream')
 
-    db.session.add(SelectedStream(rec_id=session['rec_id'],
-                                  stream_name=stream,
-                                  session_id=session['id'],
-                                  user_id=session['userid'],
-                                  timestamp=time.time()
-                                 ))
+    db.session.add(
+        SelectedStream(rec_id=session['rec_id'],
+                       stream_name=stream,
+                       session_id=session['id'],
+                       user_id=session['userid'],
+                       timestamp=time.time()
+                       ))
     db.session.commit()
 
     return redirect(url_for('dbdw_bp.post_task_survey'))
+
+
+@dbdw_bp.route('/save_selected_event')
+def save_selected_event():
+    events = request.args.getlist('event')
+
+    for event in events:
+        db.session.add(
+            SelectedEvent(rec_id=session['rec_id'],
+                          event_name=event,
+                          session_id=session['id'],
+                          user_id=session['userid'],
+                          timestamp=time.time()
+                          )
+        )
+
+    db.session.commit()
+    return "done"
 
 
 @dbdw_bp.route('/post_task_survey', methods=["GET", "POST"])

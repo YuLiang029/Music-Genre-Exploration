@@ -11,6 +11,8 @@ import random
 import re
 from general import MsiResponse, UserCondition
 import os
+from flask_mail import Message
+from mail import mail
 
 dbdw_bp = Blueprint('dbdw_bp', __name__, template_folder='templates')
 
@@ -388,10 +390,32 @@ def registration_overview():
     selected_event = SelectedEvent.query.filter_by(rec_id=session["rec_id"])
     event1 = selected_event[0].event_name
     event2 = selected_event[1].event_name
+
     return render_template("last_page_2021.html",
                            email_address=email_address,
                            event1=event1,
                            event2=event2)
+
+
+@dbdw_bp.route('/send_email')
+def send_email():
+    email_address = MsiResponse.query.filter_by(user_id=session["userid"],
+                                                item_id="email").first().value
+    msg = Message(sender=os.environ.get('MAIL_USERNAME'), recipients=[email_address])
+    msg.subject = "Data Week Nederland Cultural Night Registration"
+
+    selected_event = SelectedEvent.query.filter_by(rec_id=session["rec_id"])
+    event1 = selected_event[0].event_name
+    event2 = selected_event[1].event_name
+
+    msg.html = "<h3>Thanks for registering for the concert!</h3>" \
+               "<h5>You have made a registration for two people. Your selected performance is:</h5>" \
+               "<p>1. " + event1 + "</p><p>2. " + event2 + "</p>"
+
+    # msg.html = request.form.get("html")
+
+    mail.send(msg)
+    return "done"
 
 
 @dbdw_bp.route('/rating')
@@ -432,4 +456,3 @@ def submit_ratings():
         except Exception as e:
             print(e)
             return "error"
-

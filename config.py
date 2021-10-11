@@ -36,3 +36,11 @@ SECRET_KEY = os.urandom(16)
 
 # set SQLALCHEMY maximum concurrent thread number
 # SQLALCHEMY_POOL_SIZE = 20
+
+# Mail setting
+MAIL_SERVER = 'smtp.gmail.com'
+MAIL_PORT = 465
+MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+MAIL_USE_TLS = False
+MAIL_USE_SSL = True

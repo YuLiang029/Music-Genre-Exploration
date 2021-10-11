@@ -16,3 +16,4 @@ urllib3>=1.26
 networkx==2.5.1
 Flask-DebugToolbar==0.11.0
 python-dotenv==0.17.1
+Flask-Mail==0.9.1

@@ -6,6 +6,7 @@ from genre_exploration.flow import genre_explore_bp
 from dbdw.flow import dbdw_bp
 from nudge.flow import nudge_bp
 import os
+from mail import mail
 
 
 # Force HTTPS connection on server
@@ -25,6 +26,7 @@ app = Flask(__name__)
 app.config.from_object('config')
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 db.init_app(app)
+mail.init_app(app)
 
 # Register blueprint for spotify login
 app.register_blueprint(spotify_basic_bp)

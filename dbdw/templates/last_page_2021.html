@@ -5,8 +5,13 @@
         Thanks for registering for the concert!
     </h3>
     <h5>
-        You have made a registration for two people. Your selected performance is:
+        You have made a registration for two people.
+        A confirm email of your registration will be sent to you in a few minutes.
     </h5>
+
+    <p class="lead">
+        Your selected performance is:
+    </p>
 
     <p class="lead">
         1. {{ event1 }}
@@ -15,5 +20,18 @@
     <p class="lead">
         2. {{ event2 }}
     </p>
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+    $.ajax({
+        url: "/send_email",
+        type: "GET",
+        //data: { "html": $("html").html()},
+        //success: function() { alert("A confirm email of your registration has been sent to your email address") },
+        global: false
+    })
+    </script>
 
 {% endblock %}

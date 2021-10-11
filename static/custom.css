@@ -377,44 +377,90 @@ table.sv_q_matrix th {
     display: block;
 }
 
-#playlist_block1 {
-    /*border: thick solid #007bff;*/
-    background: #7D3C98;
-    border-radius: 5px;
-
-}
-
-#playlist_block2 {
-    background: #ffffff00;
-    border-radius: 5px;
-}
-
-#playlist_block3 {
-    background: #ffffff00;
-    border-radius: 5px;
-}
-
-#playlist_block4 {
-    background: #ffffff00;
-    border-radius: 5px;
-}
-
-#perform_1 {
+.perform_1-select {
     background-color: #8E44AD;
     color: white;
 }
 
-#perform_2 {
+.perform_1-select:hover {
+    background-color: white;
+    color: #8E44AD;
+    border-color: #8E44AD;
+}
+
+.perform_2-select {
     background-color: #2471A3;
     color: white;
 }
 
-#perform_3 {
+.perform_2-select:hover {
+    background-color: white;
+    color: #2471A3;
+    border-color: #2471A3;
+}
+
+.perform_3-select {
     background-color: #229954;
     color: white;
 }
 
-#perform_4 {
+.perform_3-select:hover {
+    background-color: white;
+    color: #229954;
+    border-color: #229954;
+}
+
+.perform_4-select {
+    background-color: #D4AC0D;
+    color: white;
+}
+
+.perform_4-select:hover {
+    background-color: white;
+    color: #D4AC0D;
+    border-color: #D4AC0D;
+}
+
+.perform_1-unselect {
+    background-color: #ffffff00;
+    color: #8E44AD;
+    border-color: #8E44AD;
+}
+
+.perform_1-unselect:hover {
+    background-color: #8E44AD;
+    color: white;
+}
+
+.perform_2-unselect {
+    background-color: #ffffff00;
+    color: #2471A3;
+    border-color: #2471A3;
+}
+
+.perform_2-unselect:hover {
+    background-color: #2471A3;
+    color: white;
+}
+
+.perform_3-unselect {
+    background-color: #ffffff00;
+    color: #229954;
+    border-color: #229954;
+}
+
+.perform_3-unselect:hover {
+    background-color: #229954;
+    color: white;
+}
+
+.perform_4-unselect {
+    background-color: #ffffff00;
+    color: #D4AC0D;
+    border-color: #D4AC0D;
+}
+
+.perform_4-unselect:hover {
     background-color: #D4AC0D;
     color: white;
 }
@@ -441,4 +487,33 @@ input[type=radio].scale_radio{
 .track--highlighted-4 {
     outline-color: Yellow;
     outline-width: 10px;
+}
+
+.playlist-unselect {
+    background: #ffffff00;
+    border-radius: 5px;
+}
+
+.playlist1-select {
+    background: #7D3C98;
+    border-radius: 5px;
+}
+
+.playlist2-select {
+    background: #2E86C1;
+    border-radius: 5px;
+}
+
+.playlist3-select {
+    background: #28B463;
+    border-radius: 5px;
+}
+
+.playlist4-select {
+    background: #D68910;
+    border-radius: 5px;
+}
+
+button:hover, button:focus {
+  outline: none;
 }

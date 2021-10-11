@@ -52,33 +52,29 @@
     </div>
 
     <div class="row">
-        <div class="col-sm-3 order-sm-1 show-on-success" id="playlist_block1"
+        <div class="col-sm-3 order-sm-1 show-on-success playlist-unselect" id="playlist_block1"
              data-intro="This column represents the pre-selected playlist, which matches your preference the most."
              data-step='1'>
                     <br>
-                    <button class="btn btn-block
-                    show-on-success" id="perform_1"></button>
+                    <button class="btn btn-block perform_1-unselect show-on-success " id="perform_1"></button>
                     <div id="playlist1" class="playlist_new"></div>
         </div>
 
-        <div class="col-sm-3 order-sm-2 show-on-success" id="playlist_block2">
+        <div class="col-sm-3 order-sm-2 show-on-success playlist-unselect" id="playlist_block2">
             <br>
-            <button class="btn btn-block
-            show-on-success" id="perform_2"></button>
+            <button class="btn btn-block perform_2-unselect show-on-success" id="perform_2"></button>
             <div id="playlist2" class="playlist_new"></div>
         </div>
 
-        <div class="col-sm-3 order-sm-2  show-on-success" id="playlist_block3">
+        <div class="col-sm-3 order-sm-2  show-on-success playlist-unselect" id="playlist_block3">
             <br>
-            <button class="btn btn-block
-            show-on-success" id="perform_3"></button>
+            <button class="btn btn-block perform_3-unselect show-on-success" id="perform_3"></button>
             <div id="playlist3" class="playlist_new"></div>
         </div>
 
-        <div class="col-sm-3 order-sm-2 show-on-success" id="playlist_block4">
+        <div class="col-sm-3 order-sm-2 show-on-success playlist-unselect" id="playlist_block4">
             <br>
-            <button class="btn btn-block
-            show-on-success" id="perform_4"></button>
+            <button class="btn btn-block perform_4-unselect show-on-success" id="perform_4"></button>
             <div id="playlist4" class="playlist_new"></div>
         </div>
     </div>
@@ -153,14 +149,9 @@
     const colors = {
         "user_profile": "#CB4335",
         "event1": "#8E44AD",
-        "event1_highlight": "#7D3C98",
         "event2": "#2471A3",
-        "event2_highlight": "#2E86C1",
         "event3": "#229954",
-        "event3_highlight": "#28B463",
         "event4": "#D4AC0D",
-        "event4_highlight": "#D68910",
-        "playlist-background": "#ffffff00",
     };
 
     function fillPlaylist(){
@@ -619,42 +610,100 @@
         event3 = recommendations[2].event;
         event4 = recommendations[3].event;
 
-        $("#perform_1").html("More matching your preferences: " + event1);
-        $("#perform_2").html(event2);
-        $("#perform_3").html(event3);
-        $("#perform_4").html("More out of your bubbles: <br>" + event4);
+        if ("{{ condition }}" === "1"){
+            $('#playlist_block4')
+                .removeClass('playlist-unselect')
+                .addClass('playlist4-select')
+            $('#perform_4')
+                .removeClass('perform_4-unselect')
+                .addClass('perform_4-select')
 
-        $('#perform_1').click(function () {
-            $('#playlist_block1').css("background-color", colors.event1_highlight);
-            $('#playlist_block2').css("background-color", colors["playlist-background"]);
-            $('#playlist_block3').css("background-color", colors["playlist-background"]);
-            $('#playlist_block4').css("background-color", colors["playlist-background"]);
+            $('#continue').attr('href', '/save_selected_stream?stream=' + event4);
+        }else {
+            $('#playlist_block1')
+                .removeClass('playlist-unselect')
+                .addClass('playlist1-select')
+
+            $('#perform_1')
+                .removeClass('perform_1-unselect')
+                .addClass('perform_1-select')
 
             $('#continue').attr('href', '/save_selected_stream?stream=' + event1);
+        }
+
+        $('#perform_1')
+            .html("More matching your preferences: " + event1)
+            .click(function () {
+                if ($(this).parent().hasClass("playlist1-select")) {
+                    $(this).parent().removeClass("playlist1-select");
+                    $(this).parent().addClass("playlist-unselect");
+
+                    $(this).removeClass("perform_1-select")
+                    $(this).addClass("perform_1-unselect")
+
+                } else {
+                    $(this).parent().removeClass("playlist-unselect");
+                    $(this).parent().addClass("playlist1-select");
+
+                    $(this).removeClass("perform_1-unselect")
+                    $(this).addClass("perform_1-select")
+                }
         });
 
-        $('#perform_2').click(function () {
-            $('#playlist_block1').css("background-color", colors["playlist-background"]);
-            $('#playlist_block2').css("background-color", colors.event2_highlight);
-            $('#playlist_block3').css("background-color", colors["playlist-background"]);
-            $('#playlist_block4').css("background-color", colors["playlist-background"]);
-            $('#continue').attr('href', '/save_selected_stream?stream=' + event2);
+        $('#perform_2')
+            .html(event2)
+            .click(function () {
+                if ($(this).parent().hasClass("playlist2-select")) {
+                    $(this).parent().removeClass("playlist2-select");
+                    $(this).parent().addClass("playlist-unselect");
+
+                    $(this).removeClass("perform_2-select")
+                    $(this).addClass("perform_2-unselect")
+
+                } else {
+                    $(this).parent().removeClass("playlist-unselect");
+                    $(this).parent().addClass("playlist2-select");
+
+                    $(this).removeClass("perform_2-unselect")
+                    $(this).addClass("perform_2-select")
+                }
         });
 
-        $('#perform_3').click(function () {
-            $('#playlist_block1').css("background-color", colors["playlist-background"]);
-            $('#playlist_block2').css("background-color", colors["playlist-background"]);
-            $('#playlist_block3').css("background-color", colors.event3_highlight);
-            $('#playlist_block4').css("background-color", colors["playlist-background"]);
-            $('#continue').attr('href', '/save_selected_stream?stream=' + event3);
+        $('#perform_3')
+            .html(event3)
+            .click(function () {
+                if ($(this).parent().hasClass("playlist3-select")) {
+                    $(this).parent().removeClass("playlist3-select");
+                    $(this).parent().addClass("playlist-unselect");
+
+                    $(this).removeClass("perform_3-select")
+                    $(this).addClass("perform_3-unselect")
+
+                } else {
+                    $(this).parent().removeClass("playlist-unselect");
+                    $(this).parent().addClass("playlist3-select");
+
+                    $(this).removeClass("perform_3-unselect")
+                    $(this).addClass("perform_3-select")
+                }
         });
 
-        $('#perform_4').click(function () {
-            $('#playlist_block1').css("background-color", colors["playlist-background"]);
-            $('#playlist_block2').css("background-color", colors["playlist-background"]);
-            $('#playlist_block3').css("background-color", colors["playlist-background"]);
-            $('#playlist_block4').css("background-color", colors.event4_highlight);
-            $('#continue').attr('href', '/save_selected_stream?stream=' + event4);
+        $('#perform_4')
+            .html("More out of your bubbles: <br>" + event4)
+            .click(function () {
+                if ($(this).parent().hasClass("playlist4-select")) {
+                    $(this).parent().removeClass("playlist4-select");
+                    $(this).parent().addClass("playlist-unselect");
+                    $(this).removeClass("perform_4-select")
+                    $(this).addClass("perform_4-unselect")
+
+                } else {
+                    $(this).parent().removeClass("playlist-unselect");
+                    $(this).parent().addClass("playlist4-select");
+
+                    $(this).removeClass("perform_4-unselect")
+                    $(this).addClass("perform_4-select")
+                }
         });
 
         fillPlaylist();

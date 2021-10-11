@@ -141,12 +141,14 @@
     const circle = d3.symbol().type(d3.symbolCircle)(),
         triangleU = d3.symbol().type(d3.symbolTriangle)(),
         cross = d3.symbol().type(d3.symbolCross)(),
-        diamond = d3.symbol().type(d3.symbolDiamond)();
+        diamond = d3.symbol().type(d3.symbolDiamond)(),
+        star = d3.symbol().type(d3.symbolStar)();
 
     const circle_big = d3.symbol().size(200).type(d3.symbolCircle),
         triangleU_big = d3.symbol().size(200).type(d3.symbolTriangle),
         cross_big = d3.symbol().size(200).type(d3.symbolCross),
-        diamond_big = d3.symbol().size(200).type(d3.symbolDiamond);
+        diamond_big = d3.symbol().size(200).type(d3.symbolDiamond),
+        star_big = d3.symbol().size(200).type(d3.symbolStar)
 
     const colors = {
         "user_profile": "#CB4335",
@@ -306,9 +308,8 @@
                 let track_id = $(this).children(".trackid").attr("value");
                 let point = $(".rec_scatter [data-track-id=" + track_id + "]");
 
-                //$(".rec_scatter [data-track-id=" + track_id + "]").addClass("circle--highlighted");
-                if (point.attr("shape_text") === "circle"){
-                    point.attr("d", circle_big);
+                if (point.attr("shape_text") === "star"){
+                    point.attr("d", star_big);
                 }
                 else if (point.attr("shape_text") === "triangle"){
                     point.attr("d", triangleU_big);
@@ -322,10 +323,8 @@
                 let track_id = $(this).children(".trackid").attr("value");
                 let point = $(".rec_scatter [data-track-id=" + track_id + "]");
 
-                //$(".rec_scatter [data-track-id=" + track_id + "]").removeClass("circle--highlighted");
-
-                if (point.attr("shape_text") === "circle"){
-                    point.attr("d", circle);
+                if (point.attr("shape_text") === "star"){
+                    point.attr("d", star);
                 }else if (point.attr("shape_text") === "triangle"){
                     point.attr("d", triangleU);
                 }else if (point.attr("shape_text") === "cross"){
@@ -467,8 +466,8 @@
 
 
         // Add a scatter plot for the recommendations1
-        this.add_scatter_plot(visible_recommendations1, colors.event1, circle,
-            circle_big, "circle", "rec_scatter");
+        this.add_scatter_plot(visible_recommendations1, colors.event1, star,
+            star_big, "star", "rec_scatter");
         this.add_scatter_plot(visible_recommendations2, colors.event2, triangleU,
             triangleU_big, "triangle", "rec_scatter");
         this.add_scatter_plot(visible_recommendations3, colors.event3, cross,
@@ -548,46 +547,29 @@
             .attr("y", height+1)
             .text(y_negative);
 
-        // Add legend
-        this.svg.append("g")
-            .attr("class", "legend_rec1")
-            .attr("transform", "translate(-75,0)");
-
-        let ordinal = d3.scaleOrdinal()
-            .domain(["Your taste", event1, event2, event3, event4])
-            .range([colors.user_profile, colors.event1, colors.event2, colors.event3, colors.event4]);
-
-        this.svg.append("g")
-          .attr("class", "legendOrdinal")
-          .attr("transform", "translate(-75,0)");
-        let legendOrdinal = d3.legendColor()
-          .shape("circle")
-          .shapePadding(16)
-          .shapeRadius(5)
-          //use cellFilter to hide the "e" cell
-          .cellFilter(function(d){ return d.label !== "e" })
-          .scale(ordinal);
-
-        this.svg.select(".legendOrdinal")
-          .call(legendOrdinal);
-
-
         let symbolScale =  d3.scaleOrdinal()
-            .domain([event1, event2, event3, event4])
-            .range([circle, triangleU, cross, diamond] );
+            .domain(["Your taste", event1, event2, event3, event4])
+            .range([circle, star, triangleU, cross, diamond] );
+
+        let colorScale =  d3.scaleOrdinal()
+            .domain(["Your taste", event1, event2, event3, event4])
+            .range([colors.user_profile, colors.event1, colors.event2, colors.event3, colors.event4] );
 
         this.svg.append("g")
             .attr("class", "legendSymbol")
-            .attr("transform", "translate(270, 300)");
+            .attr("transform", "translate(-75, 0)");
+            //.attr("transform", "translate(270, 300)");
 
         let legendPath = d3.legendSymbol()
-          .scale(symbolScale)
-          .shapePadding(16);
-          //.orient("horizontal")
-          //.labelWrap(30);
+            .scale(symbolScale)
+            .shapePadding(16);
 
         this.svg.select(".legendSymbol")
             .call(legendPath);
+
+        this.svg.selectAll(".cell path").each(function(d) {
+            d3.select(this).style("fill", colorScale(d))
+        })
     }
 
     /* Guided tour ---------------------------------------------------------------------------------------------------*/

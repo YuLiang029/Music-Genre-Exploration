@@ -6,7 +6,7 @@ from recommendation import RecommendationLog
 from database import db
 from recommendation.recommendation import get_genre_recommendation_by_preference
 from recommendation import RecTracks, SurveyResponse
-from dbdw import RecStream, SelectedStream, ImgRatings, RecEvent, SelectedEvent
+from dbdw import RecStream, SelectedStream, ImgRatings, RecEvent, SelectedEvent, Events
 import random
 import re
 from general import MsiResponse, UserCondition
@@ -187,6 +187,29 @@ def event_recommendation(perform_type):
 
         print(l_event_recs)
         return jsonify(l_event_recs)
+
+
+@dbdw_bp.route('/register_event')
+def register_event():
+    num_ssw, num_pop, num_jazz, num_harp = 20, 20, 20, 40
+    room_ssw, room_pop, room_jazz, room_harp = "room1", "room2", "room3", "room4"
+    timeslot1, timeslot2 = "timeslot1", "timeslot2"
+
+    events = {
+        "Sing-Songwriter": {"timeslot1": num_ssw, "timeslot2": num_ssw, "event_room": room_ssw},
+        "Pop musician": {"timeslot1": num_pop, "timeslot2": num_pop, "event_room": room_pop},
+        "Jazz musician": {"timeslot1": num_jazz, "timeslot2": num_jazz, "event_room": room_jazz},
+        "Harpist": {"timeslot1": num_harp, "timeslot2": num_harp, "event_room": room_harp}
+    }
+    l_timeslot = [timeslot1, timeslot2]
+
+    for event in events:
+        for timeslot in l_timeslot:
+            event_obj = Events(event_name=event, event_timeslot=timeslot, event_room=events[event]["event_room"],
+                               spots_available=events[event][timeslot])
+            db.session.add(event_obj)
+            db.session.commit()
+    return jsonify("done")
 
 
 # @dbdw_bp.route('/register_event')

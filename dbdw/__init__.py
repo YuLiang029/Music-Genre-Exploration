@@ -60,6 +60,7 @@ class Events (db.Model):
     event_id = db.Column(db.INTEGER, primary_key=True, autoincrement=True)
     event_name = db.Column(db.VARCHAR)
     event_timeslot = db.Column(db.VARCHAR)
+    event_room = db.Column(db.VARCHAR)
     spots_available = db.Column(db.INTEGER)
 
 # class RegisterEvent(db.Model):

@@ -15,6 +15,19 @@ from flask_mail import Message
 from mail import mail
 
 dbdw_bp = Blueprint('dbdw_bp', __name__, template_folder='templates')
+num_ssw, num_pop, num_jazz, num_harp = 20, 20, 20, 40
+room_ssw, room_pop, room_jazz, room_harp = "room1", "room2", "room3", "room4"
+timeslot1 = "timeslot1"
+timeslot2 = "timeslot2"
+l_timeslot = [timeslot1, timeslot2]
+
+
+events = {
+    "Singsongwriter": {"capacity": num_ssw, "event_room": room_ssw},
+    "Pop musician": {"capacity": num_pop, "event_room": room_pop},
+    "Jazz musician": {"capacity": num_jazz, "event_room": room_jazz},
+    "Harpist": {"capacity": num_harp, "event_room": room_harp}
+}
 
 
 @dbdw_bp.route('/')
@@ -191,22 +204,10 @@ def event_recommendation(perform_type):
 
 @dbdw_bp.route('/register_event')
 def register_event():
-    num_ssw, num_pop, num_jazz, num_harp = 20, 20, 20, 40
-    room_ssw, room_pop, room_jazz, room_harp = "room1", "room2", "room3", "room4"
-    timeslot1, timeslot2 = "timeslot1", "timeslot2"
-
-    events = {
-        "Sing-Songwriter": {"timeslot1": num_ssw, "timeslot2": num_ssw, "event_room": room_ssw},
-        "Pop musician": {"timeslot1": num_pop, "timeslot2": num_pop, "event_room": room_pop},
-        "Jazz musician": {"timeslot1": num_jazz, "timeslot2": num_jazz, "event_room": room_jazz},
-        "Harpist": {"timeslot1": num_harp, "timeslot2": num_harp, "event_room": room_harp}
-    }
-    l_timeslot = [timeslot1, timeslot2]
-
     for event in events:
         for timeslot in l_timeslot:
             event_obj = Events(event_name=event, event_timeslot=timeslot, event_room=events[event]["event_room"],
-                               spots_available=events[event][timeslot])
+                               spots_available=events[event]["capacity"])
             db.session.add(event_obj)
             db.session.commit()
     return jsonify("done")
@@ -294,20 +295,80 @@ def save_selected_stream():
 
 @dbdw_bp.route('/save_selected_event')
 def save_selected_event():
-    events = request.args.getlist('event')
+    selected_events = request.args.getlist('event')
+    event1 = selected_events[0]
+    event2 = selected_events[1]
 
-    for event in events:
-        db.session.add(
-            SelectedEvent(rec_id=session['rec_id'],
-                          event_name=event,
-                          session_id=session['id'],
-                          user_id=session['userid'],
-                          timestamp=time.time()
-                          )
-        )
+    event1_capacity = events[selected_events[0]]["capacity"]
+    event2_capacity = events[selected_events[1]]["capacity"]
 
-    db.session.commit()
-    return "done"
+    dict_spots_option1 = {}
+    dict_spots_option2 = {}
+
+    # # check the number of registration of the selected events
+    dict_spots_option1["remain_event1_t1"] = event1_capacity - SelectedEvent.query.filter_by(
+        event_name=event1,
+        event_timeslot=timeslot1).count()
+    dict_spots_option1["remain_event2_t2"] = event2_capacity - SelectedEvent.query.filter_by(
+        event_name=event2,
+        event_timeslot=timeslot2).count()
+
+    min_option1 = min(dict_spots_option1.values())
+    sum_option1 = sum(dict_spots_option1.values())
+
+    dict_spots_option2["remain_event2_t1"] = event2_capacity - SelectedEvent.query.filter_by(
+        event_name=event2,
+        event_timeslot=timeslot1).count()
+    dict_spots_option2["remain_event1_t2"] = event1_capacity - SelectedEvent.query.filter_by(
+        event_name=event1,
+        event_timeslot=timeslot2).count()
+    min_option2 = min(dict_spots_option2.values())
+    sum_option2 = sum(dict_spots_option2.values())
+
+    event1_spots_available = event1_capacity - SelectedEvent.query.filter_by(event_name=event1).count()
+    event2_spots_available = event2_capacity - SelectedEvent.query.filter_by(event_name=event2).count()
+    print(min_option1, min_option2, sum_option1, sum_option2, event1_spots_available, event2_spots_available)
+
+    # simple greedy algorithm for scheduling
+    if min_option1 > 0 and min_option2 > 0:
+        if min_option1 < min_option2:
+            # E1 E2
+            save_events = [selected_events[1], selected_events[0]]
+        elif min_option1 > min_option2:
+            # E2, E1
+            save_events = [selected_events[0], selected_events[1]]
+        else:
+            # if there is a tie
+            if sum_option1 <= sum_option2:
+                # E2, E1
+                save_events = [selected_events[1], selected_events[0]]
+            else:
+                # E1, E2
+                save_events = [selected_events[0], selected_events[1]]
+        print(save_events)
+
+        for i in range(len(save_events)):
+            db.session.add(
+                SelectedEvent(rec_id=session['rec_id'],
+                              event_timeslot=l_timeslot[i],
+                              event_name=save_events[i],
+                              session_id=session['id'],
+                              user_id=session['userid'],
+                              timestamp=time.time()
+                              )
+            )
+            db.session.commit()
+        return "done"
+    else:
+        if event1_spots_available == 0 and event2_spots_available == 0:
+            return "both events are not available any more"
+        else:
+            if event1_spots_available == 0:
+                return "event 1 is not available"
+            elif event2_spots_available == 0:
+                return "event 2 is not available"
+            else:
+                return "this combination is not available anymore"
 
 
 @dbdw_bp.route('/post_task_survey', methods=["GET", "POST"])
@@ -404,11 +465,12 @@ def final_step():
 
 @dbdw_bp.route('/registration_overview')
 def registration_overview():
-    selected_event = SelectedEvent.query.filter_by(rec_id=session["rec_id"])
-    event1 = selected_event[0].event_name
-    event2 = selected_event[1].event_name
+    event1 = SelectedEvent.query.filter_by(rec_id=session["rec_id"], event_timeslot=timeslot1).first().event_name
+    event2 = SelectedEvent.query.filter_by(rec_id=session["rec_id"], event_timeslot=timeslot2).first().event_name
 
     return render_template("last_page_2021.html",
+                           timeslot1=timeslot1,
+                           timeslot2=timeslot2,
                            event1=event1,
                            event2=event2)
 
@@ -426,9 +488,8 @@ def send_email():
 
     msg.html = "<h3>Thanks for registering for the concert!</h3>" \
                "<p>You have made a registration for two people. Your selected performance is:</p>" \
-               "<p>1. " + event1 + "</p><p>2. " + event2 + "</p> " \
-               "<div> <img src=\"{{ url_for('static', filename='imgs/JADS_logo_RGB.png') }}\" " \
-                                                           "alt=\"Jheronimus Academy of Data Science\"/ " \
+               "<p>1. " + event1 + "at " + timeslot1 + "</p><p>2. " + event2 + "at " + timeslot2 + "</p> " \
+               "<div> <img src=\"{{ url_for('static', filename='imgs/JADS_logo_RGB.png') }}\" alt=\"Jheronimus Academy of Data Science\"/ " \
                                                            "style=\"width:300px\"></div>" \
                "<div><img src=\"{{ url_for('static', filename='imgs/logo_tue.svg') }}\" " \
                                                            "alt=\"Eindhoven University of Technology\"/ " \

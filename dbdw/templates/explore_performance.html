@@ -761,8 +761,14 @@
                     }).done(function (data){
                         if (data === "done"){
                             window.location.href = "/post_task_survey";
-                        }else if (data === "no enough spots"){
-                            alert("There are not enough spots for this combination of performance");
+                        }else if (data === "this combination is not available anymore"){
+                            alert("There are not enough spots for this combination of performance. Please make a new selection");
+                        }else if (data === "event 1 is not available"){
+                            alert(selected_events[0] + " is not available any more. Please make a new selection");
+                        }else if (data === "event 2 is not available"){
+                            alert(selected_events[1] + " is not available any more. Please make a new selection");
+                        }else if (data=== "both events are not available any more"){
+                            alert("The two selected performance is not available any more. Please make a new selection");
                         }
                     });
 

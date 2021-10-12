@@ -43,6 +43,11 @@ def inform_consent():
 @dbdw_bp.route('/assign_condition')
 def assign_condition():
     user_condition = UserCondition.query.filter_by(user_id=session["userid"]).first()
+    selected_event = SelectedEvent.query.filter_by(user_id=session["userid"]).count()
+
+    if selected_event >= 2:
+        return redirect(url_for("dbdw_bp.selection_made_exception"))
+
     if not user_condition:
         # randomly assign a user to a condition
         condition = random.randint(0, 1)
@@ -59,6 +64,11 @@ def assign_condition():
         db.session.add(user_condition_new)
         db.session.commit()
     return redirect(url_for("spotify_basic_bp.msi_survey", redirect_path="dbdw_bp.event_explore"))
+
+
+@dbdw_bp.route('/selection_made_exception')
+def selection_made_exception():
+    return render_template("error_selection_already_made.html")
 
 
 @dbdw_bp.route('/event_explore')

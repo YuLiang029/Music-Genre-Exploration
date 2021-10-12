@@ -64,18 +64,6 @@ class Events (db.Model):
     event_room = db.Column(db.VARCHAR)
     spots_available = db.Column(db.INTEGER)
 
-# class RegisterEvent(db.Model):
-#     __tablename__ = 'register_event'
-#     user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'))
-#     session_id = db.Column(db.VARCHAR, db.ForeignKey('session_log.id'))
-#     rec_id = db.Column(db.VARCHAR, db.ForeignKey('recommendation_log.id'), primary_key=True)
-#     event_id = db.Column(db.VARCHAR, primary_key=True)
-#     event_session = db.Column(db.VARCHAR, primary_key=True)
-#     timestamp = db.Column(db.FLOAT)
-#
-#     def __repr__(self):
-#         return '<RegisterEvent %r-%r>' % (self.user_id, self.event_id)
-
 
 class ImgRatings(db.Model):
     __tablename__ = 'img_ratings'

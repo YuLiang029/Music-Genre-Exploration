@@ -15,7 +15,7 @@ from flask_mail import Message
 from mail import mail
 
 dbdw_bp = Blueprint('dbdw_bp', __name__, template_folder='templates')
-num_ssw, num_pop, num_jazz, num_harp = 20, 20, 20, 40
+num_ssw, num_pop, num_jazz, num_harp = 2, 2, 1, 1
 room_ssw, room_pop, room_jazz, room_harp = "room1", "room2", "room3", "room4"
 timeslot1 = "timeslot1"
 timeslot2 = "timeslot2"
@@ -275,13 +275,22 @@ def save_selected_event():
     event2_spots_available = event2_capacity - SelectedEvent.query.filter_by(event_name=event2).count()
     print(min_option1, min_option2, sum_option1, sum_option2, event1_spots_available, event2_spots_available)
 
+    # check the number of people for the concert
+    num_people = MsiResponse.query.filter_by(user_id=session["userid"],
+                                             item_id="ticketnum").first().value
+
+    minimal_aval_spots = 0
+
+    if num_people != 1:
+        minimal_aval_spots = 1
+
     # simple greedy algorithm for scheduling
-    if min_option1 > 0 and min_option2 > 0:
+    if min_option1 > minimal_aval_spots or min_option2 > minimal_aval_spots:
         if min_option1 < min_option2:
-            # E1 E2
+            # E2, E1
             save_events = [selected_events[1], selected_events[0]]
         elif min_option1 > min_option2:
-            # E2, E1
+            # E1, E2
             save_events = [selected_events[0], selected_events[1]]
         else:
             # if there is a tie
@@ -306,15 +315,16 @@ def save_selected_event():
             db.session.commit()
         return "done"
     else:
-        if event1_spots_available == 0 and event2_spots_available == 0:
-            return "both events are not available any more"
+        if event1_spots_available <= minimal_aval_spots and event2_spots_available <= minimal_aval_spots:
+            data = {'return_message': "both events are not available any more", 'num_people': num_people}
         else:
-            if event1_spots_available == 0:
-                return "event 1 is not available"
-            elif event2_spots_available == 0:
-                return "event 2 is not available"
+            if event1_spots_available <= minimal_aval_spots:
+                data = {'return_message': "event 1 is not available", 'num_people': num_people}
+            elif event2_spots_available <= minimal_aval_spots:
+                data = {'return_message': "event 2 is not available", 'num_people': num_people}
             else:
-                return "this combination is not available anymore"
+                data = {'return_message': "this combination is not available anymore", 'num_people': num_people}
+        return jsonify(data)
 
 
 @dbdw_bp.route('/post_task_survey', methods=["GET", "POST"])

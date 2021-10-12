@@ -49,6 +49,7 @@ class SelectedEvent (db.Model):
     user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'))
     timestamp = db.Column(db.FLOAT)
     event_timeslot = db.Column(db.VARCHAR)
+    num_people = db.Column(db.INTEGER)
     event_name = db.Column(db.VARCHAR, primary_key=True)
     rec_id = db.Column(db.VARCHAR, db.ForeignKey('recommendation_log.id'), primary_key=True)
 

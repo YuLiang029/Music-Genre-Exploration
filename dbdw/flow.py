@@ -383,16 +383,11 @@ def final_step():
 
 @dbdw_bp.route('/registration_overview')
 def registration_overview():
-
-    email_address = MsiResponse.query.filter_by(user_id=session["userid"],
-                                                item_id="email").first().value
-
     selected_event = SelectedEvent.query.filter_by(rec_id=session["rec_id"])
     event1 = selected_event[0].event_name
     event2 = selected_event[1].event_name
 
     return render_template("last_page_2021.html",
-                           email_address=email_address,
                            event1=event1,
                            event2=event2)
 
@@ -409,10 +404,14 @@ def send_email():
     event2 = selected_event[1].event_name
 
     msg.html = "<h3>Thanks for registering for the concert!</h3>" \
-               "<h5>You have made a registration for two people. Your selected performance is:</h5>" \
-               "<p>1. " + event1 + "</p><p>2. " + event2 + "</p>"
-
-    # msg.html = request.form.get("html")
+               "<p>You have made a registration for two people. Your selected performance is:</p>" \
+               "<p>1. " + event1 + "</p><p>2. " + event2 + "</p> " \
+               "<div> <img src=\"{{ url_for('static', filename='imgs/JADS_logo_RGB.png') }}\" " \
+                                                           "alt=\"Jheronimus Academy of Data Science\"/ " \
+                                                           "style=\"width:300px\"></div>" \
+               "<div><img src=\"{{ url_for('static', filename='imgs/logo_tue.svg') }}\" " \
+                                                           "alt=\"Eindhoven University of Technology\"/ " \
+                                                           "style=\"width:300px\"></div>"
 
     mail.send(msg)
     return "done"

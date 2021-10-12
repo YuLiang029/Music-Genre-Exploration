@@ -313,9 +313,7 @@ def post_task_survey():
                 "questions": [{
                     "type": "matrix",
                     "name": "Eval",
-                    "title": "Below you can find some questions related to your experience with the interface "
-                             "and the correctness of the algorithm that recommended the sessions to you."
-                             "Please indicate to what extent you agree or disagree with each statement.",
+                    "title": "Please indicate to what extent you agree or disagree with each statement.",
                     "isAllRowRequired": "true",
                     "columns": [
                         {"value": 1, "text": "Completely Disagree"},
@@ -327,17 +325,17 @@ def post_task_survey():
                         {"value": 7, "text": "Completely Agree"}
                     ],
                     "rows": [
-                        {"value": "1", "text": "The stream that should match with "
-                                               "my music preference actually matched my music preference."},
-                        {"value": "2", "text": "The stream that was more out "
-                                               "of my bubble challenged me to explore a new music taste."},
-                        {"value": "3", "text": "I like the stream that was "
+                        {"value": "1", "text": "The performance that should match with "
+                                               "my musical preference actually matched my musical preference."},
+                        {"value": "2", "text": "The performance that is more out "
+                                               "of my bubble challenges me to explore a new music taste."},
+                        {"value": "3", "text": "I like the performance that is "
                                                "out of my bubble more than I expected beforehand."},
                         {"value": "4", "text": "The visualization helped me "
-                                               "in understanding my own music taste."},
+                                               "in understanding my own musical tastes."},
                         {"value": "5", "text": "The visualization helped me in "
-                                               "understanding the song characteristics of the different sessions."},
-                        {"value": "6", "text": "The visualization helped me in choosing which session to go to."}
+                                               "understanding the song characteristics of the different performance."},
+                        {"value": "6", "text": "The visualization helped me in choosing which two performance to go to."}
 
                     ]
                 }]
@@ -347,7 +345,7 @@ def post_task_survey():
 
         survey_config = {
             'title': 'Survey about your experience with the recommendations and interface',
-            'description': 'Before receiving the link to your chosen concert, please fill in this survey.',
+            'description': 'Please fill in this survey about your experience with the recommendations and interface ',
             'next_url': url_for('dbdw_bp.registration_overview')
         }
 

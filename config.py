@@ -17,6 +17,11 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'test.db').repla
 # Database configuration for upgraded HEROKU database
 # SQLALCHEMY_DATABASE_URI = os.environ.get('HEROKU_POSTGRESQL_MAROON_URL').replace("://", "ql://", 1)
 
+# Database for postgresql
+# SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL',
+#                                          'postgresql://localhost/dbdw').replace(
+#                                          "mysql://", "mysql+pymysql://")
+
 DATABASE_CONNECT_OPTIONS = {}
 
 # Application threads. A common general assumption is using 2 per available processor cores - to handle

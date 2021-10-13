@@ -456,7 +456,7 @@ def send_email():
 
     msg.html = "<h3>Thanks for registering for the concert!</h3>" \
                "<p>You have made a registration for two people. Your selected performances are:</p>" \
-               "<p>1. " + event1 + " at " + timeslot1 + " , 26 Oct</p><p>2. " \
+               "<p>1. " + event1 + " at " + timeslot1 + ", 26 Oct</p><p>2. " \
                + event2 + " at " + timeslot2 + ", 26 Oct</p> " \
                "<div> <img src=\"{{ url_for('static', filename='imgs/JADS_logo_RGB.png') }}\" alt=\"Jheronimus Academy of Data Science\"/ " \
                                                            "style=\"width:300px\"></div>" \

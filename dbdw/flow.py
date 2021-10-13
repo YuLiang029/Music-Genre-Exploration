@@ -488,10 +488,6 @@ def send_email():
                "<p>Best regards,</p>"\
                "<p>Yu Liang & Martijn Willemsen</p>"\
                "Researchers on Music Recommender Systems, JADS"\
-               "<div> <img src='../static/imgs/JADS_logo_RGB.png' alt=\"Jheronimus Academy of Data Science\"/ " \
-                                                           "style=\"width:300px\"></div>" \
-               "<div><img src='../static/imgs/logo_tue.svg' alt=\"Eindhoven University of Technology\"/ " \
-                                                           "style=\"width:300px\"></div>"
 
     mail.send(msg)
     return "done"

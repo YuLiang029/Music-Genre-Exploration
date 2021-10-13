@@ -2,22 +2,26 @@
 {% block title %}Last Page{% endblock %}
 {% block content%}
     <h3>
-        Thanks for registering for the concert!
+        Thanks for registering for the JADS Music Night!
     </h3>
-    <h5>
-        A confirm email of your registration will be sent to you in a few minutes.
-    </h5>
-
-    <p class="lead">
-        You have made a registration for two people. Your selected performances are:
+    <p>
+        <strong>A confirm email of your registration will be sent to you in a few minutes</strong>
     </p>
 
     <p class="lead">
-        1. {{ event1 }} at {{ timeslot1 }}
+        Your reservation number is: {{ reserve_num }}
     </p>
 
     <p class="lead">
-        2. {{ event2 }} at {{ timeslot2 }}
+        You have made a registration for {{ num_people }} people. Your selected performances are:
+    </p>
+
+    <p class="lead">
+        1. {{ event1 }} in the first session {{ timeslot1 }}
+    </p>
+
+    <p class="lead">
+        2. {{ event2 }} in the second session {{ timeslot2 }}
     </p>
 
 {% endblock %}

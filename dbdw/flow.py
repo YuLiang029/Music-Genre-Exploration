@@ -450,7 +450,16 @@ def registration_overview():
     event1 = SelectedEvent.query.filter_by(rec_id=session["rec_id"], event_timeslot=timeslot1).first().event_name
     event2 = SelectedEvent.query.filter_by(rec_id=session["rec_id"], event_timeslot=timeslot2).first().event_name
 
+    num_people = MsiResponse.query.filter_by(user_id=session["userid"],
+                                             item_id="ticketnum").first().value
+
+    reserve_num = SelectedEvent.query.filter_by(user_id=session["userid"]).first().reserve_num
+    session["reserve_num"] = reserve_num
+    session["num_people"] = num_people
+
     return render_template("last_page_2021.html",
+                           reserve_num="jm" + str(session["reserve_num"]),
+                           num_people=num_people,
                            timeslot1=timeslot1,
                            timeslot2=timeslot2,
                            event1=event1,
@@ -468,10 +477,17 @@ def send_email():
     event1 = selected_event[0].event_name
     event2 = selected_event[1].event_name
 
-    msg.html = "<h3>Thanks for registering for the concert!</h3>" \
-               "<p>You have made a registration for two people. Your selected performances are:</p>" \
-               "<p>1. " + event1 + " at " + timeslot1 + ", 26 Oct</p><p>2. " \
-               + event2 + " at " + timeslot2 + ", 26 Oct</p> " \
+    msg.html = "<h3>Thanks for registering for the JADS Music Night!</h3>" \
+               "Your reservation number is: jm" + str(session["reserve_num"]) + \
+               "<p>You have made a registration for " + str(session["num_people"]) + \
+               " people. Your selected performances are:</p>" \
+               "<p>1. " + event1 + "  in the first session (" + timeslot1 + "),</p><p>2. " \
+               + event2 + " in the second session (" + timeslot2 + "),</p> " \
+               "<p>The evening starts at 19:00h with an introduction and two short lectures.</p>" \
+               "<p>Please bring this email to the Music Night along with the tickets to confirm you registration for the two sessions above.</p>" \
+               "<p>Best regards,</p>"\
+               "<p>Yu Liang & Martijn Willemsen</p>"\
+               "Researchers on Music Recommender Systems, JADS"\
                "<div> <img src=\"{{ url_for('static', filename='imgs/JADS_logo_RGB.png') }}\" alt=\"Jheronimus Academy of Data Science\"/ " \
                                                            "style=\"width:300px\"></div>" \
                "<div><img src=\"{{ url_for('static', filename='imgs/logo_tue.svg') }}\" " \

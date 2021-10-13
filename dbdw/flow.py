@@ -271,8 +271,19 @@ def save_selected_event():
     min_option2 = min(dict_spots_option2.values())
     sum_option2 = sum(dict_spots_option2.values())
 
-    event1_spots_available = event1_capacity - SelectedEvent.query.filter_by(event_name=event1).count()
-    event2_spots_available = event2_capacity - SelectedEvent.query.filter_by(event_name=event2).count()
+    event1_occupied = SelectedEvent.query.filter_by(event_name=event1).all()
+    event2_occupied = SelectedEvent.query.filter_by(event_name=event2).all()
+
+    num_event1_occupied = 0
+    for e1_occupied in event1_occupied:
+        num_event1_occupied = num_event1_occupied + e1_occupied
+
+    num_event2_occupied = 0
+    for e2_occupied in event2_occupied:
+        num_event2_occupied = num_event2_occupied + e2_occupied
+
+    event1_spots_available = event1_capacity - num_event1_occupied
+    event2_spots_available = event2_capacity - num_event2_occupied
     print(min_option1, min_option2, sum_option1, sum_option2, event1_spots_available, event2_spots_available)
 
     # check the number of people for the concert
@@ -308,6 +319,7 @@ def save_selected_event():
                               event_timeslot=l_timeslot[i],
                               event_name=save_events[i],
                               session_id=session['id'],
+                              num_people=num_people,
                               user_id=session['userid'],
                               timestamp=time.time()
                               )
@@ -444,7 +456,8 @@ def send_email():
 
     msg.html = "<h3>Thanks for registering for the concert!</h3>" \
                "<p>You have made a registration for two people. Your selected performances are:</p>" \
-               "<p>1. " + event1 + " at " + timeslot1 + "</p><p>2. " + event2 + " at " + timeslot2 + "</p> " \
+               "<p>1. " + event1 + " at " + timeslot1 + " , 26 Oct</p><p>2. " \
+               + event2 + " at " + timeslot2 + ", 26 Oct</p> " \
                "<div> <img src=\"{{ url_for('static', filename='imgs/JADS_logo_RGB.png') }}\" alt=\"Jheronimus Academy of Data Science\"/ " \
                                                            "style=\"width:300px\"></div>" \
                "<div><img src=\"{{ url_for('static', filename='imgs/logo_tue.svg') }}\" " \

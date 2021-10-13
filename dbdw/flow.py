@@ -15,7 +15,7 @@ from flask_mail import Message
 from mail import mail
 
 dbdw_bp = Blueprint('dbdw_bp', __name__, template_folder='templates')
-num_ssw, num_pop, num_jazz, num_harp = 2, 2, 1, 1
+num_ssw, num_pop, num_jazz, num_harp = 20, 20, 20, 40
 room_ssw, room_pop, room_jazz, room_harp = "room1", "room2", "room3", "room4"
 timeslot1 = "timeslot1"
 timeslot2 = "timeslot2"
@@ -444,7 +444,7 @@ def send_email():
 
     msg.html = "<h3>Thanks for registering for the concert!</h3>" \
                "<p>You have made a registration for two people. Your selected performance is:</p>" \
-               "<p>1. " + event1 + "at " + timeslot1 + "</p><p>2. " + event2 + "at " + timeslot2 + "</p> " \
+               "<p>1. " + event1 + " at " + timeslot1 + "</p><p>2. " + event2 + " at " + timeslot2 + "</p> " \
                "<div> <img src=\"{{ url_for('static', filename='imgs/JADS_logo_RGB.png') }}\" alt=\"Jheronimus Academy of Data Science\"/ " \
                                                            "style=\"width:300px\"></div>" \
                "<div><img src=\"{{ url_for('static', filename='imgs/logo_tue.svg') }}\" " \

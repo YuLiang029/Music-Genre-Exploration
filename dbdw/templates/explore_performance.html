@@ -27,17 +27,17 @@
 
     <div class="mb-3 row">
         <div id="contour_viz" class="show-on-success col-sm-6" data-intro="In this graph, you can see how the
-            songs from different performance
+            songs from different performances
             relate to your music taste (orange outline).
             This graph shows two features of the songs: energy (the excitement of the song)
-            and valence (the positiveness of the song) for the 4 different performance:
+            and valence (the positiveness of the song) for the 4 different performances:
             Sing-Songwriter, Harpist, Pop musician, and Jazz musician" data-step='2'>
             <span class="help" data-toggle="tooltip" data-placement="top" style="position:absolute;right:20px;top:20px;"
                   title="In this graph, you can see how the
             songs from different events
             relate to your music taste (orange outline).
             This graph shows two features of the songs: energy (the excitement of the song)
-            and valence (the positiveness of the song) for the 4 different performance:
+            and valence (the positiveness of the song) for the 4 different performances:
             Sing-Songwriter, Harpist, Pop musician, and Jazz musician">
                 <i class="fas fa-question-circle text-info"></i>
             </span>
@@ -111,7 +111,7 @@
     <br>
     <div class="col-sm text-right">
         <a class="show-on-success btn btn-outline-success" id="continue" href="#"
-           data-intro="After selecting two performance you want to go to for the concert, click the button to continue" data-step='5'>
+           data-intro="After selecting two performances you want to go to for the concert, click the button to continue" data-step='5'>
             Continue <i class="fas fa-arrow-right"></i>
         </a>
     </div>
@@ -747,9 +747,9 @@
                 e.preventDefault();
 
                 if (num_selected > 2){
-                    alert("You can only select 2 performance")
+                    alert("You can only select 2 performances")
                 }else if (num_selected < 2){
-                    alert("You need to select 2 performance")
+                    alert("You need to select 2 performances")
                 }else{
                     $( ".playlist-select" ).each(function(index) {
                         switch ($(this).attr("id")){
@@ -777,9 +777,9 @@
                             window.location.href = "/post_task_survey";
                         }else if (data["return_message"] === "this combination is not available anymore"){
                             if (data["num_people"] === 1){
-                                alert("There are not enough spots for this combination of performance. Please make a new selection");
+                                alert("There are not enough spots for this combination of performances. Please make a new selection");
                             }else{
-                                alert("There are not enough spots for this combination of performance for two people. " +
+                                alert("There are not enough spots for this combination of performances for two people. " +
                                     "Please make a new selection");
                             }
                         }else if (data["return_message"] === "event 1 is not available"){
@@ -799,9 +799,9 @@
 
                         }else if (data["return_message"] === "both events are not available any more"){
                             if (data["num_people"] === 1){
-                                 alert("The two selected performance is not available any more. Please make a new selection");
+                                 alert("The two selected performances are not available any more. Please make a new selection");
                             }else{
-                                 alert("The two selected performance is not available any more for two people. Please make a new selection");
+                                 alert("The two selected performances are not available any more for two people. Please make a new selection");
                             }
 
                         }

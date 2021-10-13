@@ -17,8 +17,8 @@ from mail import mail
 dbdw_bp = Blueprint('dbdw_bp', __name__, template_folder='templates')
 num_ssw, num_pop, num_jazz, num_harp = 20, 20, 20, 40
 room_ssw, room_pop, room_jazz, room_harp = "room1", "room2", "room3", "room4"
-timeslot1 = "timeslot1"
-timeslot2 = "timeslot2"
+timeslot1 = "19:35"
+timeslot2 = "20:10"
 l_timeslot = [timeslot1, timeslot2]
 
 

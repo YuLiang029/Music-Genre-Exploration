@@ -365,17 +365,17 @@ def post_task_survey():
                         {"value": 7, "text": "Completely Agree"}
                     ],
                     "rows": [
-                        {"value": "1", "text": "The performance that should match with "
-                                               "my musical preference actually matched my musical preference."},
-                        {"value": "2", "text": "The performance that is more out "
-                                               "of my bubble challenges me to explore a new music taste."},
-                        {"value": "3", "text": "I like the performance that is "
-                                               "out of my bubble more than I expected beforehand."},
-                        {"value": "4", "text": "The visualization helped me "
+                        {"value": "1", "text": "The system motivates me to explore more out of my bubble."},
+                        {"value": "2", "text": "I feel supported by the system to explore out of my bubble."},
+                        {"value": "3", "text": "I feel the system is not helpful in exploring out of my bubble."},
+                        {"value": "4", "text": "The performance that is more out of my bubble challenges "
+                                               "me to explore a new music taste."},
+                        {"value": "5", "text": "The visualization helped me "
                                                "in understanding my own musical tastes."},
-                        {"value": "5", "text": "The visualization helped me in "
-                                               "understanding the song characteristics of the different performance."},
-                        {"value": "6", "text": "The visualization helped me in choosing which two performance to go to."}
+                        {"value": "6", "text": "The visualization helped me in "
+                                               "understanding the song characteristics of the different performances."},
+                        {"value": "7", "text": "The visualization helped me in choosing which two "
+                                               "performances to go to."}
 
                     ]
                 }]
@@ -443,7 +443,7 @@ def send_email():
     event2 = selected_event[1].event_name
 
     msg.html = "<h3>Thanks for registering for the concert!</h3>" \
-               "<p>You have made a registration for two people. Your selected performance is:</p>" \
+               "<p>You have made a registration for two people. Your selected performances are:</p>" \
                "<p>1. " + event1 + " at " + timeslot1 + "</p><p>2. " + event2 + " at " + timeslot2 + "</p> " \
                "<div> <img src=\"{{ url_for('static', filename='imgs/JADS_logo_RGB.png') }}\" alt=\"Jheronimus Academy of Data Science\"/ " \
                                                            "style=\"width:300px\"></div>" \

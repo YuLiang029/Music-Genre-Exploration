@@ -75,6 +75,12 @@ def selection_made_exception():
 def event_explore():
     user_condition = UserCondition.query.filter_by(user_id=session["userid"]).first()
 
+    # @todo prevent making selection more than one times
+    selected_event = SelectedEvent.query.filter_by(user_id=session["userid"]).count()
+
+    if selected_event >= 2:
+        return redirect(url_for("dbdw_bp.post_task_survey"))
+
     print(user_condition.condition)
     return render_template("explore_performance.html",
                            condition=user_condition.condition,

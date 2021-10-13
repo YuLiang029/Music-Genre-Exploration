@@ -111,8 +111,8 @@
     <br>
     <div class="col-sm text-right">
         <a class="show-on-success btn btn-outline-success" id="continue" href="#"
-           data-intro="After selecting two performances you want to go to for the concert, click the button to continue" data-step='5'>
-            Continue <i class="fas fa-arrow-right"></i>
+           data-intro="After selecting two performances you want to go to for the concert, click the button to confirm your selection." data-step='5'>
+            Confirm my selection and continue <i class="fas fa-arrow-right"></i>
         </a>
     </div>
 
@@ -751,62 +751,63 @@
                 }else if (num_selected < 2){
                     alert("You need to select 2 performances")
                 }else{
-                    $( ".playlist-select" ).each(function(index) {
-                        switch ($(this).attr("id")){
-                            case "playlist_block1":
-                                selected_events[index] = event1;
-                                break;
-                            case "playlist_block2":
-                                selected_events[index] = event2;
-                                break;
-                            case "playlist_block3":
-                                selected_events[index] = event3;
-                                break;
-                            case "playlist_block4":
-                                selected_events[index] = event4;
-                                break;
-                        }
-                    });
-
-                    $.ajax({
-                        url: "/save_selected_event?event=" + selected_events[0] + "&event=" + selected_events[1],
-                        global: false
-                    }).done(function (data){
-                        console.log(data)
-                        if (data === "done"){
-                            window.location.href = "/post_task_survey";
-                        }else if (data["return_message"] === "this combination is not available anymore"){
-                            if (data["num_people"] === 1){
-                                alert("There are not enough spots for this combination of performances. Please make a new selection");
-                            }else{
-                                alert("There are not enough spots for this combination of performances for two people. " +
-                                    "Please make a new selection");
+                    if (confirm('Are you sure about your selections? You can only make your selection only once.')) {
+                            $( ".playlist-select" ).each(function(index) {
+                            switch ($(this).attr("id")){
+                                case "playlist_block1":
+                                    selected_events[index] = event1;
+                                    break;
+                                case "playlist_block2":
+                                    selected_events[index] = event2;
+                                    break;
+                                case "playlist_block3":
+                                    selected_events[index] = event3;
+                                    break;
+                                case "playlist_block4":
+                                    selected_events[index] = event4;
+                                    break;
                             }
-                        }else if (data["return_message"] === "event 1 is not available"){
-                             if (data["num_people"] === 1){
-                                alert(selected_events[0] + " is not available any more. Please make a new selection");
-                            }else{
-                                alert(selected_events[0] + " is not available any more for two people. " +
-                                    "Please make a new selection");
-                            }
-                        }else if (data["return_message"] === "event 2 is not available"){
-                             if (data["num_people"] === 1){
-                                alert(selected_events[1] + " is not available any more. Please make a new selection");
-                            }else{
-                                alert(selected_events[1] + " is not available any more for two people. " +
-                                    "Please make a new selection");
-                            }
+                        });
 
-                        }else if (data["return_message"] === "both events are not available any more"){
-                            if (data["num_people"] === 1){
-                                 alert("The two selected performances are not available any more. Please make a new selection");
-                            }else{
-                                 alert("The two selected performances are not available any more for two people. Please make a new selection");
+                        $.ajax({
+                            url: "/save_selected_event?event=" + selected_events[0] + "&event=" + selected_events[1],
+                            global: false
+                        }).done(function (data){
+                            console.log(data)
+                            if (data === "done"){
+                                window.location.href = "/post_task_survey";
+                            }else if (data["return_message"] === "this combination is not available anymore"){
+                                if (data["num_people"] === 1){
+                                    alert("There are not enough spots for this combination of performances. Please make a new selection");
+                                }else{
+                                    alert("There are not enough spots for this combination of performances for two people. " +
+                                        "Please make a new selection");
+                                }
+                            }else if (data["return_message"] === "event 1 is not available"){
+                                 if (data["num_people"] === 1){
+                                    alert(selected_events[0] + " is not available any more. Please make a new selection");
+                                }else{
+                                    alert(selected_events[0] + " is not available any more for two people. " +
+                                        "Please make a new selection");
+                                }
+                            }else if (data["return_message"] === "event 2 is not available"){
+                                 if (data["num_people"] === 1){
+                                    alert(selected_events[1] + " is not available any more. Please make a new selection");
+                                }else{
+                                    alert(selected_events[1] + " is not available any more for two people. " +
+                                        "Please make a new selection");
+                                }
+
+                            }else if (data["return_message"] === "both events are not available any more"){
+                                if (data["num_people"] === 1){
+                                     alert("The two selected performances are not available any more. Please make a new selection");
+                                }else{
+                                     alert("The two selected performances are not available any more for two people. Please make a new selection");
+                                }
+
                             }
-
-                        }
-                    });
-
+                        });
+                      }
                 }
 
         });

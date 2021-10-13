@@ -136,6 +136,14 @@
         event4;
     let selected_events = new Array(2)
 
+    let textNudge;
+    let textButton1, textButton2, textButton3, textButton4;
+
+    const closestText = "Most matching your preference: ",
+        closeText = "Somewhat matching your preference: ",
+        distantText = "Somewhat out of your bubble: ",
+        mostDistantText = "Most out of your bubble: ";
+
     const circle = d3.symbol().type(d3.symbolCircle)(),
         triangleU = d3.symbol().type(d3.symbolTriangle)(),
         cross = d3.symbol().type(d3.symbolCross)(),
@@ -602,6 +610,8 @@
             return sum/tracks.length;
         }
 
+        textNudge = 'This performance matches your preferences the most';
+
         // Initialise playlist and visualisation
         visible_recommendations1 = recommendations[0].tracks;
         visible_recommendations2 = recommendations[1].tracks;
@@ -611,37 +621,40 @@
         event2 = recommendations[1].event;
         event3 = recommendations[2].event;
         event4 = recommendations[3].event;
+        textButton1 = closestText;
+        textButton2 = closeText;
+        textButton3 = distantText;
+        textButton4 = mostDistantText;
+
 
         if ("{{ condition }}" === "1"){
-            $('#playlist_block4')
-                .removeClass('playlist-unselect')
-                .addClass('playlist4-select')
-                .addClass('playlist-select')
-                .attr('data-intro', 'We pre-selected the performance ' + event4 + ' for you. ' +
-                    'This performance is more out of your bubble')
-                .attr('data-step', '1')
-
-            $('#perform_4')
-                .removeClass('perform_4-unselect')
-                .addClass('perform_4-select')
-
-        }else {
-            $('#playlist_block1')
-                .removeClass('playlist-unselect')
-                .addClass('playlist1-select')
-                .addClass('playlist-select')
-
-                .attr('data-intro', 'We pre-selected the performance ' + event1 + ' for you. ' +
-                    'This performance matches your preferences the most')
-                .attr('data-step', '1')
-
-            $('#perform_1')
-                .removeClass('perform_1-unselect')
-                .addClass('perform_1-select')
+            visible_recommendations1 = recommendations[3].tracks;
+            visible_recommendations2 = recommendations[2].tracks;
+            visible_recommendations3 = recommendations[1].tracks;
+            visible_recommendations4 = recommendations[0].tracks;
+            event1 = recommendations[3].event;
+            event2 = recommendations[2].event;
+            event3 = recommendations[1].event;
+            event4 = recommendations[0].event;
+            textNudge = 'This performance is the most out of your bubble';
+            textButton1 = mostDistantText;
+            textButton2 = distantText;
+            textButton3 = closeText;
+            textButton4 = closestText;
         }
 
+        $('#playlist_block1')
+            .removeClass('playlist-unselect')
+            .addClass('playlist1-select')
+            .addClass('playlist-select')
+            .attr('data-step', '1')
+            .attr('data-intro', 'We pre-selected the performance ' + event1 + ' for you. ' + textNudge)
+
+
         $('#perform_1')
-            .html("More matching your preferences: " + event1)
+            .removeClass('perform_1-unselect')
+            .addClass('perform_1-select')
+            .html(textButton1 + event1)
             .click(function () {
                 if ($(this).parent().hasClass("playlist1-select")) {
                     $(this).parent().removeClass("playlist1-select");
@@ -663,7 +676,7 @@
         });
 
         $('#perform_2')
-            .html(event2)
+            .html(textButton2 + event2)
             .click(function () {
                 if ($(this).parent().hasClass("playlist2-select")) {
                     $(this).parent().removeClass("playlist2-select");
@@ -685,7 +698,7 @@
         });
 
         $('#perform_3')
-            .html(event3)
+            .html(textButton3 + event3)
             .click(function () {
                 if ($(this).parent().hasClass("playlist3-select")) {
                     $(this).parent().removeClass("playlist3-select");
@@ -707,7 +720,7 @@
         });
 
         $('#perform_4')
-            .html("More out of your bubbles: <br>" + event4)
+            .html(textButton4 + event4)
             .click(function () {
                 if ($(this).parent().hasClass("playlist4-select")) {
                     $(this).parent().removeClass("playlist4-select");

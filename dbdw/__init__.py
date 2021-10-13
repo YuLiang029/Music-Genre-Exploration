@@ -52,6 +52,7 @@ class SelectedEvent (db.Model):
     num_people = db.Column(db.INTEGER)
     event_name = db.Column(db.VARCHAR, primary_key=True)
     rec_id = db.Column(db.VARCHAR, db.ForeignKey('recommendation_log.id'), primary_key=True)
+    reserve_num = db.Column(db.INTEGER)
 
     def __repr__(self):
         return '<SelectedEvent %r-%r>' % (self.user_id, self.event_name)

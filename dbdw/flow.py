@@ -13,6 +13,7 @@ from general import MsiResponse, UserCondition
 import os
 from flask_mail import Message
 from mail import mail
+from sqlalchemy import func
 
 dbdw_bp = Blueprint('dbdw_bp', __name__, template_folder='templates')
 num_ssw, num_pop, num_jazz, num_harp = 20, 20, 20, 40
@@ -319,11 +320,18 @@ def save_selected_event():
                 save_events = [selected_events[0], selected_events[1]]
         print(save_events)
 
+        max_num_obj = db.session.query(func.max(SelectedEvent.reserve_num)).scalar()
+        if max_num_obj:
+            current_num = max_num_obj.reserve_num + 1
+        else:
+            current_num = 10
+
         for i in range(len(save_events)):
             db.session.add(
                 SelectedEvent(rec_id=session['rec_id'],
                               event_timeslot=l_timeslot[i],
                               event_name=save_events[i],
+                              reserve_num=current_num,
                               session_id=session['id'],
                               num_people=num_people,
                               user_id=session['userid'],

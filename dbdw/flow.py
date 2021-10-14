@@ -460,6 +460,8 @@ def registration_overview():
     reserve_num = SelectedEvent.query.filter_by(user_id=session["userid"]).first().reserve_num
     session["reserve_num"] = reserve_num
     session["num_people"] = num_people
+    session["event1"] = event1
+    session["event2"] = event2
 
     return render_template("last_page_2021.html",
                            reserve_num="jm" + str(session["reserve_num"]),
@@ -477,16 +479,12 @@ def send_email():
     msg = Message(sender=os.environ.get('MAIL_USERNAME'), recipients=[email_address])
     msg.subject = "Data Week Nederland Cultural Night Registration"
 
-    selected_event = SelectedEvent.query.filter_by(rec_id=session["rec_id"])
-    event1 = selected_event[0].event_name
-    event2 = selected_event[1].event_name
-
     msg.html = "<h3>Thanks for registering for the JADS Music Night!</h3>" \
                "Your reservation number is: jm" + str(session["reserve_num"]) + \
                "<p>You have made a registration for " + str(session["num_people"]) + \
                " people. Your selected performances are:</p>" \
-               "<p>1. " + event1 + "  in the first session (" + timeslot1 + "),</p><p>2. " \
-               + event2 + " in the second session (" + timeslot2 + "),</p> " \
+               "<p>1. " + session["event1"] + "  in the first session (" + timeslot1 + "),</p><p>2. " \
+               + session["event2"] + " in the second session (" + timeslot2 + "),</p> " \
                "<p>The evening starts at 19:00h with an introduction and two short lectures.</p>" \
                "<p>Please bring this email to the Music Night along with the tickets to confirm you registration for the two sessions above.</p>" \
                "<p>Best regards,</p>"\

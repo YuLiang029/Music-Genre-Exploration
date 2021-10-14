@@ -267,25 +267,25 @@
                 for (let i = 0; i < visible_recommendations1.length; i++) {
                     trackString = trackString + "," + visible_recommendations1[i].id;
                 }
-                playlistname = "DBDW: " + event1
+                playlistname = "JADS Music Night: " + event1
 
             }else if ($(this).attr("id") === "save_playlist2"){
                 for (let i = 0; i < visible_recommendations2.length; i++) {
                     trackString = trackString + "," + visible_recommendations2[i].id;
                 }
-                playlistname = "DBDW: " + event2
+                playlistname = "JADS Music Night: " + event2
 
             }else if ($(this).attr("id") === "save_playlist3"){
                 for (let i = 0; i < visible_recommendations3.length; i++) {
                     trackString = trackString + "," + visible_recommendations3[i].id;
                 }
-                playlistname = "DBDW: " + event3
+                playlistname = "JADS Music Night: " + event3
 
             }else{
                 for (let i = 0; i < visible_recommendations4.length; i++) {
                     trackString = trackString + "," + visible_recommendations4[i].id;
                 }
-                playlistname = "DBDW: " + event4
+                playlistname = "JADS Music Night: " + event4
             }
 
             $.ajax({
@@ -823,6 +823,23 @@
 
         // Initialise and start the tour
         introJsObj.start();
+
+        setInterval(function(){
+            var elem = document.activeElement;
+            var track_id;
+            if(elem.id.startsWith('iframe_spotify')){
+                track_id = elem.src.replace('https://open.spotify.com/embed/track/','');
+                elem.blur();
+                $.ajax({
+                    type: "POST",
+                    url: "/log_track_interact",
+                    data: {
+                        'track_id': track_id,
+                    },
+                    global: false
+                });
+            }
+        }, 500);
 
     }).catch(function(e) {
         // Display error message in console

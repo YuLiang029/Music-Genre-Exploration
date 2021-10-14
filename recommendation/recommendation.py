@@ -569,7 +569,7 @@ def log_track_interact():
         )
         db.session.add(track_interact_log)
         db.session.commit()
-        print("Stored interaction with track {}".format(request.form["track_id"]))
+        # print("Stored interaction with track {}".format(request.form["track_id"]))
         return "done"
 
 

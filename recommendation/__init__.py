@@ -71,7 +71,7 @@ class TrackInteractLog(db.Model):
     rec_id = db.Column(db.VARCHAR, db.ForeignKey('recommendation_log.id'))
     session_id = db.Column(db.VARCHAR, db.ForeignKey('session_log.id'))
     timestamp = db.Column(db.FLOAT)
-    track_id = db.Column(db.VARCHAR, db.ForeignKey('track.id'))
+    track_id = db.Column(db.VARCHAR)
 
 
 class SliderInteractLog(db.Model):

@@ -686,7 +686,7 @@ def generate_playlist_spotify(genre):
         description = "Recommendation for genre: " + genre + " with weight " + weight
         description_save = weight
     else:
-        description = "Recommendation for genre: " + genre
+        description = genre
         description_save = description
 
     """refresh token"""

@@ -292,17 +292,16 @@ def save_selected_event():
     min_option2 = min(dict_spots_option2.values())
     sum_option2 = sum(dict_spots_option2.values())
 
-    event1_spots_available = num_event1_occupied_t1 + num_event1_occupied_t2
-    event2_spots_available = num_event2_occupied_t1 + num_event2_occupied_t2
+    event1_spots_available = dict_spots_option1["remain_event1_t1"] + dict_spots_option2["remain_event1_t2"]
+    event2_spots_available = dict_spots_option2["remain_event2_t1"] + dict_spots_option1["remain_event2_t2"]
 
     print(min_option1, min_option2, sum_option1, sum_option2, event1_spots_available, event2_spots_available)
 
     # check the number of people for the concert
-    num_people = MsiResponse.query.filter_by(user_id=session["userid"],
-                                             item_id="ticketnum").first().value
+    num_people = int(MsiResponse.query.filter_by(user_id=session["userid"],
+                                                 item_id="ticketnum").first().value)
 
     minimal_aval_spots = 0
-
     if num_people != 1:
         minimal_aval_spots = 1
 
@@ -326,7 +325,7 @@ def save_selected_event():
 
         max_num_obj = db.session.query(func.max(SelectedEvent.reserve_num)).scalar()
         if max_num_obj:
-            current_num = max_num_obj.reserve_num + 1
+            current_num = max_num_obj + 1
         else:
             current_num = 10
 
@@ -457,8 +456,7 @@ def registration_overview():
     num_people = MsiResponse.query.filter_by(user_id=session["userid"],
                                              item_id="ticketnum").first().value
 
-    reserve_num = SelectedEvent.query.filter_by(user_id=session["userid"]).first().reserve_num
-    session["reserve_num"] = reserve_num
+    session["reserve_num"] = SelectedEvent.query.filter_by(rec_id=session['rec_id']).first().reserve_num
     session["num_people"] = num_people
     session["event1"] = event1
     session["event2"] = event2
@@ -481,7 +479,7 @@ def send_email():
 
     msg.html = "<h3>Thanks for registering for the JADS Music Night!</h3>" \
                "Your reservation number is: jm" + str(session["reserve_num"]) + \
-               "<p>You have made a registration for " + str(session["num_people"]) + \
+               "<p>You have made a registration for " + session["num_people"] + \
                " people. Your selected performances are:</p>" \
                "<p>1. " + session["event1"] + "  in the first session (" + timeslot1 + "),</p><p>2. " \
                + session["event2"] + " in the second session (" + timeslot2 + "),</p> " \

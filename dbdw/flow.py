@@ -258,39 +258,43 @@ def save_selected_event():
     dict_spots_option1 = {}
     dict_spots_option2 = {}
 
-    # # check the number of registration of the selected events
-    dict_spots_option1["remain_event1_t1"] = event1_capacity - SelectedEvent.query.filter_by(
-        event_name=event1,
-        event_timeslot=timeslot1).count()
-    dict_spots_option1["remain_event2_t2"] = event2_capacity - SelectedEvent.query.filter_by(
-        event_name=event2,
-        event_timeslot=timeslot2).count()
+    event1_occupied_t1 = SelectedEvent.query.filter_by(event_name=event1, event_timeslot=timeslot1).all()
+    event2_occupied_t2 = SelectedEvent.query.filter_by(event_name=event2, event_timeslot=timeslot2).all()
+
+    event1_occupied_t2 = SelectedEvent.query.filter_by(event_name=event2, event_timeslot=timeslot1).all()
+    event2_occupied_t1 = SelectedEvent.query.filter_by(event_name=event1, event_timeslot=timeslot2).all()
+
+    num_event1_occupied_t1 = 0
+    for e1_occupied_t1 in event1_occupied_t1:
+        num_event1_occupied_t1 = num_event1_occupied_t1 + e1_occupied_t1.num_people
+
+    num_event2_occupied_t2 = 0
+    for e2_occupied_t2 in event2_occupied_t2:
+        num_event2_occupied_t2 = num_event2_occupied_t2 + e2_occupied_t2.num_people
+
+    # check the number of registration of the selected events
+    dict_spots_option1["remain_event1_t1"] = event1_capacity - num_event1_occupied_t1
+    dict_spots_option1["remain_event2_t2"] = event2_capacity - num_event2_occupied_t2
 
     min_option1 = min(dict_spots_option1.values())
     sum_option1 = sum(dict_spots_option1.values())
 
-    dict_spots_option2["remain_event2_t1"] = event2_capacity - SelectedEvent.query.filter_by(
-        event_name=event2,
-        event_timeslot=timeslot1).count()
-    dict_spots_option2["remain_event1_t2"] = event1_capacity - SelectedEvent.query.filter_by(
-        event_name=event1,
-        event_timeslot=timeslot2).count()
+    num_event1_occupied_t2 = 0
+    for e1_occupied_t2 in event1_occupied_t2:
+        num_event1_occupied_t2 = num_event1_occupied_t2 + e1_occupied_t2.num_people
+
+    num_event2_occupied_t1 = 0
+    for e2_occupied_t1 in event2_occupied_t1:
+        num_event2_occupied_t1 = num_event2_occupied_t1 + e2_occupied_t1.num_people
+
+    dict_spots_option2["remain_event2_t1"] = event1_capacity - num_event1_occupied_t2
+    dict_spots_option2["remain_event1_t2"] = event1_capacity - num_event2_occupied_t1
     min_option2 = min(dict_spots_option2.values())
     sum_option2 = sum(dict_spots_option2.values())
 
-    event1_occupied = SelectedEvent.query.filter_by(event_name=event1).all()
-    event2_occupied = SelectedEvent.query.filter_by(event_name=event2).all()
+    event1_spots_available = num_event1_occupied_t1 + num_event1_occupied_t2
+    event2_spots_available = num_event2_occupied_t1 + num_event2_occupied_t2
 
-    num_event1_occupied = 0
-    for e1_occupied in event1_occupied:
-        num_event1_occupied = num_event1_occupied + e1_occupied
-
-    num_event2_occupied = 0
-    for e2_occupied in event2_occupied:
-        num_event2_occupied = num_event2_occupied + e2_occupied
-
-    event1_spots_available = event1_capacity - num_event1_occupied
-    event2_spots_available = event2_capacity - num_event2_occupied
     print(min_option1, min_option2, sum_option1, sum_option2, event1_spots_available, event2_spots_available)
 
     # check the number of people for the concert

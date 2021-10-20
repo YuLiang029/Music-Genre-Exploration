@@ -107,116 +107,171 @@ def get_track_recommendations():
     db.session.commit()
 
     recommendations = get_genre_recommendation_by_preference(track_df=track_df, by_preference=True)
-    for index, row in recommendations.iterrows():
-        rec_tracks = RecTracks(rec_id=session['rec_id'], track_id=row["id"], rank=index)
-        db.session.add(rec_tracks)
-        db.session.commit()
 
-    track_df_new = track_df[['id', 'event', 'stream']]
-    tracks = track_df_new.merge(recommendations.drop(columns=['event', 'stream']), on=['id'])
-    return tracks
+    # error handler for users without enough tracks to get recommendations:
+    if isinstance(recommendations, pd.DataFrame):
+        for index, row in recommendations.iterrows():
+            rec_tracks = RecTracks(rec_id=session['rec_id'], track_id=row["id"], rank=index)
+            db.session.add(rec_tracks)
+            db.session.commit()
+
+        track_df_new = track_df[['id', 'event', 'stream']]
+        tracks = track_df_new.merge(recommendations.drop(columns=['event', 'stream']), on=['id'])
+        return tracks
+    else:
+        return "error"
 
 
 @dbdw_bp.route('/event_recommendation/<perform_type>')
 def event_recommendation(perform_type):
     tracks = get_track_recommendations()
 
-    if perform_type == "stream":
-        # list of two streams
-        l_stream = ['stream a', 'stream b']
+    if isinstance(tracks, pd.DataFrame):
+        if perform_type == "stream":
+            # list of two streams
+            l_stream = ['stream a', 'stream b']
 
-        # calculate stream recommendation score, valence mean and energy mean
-        dict_stream_score = {}
-        dict_stream_valence = {}
-        dict_stream_energy = {}
+            # calculate stream recommendation score, valence mean and energy mean
+            dict_stream_score = {}
+            dict_stream_valence = {}
+            dict_stream_energy = {}
 
-        for stream in l_stream:
-            df_stream = tracks[tracks["stream"] == stream]
-            dict_stream_score[stream] = df_stream.sum_rank.sum()/len(df_stream)
-            dict_stream_valence[stream] = df_stream.valence.sum() / len(df_stream)
-            dict_stream_energy[stream] = df_stream.energy.sum() / len(df_stream)
+            for stream in l_stream:
+                df_stream = tracks[tracks["stream"] == stream]
+                dict_stream_score[stream] = df_stream.sum_rank.sum()/len(df_stream)
+                dict_stream_valence[stream] = df_stream.valence.sum() / len(df_stream)
+                dict_stream_energy[stream] = df_stream.energy.sum() / len(df_stream)
 
-        sorted_dict_stream_score = {k: v for k, v in sorted(dict_stream_score.items(),
-                                                            key=lambda item: item[1],
-                                                            reverse=True)}
+            sorted_dict_stream_score = {k: v for k, v in sorted(dict_stream_score.items(),
+                                                                key=lambda item: item[1],
+                                                                reverse=True)}
 
-        l_stream_recs = []
-        for stream in sorted_dict_stream_score:
-            dict_stream = {}
+            l_stream_recs = []
+            for stream in sorted_dict_stream_score:
+                dict_stream = {}
 
-            dict_stream["tracks"] = tracks[tracks["stream"] == stream].to_dict('records')
-            dict_stream["rec_scores"] = sorted_dict_stream_score[stream]
+                dict_stream["tracks"] = tracks[tracks["stream"] == stream].to_dict('records')
+                dict_stream["rec_scores"] = sorted_dict_stream_score[stream]
 
-            dict_stream["stream_valence"] = dict_stream_valence[stream]
-            dict_stream["stream_energy"] = dict_stream_energy[stream]
+                dict_stream["stream_valence"] = dict_stream_valence[stream]
+                dict_stream["stream_energy"] = dict_stream_energy[stream]
 
-            dict_stream["stream"] = stream
+                dict_stream["stream"] = stream
 
-            l_stream_recs.append(dict_stream)
+                l_stream_recs.append(dict_stream)
 
-            db.session.add(RecStream(rec_id=session['rec_id'],
-                                     stream_name=stream,
-                                     rec_scores=dict_stream["rec_scores"],
-                                     stream_valence=dict_stream["stream_valence"],
-                                     stream_energy=dict_stream["stream_energy"],
-                                     session_id=session['id'],
-                                     user_id=session['userid'],
-                                     timestamp=time.time()
-                                     ))
-        print(l_stream_recs)
-        db.session.commit()
-        return jsonify(l_stream_recs)
+                db.session.add(RecStream(rec_id=session['rec_id'],
+                                         stream_name=stream,
+                                         rec_scores=dict_stream["rec_scores"],
+                                         stream_valence=dict_stream["stream_valence"],
+                                         stream_energy=dict_stream["stream_energy"],
+                                         session_id=session['id'],
+                                         user_id=session['userid'],
+                                         timestamp=time.time()
+                                         ))
+            print(l_stream_recs)
+            db.session.commit()
+            return jsonify(l_stream_recs)
 
-    elif perform_type == "performance":
-        # code for event recommendation
-        # calculate event recommendation score, valence mean and energy mean
-        dict_event_score = {}
-        dict_event_valence = {}
-        dict_event_energy = {}
+        elif perform_type == "performance":
+            # code for event recommendation
+            # calculate event recommendation score, valence mean and energy mean
+            dict_event_score = {}
+            dict_event_valence = {}
+            dict_event_energy = {}
 
-        l_event = ['Singsongwriter', 'Pop musician', 'Harpist', 'Jazz musician']
-        for event in l_event:
-            df_event = tracks[tracks["event"] == event]
-            dict_event_score[event] = df_event.sum_rank.sum() / len(df_event)
-            dict_event_valence[event] = df_event.valence.sum() / len(df_event)
-            dict_event_energy[event] = df_event.energy.sum() / len(df_event)
+            l_event = ['Singsongwriter', 'Pop musician', 'Harpist', 'Jazz musician']
+            for event in l_event:
+                df_event = tracks[tracks["event"] == event]
+                dict_event_score[event] = df_event.sum_rank.sum() / len(df_event)
+                dict_event_valence[event] = df_event.valence.sum() / len(df_event)
+                dict_event_energy[event] = df_event.energy.sum() / len(df_event)
 
-        sorted_dict_event_score = {k: v for k, v in sorted(dict_event_score.items(),
-                                                           key=lambda item: item[1],
-                                                           reverse=True)}
-        l_event_recs = []
-        for event in sorted_dict_event_score:
+            sorted_dict_event_score = {k: v for k, v in sorted(dict_event_score.items(),
+                                                               key=lambda item: item[1],
+                                                               reverse=True)}
+            l_event_recs = []
+            for event in sorted_dict_event_score:
 
-            # dictionary for the event
-            dict_event = {}
+                # dictionary for the event
+                dict_event = {}
 
-            # attach track attributes
-            dict_event["tracks"] = tracks[tracks["event"] == event].to_dict('records')
+                # attach track attributes
+                dict_event["tracks"] = tracks[tracks["event"] == event].to_dict('records')
 
-            # attach recommendation score
-            dict_event["rec_scores"] = sorted_dict_event_score[event]
+                # attach recommendation score
+                dict_event["rec_scores"] = sorted_dict_event_score[event]
 
-            # attach feature attributes
-            dict_event["event_valence"] = dict_event_valence[event]
-            dict_event["event_energy"] = dict_event_energy[event]
+                # attach feature attributes
+                dict_event["event_valence"] = dict_event_valence[event]
+                dict_event["event_energy"] = dict_event_energy[event]
 
-            dict_event["event"] = event
+                dict_event["event"] = event
 
-            db.session.add(RecEvent(rec_id=session['rec_id'],
-                                    event_id=event,
-                                    rec_scores=dict_event["rec_scores"],
-                                    event_valence=dict_event_valence[event],
-                                    event_energy=dict_event_energy[event],
-                                    session_id=session['id'],
-                                    user_id=session['userid'],
-                                    timestamp=time.time()
-                                    ))
-            l_event_recs.append(dict_event)
+                db.session.add(RecEvent(rec_id=session['rec_id'],
+                                        event_id=event,
+                                        rec_scores=dict_event["rec_scores"],
+                                        event_valence=dict_event_valence[event],
+                                        event_energy=dict_event_energy[event],
+                                        session_id=session['id'],
+                                        user_id=session['userid'],
+                                        timestamp=time.time()
+                                        ))
+                l_event_recs.append(dict_event)
 
-        db.session.commit()
+            db.session.commit()
 
-        print(l_event_recs)
-        return jsonify(l_event_recs)
+            print(l_event_recs)
+            return jsonify(l_event_recs)
+    else:
+        print("no enough listening history")
+        return jsonify("error")
+
+
+@dbdw_bp.route('/select_events')
+def select_events():
+    # @todo prevent making selection more than one times
+    selected_event = SelectedEvent.query.filter_by(user_id=session["userid"]).count()
+
+    if selected_event >= 2:
+        return redirect(url_for("dbdw_bp.registration_overview"))
+
+    return render_template("explore_performance2.html")
+
+
+@dbdw_bp.route('/event_explore_without_recommendations')
+def event_explore_without_recommendations():
+    dbdw_data_path = os.path.join(
+        os.path.join(os.path.dirname(dbdw_bp.root_path),
+                     'dbdw'), "dbdw_music.csv")
+
+    track_df = pd.read_csv(dbdw_data_path, delimiter=";")
+
+    l_event = ['Singsongwriter', 'Pop musician', 'Harpist', 'Jazz musician']
+    l_event_new = random.sample(l_event, k=4)
+
+    l_event_recs = []
+    for event in l_event_new:
+        # dictionary for the event
+        dict_event = {}
+
+        # attach track attributes
+        dict_event["tracks"] = track_df[track_df["event"] == event].to_dict('records')
+
+        dict_event["event"] = event
+
+        db.session.add(RecEvent(rec_id=session['rec_id'],
+                                event_id=event,
+                                session_id=session['id'],
+                                user_id=session['userid'],
+                                timestamp=time.time()
+                                ))
+        l_event_recs.append(dict_event)
+
+    db.session.commit()
+
+    print(l_event_recs)
+    return jsonify(l_event_recs)
 
 
 @dbdw_bp.route('/register_event')

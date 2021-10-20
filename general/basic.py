@@ -285,7 +285,10 @@ def check_token():
 def user_top_tracks():
     user_id = session["userid"]
     top_tracks = TopTracks.query.filter_by(user_id=user_id).all()
-    return jsonify([x.track.to_json() for x in top_tracks])
+    if top_tracks:
+        return jsonify([x.track.to_json() for x in top_tracks])
+    else:
+        return jsonify("no top tracks")
 
 
 def is_token_expired():

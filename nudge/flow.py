@@ -69,9 +69,8 @@ def redirect_from_main():
         db.session.add(user_condition_new)
         db.session.commit()
 
-    return redirect(url_for("spotify_basic_bp.msi_survey", redirect_path="nudge_bp.select_genre"))
-    # return redirect(url_for("spotify_basic_bp.msi_survey"))
-    # return redirect('select_genre')
+    # return redirect(url_for("spotify_basic_bp.msi_survey", redirect_path="nudge_bp.select_genre"))
+    return redirect(url_for("nudge_bp.select_genre"))
 
 
 @nudge_bp.route('/select_genre')
@@ -246,7 +245,8 @@ def post_task_survey():
         survey_config = {
             'title': 'Survey about your experience with the recommendations and interface',
             'description': 'Please fill in this survey about your experience with the recommendations and interface',
-            'next_url': url_for('nudge_bp.last_step')
+            # 'next_url': url_for('nudge_bp.last_step')
+            'next_url': url_for("spotify_basic_bp.msi_survey", redirect_path="nudge_bp.last_step")
         }
 
         return render_template('survey.html', survey=survey, surveydata=surveydata, survey_config=survey_config)

@@ -505,50 +505,50 @@ def msi_survey(redirect_path):
         survey = {
             "showProgressBar": "top",
             "pages": [
-                {
-                    "questions": [
-                        {
-                            "name": "email",
-                            "type": "text",
-                            "inputType": "email",
-                            "title": "Your contact email:",
-                            "isRequired": "true",
-                            "validators": [{
-                                "type": "email"
-                            }]
-                        },
-                        {
-                            "name": "age",
-                            "type": "text",
-                            "title": "Your age (years):",
-                            "isRequired": "true"
-                        },
-                        {
-                            "name": "gender",
-                            "type": "dropdown",
-                            "title": "Your gender:",
-                            "isRequired": "true",
-                            "colCount": 0,
-                            "choices": [
-                                "male",
-                                "female",
-                                "other"
-                            ]
-                        },
-                        {
-                            "name": "ticketnum",
-                            "type": "dropdown",
-                            "title": "How many tickets would you like to register?"
-                                     "(You can register one ticket for your self and one for your accompany)",
-                            "isRequired": "true",
-                            "colCount": 0,
-                            "choices": [
-                                1,
-                                2
-                            ]
-                        }
-                    ]
-                },
+                # {
+                #     "questions": [
+                #         {
+                #             "name": "email",
+                #             "type": "text",
+                #             "inputType": "email",
+                #             "title": "Your contact email:",
+                #             "isRequired": "true",
+                #             "validators": [{
+                #                 "type": "email"
+                #             }]
+                #         },
+                #         {
+                #             "name": "age",
+                #             "type": "text",
+                #             "title": "Your age (years):",
+                #             "isRequired": "true"
+                #         },
+                #         {
+                #             "name": "gender",
+                #             "type": "dropdown",
+                #             "title": "Your gender:",
+                #             "isRequired": "true",
+                #             "colCount": 0,
+                #             "choices": [
+                #                 "male",
+                #                 "female",
+                #                 "other"
+                #             ]
+                #         },
+                #         {
+                #             "name": "ticketnum",
+                #             "type": "dropdown",
+                #             "title": "How many tickets would you like to register?"
+                #                      "(You can register one ticket for your self and one for your accompany)",
+                #             "isRequired": "true",
+                #             "colCount": 0,
+                #             "choices": [
+                #                 1,
+                #                 2
+                #             ]
+                #         }
+                #     ]
+                # },
 
                 {
                     "questions": [

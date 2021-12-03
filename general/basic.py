@@ -555,8 +555,7 @@ def msi_survey(redirect_path):
                         {
                             "type": "matrix",
                             "name": "Active Engagement",
-                            "title": "Below some questions how you relate to music. "
-                                     "Please indicate to what extent you agree or disagree with each statement.",
+                            "title": "Please indicate to what extent you agree or disagree with each statement.",
                             "isAllRowRequired": "true",
                             "columns": [
                                 {"value": 1, "text": "Completely Disagree"},
@@ -651,8 +650,8 @@ def msi_survey(redirect_path):
         }
 
         survey_config = {
-            'title': 'Musical sophistication survey',
-            'description': 'The music sophistication survey makes us know your music expertise better.',
+            'title': 'Your experience with music',
+            'description': 'We would like to know more about your experience with music',
             'next_url': url_for(redirect_path)
         }
 

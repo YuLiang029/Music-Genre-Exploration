@@ -1,0 +1,152 @@
+{% extends "layout.html" %}
+{% block title %}Explore genre{% endblock %}
+{% block content %}
+
+    <div class="row">
+        <h2 id="rec_header" class="col-12 show-on-success">Top recommendations for you – Genre: {{genre}}</h2>
+        <p class="show-on-success lead col-12">
+            We have generated a playlist for you to explore the selected genre: {{ genre }}
+        </p>
+
+        <div id="alertbox" class="d-none-soft col-12"></div>
+
+        <div id="loadingDiv" class="mb-5 col-12 hide-on-success">
+            <div id="hloading" class="text-center lead">
+                <div class="spinner-border" role="status">
+                  <span class="sr-only">Loading...</span>
+                </div>
+                Your recommendations are being generated.
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-sm-center">
+        <div id="playlist" class="col-sm-6 show-on-success">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm text-right">
+            <button class="show-on-success btn btn-success btn-lg" id="save_playlist">
+                Continue and save the playlist to my Spotify
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+
+    <script>
+
+    let all_recommendations = []; // All recommendations fetched from the back-end
+    let visible_recommendations = []; // Subset of recommendations actually shown to the user
+    let $playlist = $("#playlist");
+    const number_of_tracks = 10;
+
+    function fillPlaylist() {
+        // Check if the number of tracks equals 10
+        if(visible_recommendations.length < number_of_tracks) {
+            throw new Error("We cannot get enough personalized data from your Spotify account to generate recommendations.");
+        } else if(visible_recommendations.length > number_of_tracks) {
+            throw new Error("Too many tracks given to show.");
+        }
+
+
+        $playlist.append($("<ul>"));
+        let $playlist_ul = $("#playlist ul");
+
+        let i = 0;
+        visible_recommendations.forEach(function (track) {
+            let iframe_suffix = i.toString();
+
+            let $newElement = $("<li>").addClass("track")
+                .append($("<iframe>").attr("id","iframe_spotify" + iframe_suffix)
+                    .attr("src", "https://open.spotify.com/embed/track/" + track.id)
+                    .attr("width", "100%")
+                    .attr("height", "80")
+                    .attr("frameborder", "0")
+                    .attr("allowtransparency", "true")
+                    .attr("allow", "encrypted-media"))
+                .append($("<span>").attr("value", track.id).addClass("trackid"));
+
+            $playlist_ul.append($newElement);
+            ++i;
+        });
+    }
+
+    $(function () {
+        // Save playlist to Spotify
+        $('#save_playlist').on('click', function()  {
+            let trackString = "";
+            for (let i = 0; i < visible_recommendations.length; i++) {
+                trackString = trackString + "," + visible_recommendations[i].id;
+            }
+            let slider_val_save = $("#range_slider").val();
+            $.ajax({
+                url: "/generate_playlist_spotify/{{ genre }}?weight=" + slider_val_save + "&tracks=" + trackString.substring(1,) + "",
+                global: false
+            }).done(function (data){
+                if (data === "done"){
+                    alert("Your playlist has been successfully saved to your Spotify account");
+                    $('#save_playlist')
+                        .hover().css("opacity", 1)
+                        .css("cursor", "auto");
+                } else{
+                    alert("Please try again");
+                }
+            });
+        });
+
+        // logging function for iframe @TODO: update to a correct function
+        setInterval(function(){
+            var elem = document.activeElement;
+            var track_id;
+            if(elem.id.startsWith('iframe_spotify')){
+                track_id = elem.src.replace('https://open.spotify.com/embed/track/','');
+                elem.blur();
+                $.ajax({
+                    type: "POST",
+                    url: "/log_track_interact",
+                    data: {
+                        'track_id': track_id,
+                    },
+                    global: false
+                });
+            }
+        }, 500);
+
+    });
+
+
+    /* Read data -----------------------------------------------------------------------------------------------------*/
+    Promise.all([
+        d3.json("/genre_recommendation_exp_multiple?genre={{ genre }}&weight={{ weight }}"),
+    ]).then(function(data) {
+        // Extract data from promises
+        let recommendations = data[0];
+
+        let track_index = {{ weight }}*100;
+
+        // Set global variables based on data
+        all_recommendations = recommendations;
+        visible_recommendations = recommendations.slice(track_index, track_index+number_of_tracks);
+
+        // Initialise playlist
+        fillPlaylist();
+
+        $('.hide-on-success').hide();
+        $('.show-on-success').show();
+
+    }).catch(function(e) {
+        // Display error message in console
+        console.error(e);
+
+        // Show error message in #hloading box
+        $('#hloading').text(e.message);
+    })
+
+    </script>
+{% endblock %}

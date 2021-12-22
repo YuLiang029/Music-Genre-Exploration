@@ -8,7 +8,7 @@ from general import UserCondition
 import random
 
 longitudinal_bp = Blueprint('longitudinal_bp', __name__, template_folder='templates')
-session_id = 1
+session_num = 1
 
 
 @longitudinal_bp.route('/')
@@ -22,13 +22,13 @@ def redirect_from_index():
         session["subject_id"] = request.args.get("subject_id")
         print(session["subject_id"])
 
-        if session_id == 1:
+        if session_num == 1:
             return redirect(url_for("longitudinal_bp.inform_consent"))
-        elif session_id == 2:
+        elif session_num == 2:
             return redirect(url_for("longitudinal_bp.error_page"))
-        elif session_id == 3:
+        elif session_num == 3:
             return redirect(url_for("longitudinal_bp.error_page"))
-        elif session_id == 4:
+        elif session_num == 4:
             return redirect(url_for("longitudinal_bp.error_page"))
 
     return redirect(url_for("longitudinal_bp.error_page"))
@@ -37,11 +37,6 @@ def redirect_from_index():
 @longitudinal_bp.route('/inform_consent')
 def inform_consent():
     return render_template('informed_consent.html')
-
-
-@longitudinal_bp.route('/error_page')
-def error_page():
-    return render_template("Error_non_prolificid.html")
 
 
 @longitudinal_bp.route('/register')
@@ -85,3 +80,26 @@ def redirect_from_main():
 @longitudinal_bp.route('/select_genre')
 def select_genre():
     return render_template("select_genre.html")
+
+
+@longitudinal_bp.route('/error_page')
+def error_page():
+    return render_template("Error_non_prolificid.html")
+
+
+@longitudinal_bp.route('/explore_genre')
+def explore_genre():
+    if session_num == 1:
+        # infer the experimental condition
+        user_condition = UserCondition.query.filter_by(user_id=session["userid"]).first()
+        user_condition_num = user_condition.condition
+        weight = 0.2
+
+        if user_condition_num == 1 or user_condition_num == 3:
+            weight = 0.8
+
+        return render_template('explore_genre.html',
+                               genre=request.args.get('genre'),
+                               weight=weight)
+    else:
+        return redirect(url_for("longitudinal_bp.error_page"))

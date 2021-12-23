@@ -683,13 +683,11 @@ def generate_playlist_spotify(genre):
     tracks = request.args.get('tracks')
     track_list = tracks.split(',')
 
+    description = genre
+
     if 'weight' in request.args:
         weight = request.args.get('weight')
         description = "Recommendation for genre: " + genre + " with weight " + weight
-        description_save = weight
-    else:
-        description = genre
-        description_save = description
 
     """refresh token"""
     if is_token_expired():
@@ -702,7 +700,7 @@ def generate_playlist_spotify(genre):
     playlist_id_hash = str(uuid.uuid4())
     spotify_playlist = Playlist(id=playlist_id_hash,
                                 name=genre,
-                                description=description_save,
+                                description=description,
                                 rec_id=rec_id,
                                 timestamp=time.time(),
                                 user_id=session["userid"],

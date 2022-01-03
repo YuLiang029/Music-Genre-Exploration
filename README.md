@@ -66,6 +66,8 @@ series = {RecSys '21}
 ```
 
 ### Code structure
+#### Module diagram
+![Module diagram](doc/module_structure.png)
 - general: basic function to connect with Spotify API
 - recommendation: recommendation function 
 - dbdw: source code for Den Bosch Data Week - Jads Cultural Night 2020

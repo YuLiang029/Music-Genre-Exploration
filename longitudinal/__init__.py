@@ -6,6 +6,7 @@ class UserPlaylistSession (db.Model):
     id = db.Column(db.VARCHAR, primary_key=True)
     playlist_id = db.Column(db.VARCHAR, db.ForeignKey('playlist.id'))
     user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'))
+    rec_id = db.Column(db.VARCHAR, db.ForeignKey('recommendation_log.id'))
     timestamp = db.Column(db.FLOAT)
     session_num = db.Column(db.Integer)
 

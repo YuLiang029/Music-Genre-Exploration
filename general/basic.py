@@ -96,8 +96,8 @@ def authorized():
             session["spotify_id"] = me.data['id']
 
             # TODO: functionality for specifying if prolific_pid is available or not
-            if 'prolific_pid' in session:
-                userid = session["prolific_pid"]
+            if 'subject_id' in session:
+                userid = session["subject_id"]
             else:
                 # use Hash function for anonymization
                 userid = hashlib.sha256(session["spotify_id"].encode('utf-8')).hexdigest()

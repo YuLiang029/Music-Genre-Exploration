@@ -12,6 +12,7 @@ class RecommendationLog(db.Model):
     current_phase = db.Column(db.Integer)
     genre_name = db.Column(db.VARCHAR)
     type = db.Column(db.VARCHAR)
+    init_weight = db.Column(db.FLOAT)
 
     survey_response = db.relationship('SurveyResponse',
                                       cascade='all, delete-orphan',

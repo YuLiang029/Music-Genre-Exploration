@@ -327,6 +327,7 @@ def genre_recommendation_exp_multiple():
     print('selected genre is {}'.format(genre_name))
 
     recommendation_log = RecommendationLog(user_id=session["userid"], genre_name=genre_name,
+                                           init_weight=weight,
                                            start_ts=ts, session_id=session['id'], id=session['rec_id'])
 
     db.session.add(recommendation_log)

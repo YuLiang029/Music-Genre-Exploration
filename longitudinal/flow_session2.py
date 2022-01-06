@@ -131,9 +131,14 @@ def pre_survey():
 
 @session2_bp.route('/explore_genre')
 def explore_genre():
-    return render_template('explore_genre.html',
-                           genre="classical",
-                           weight=0.5)
+    rec_id = UserPlaylistSession.query.filter_by(user_id=session["userid"]).first().rec_id
+    recommendation_log = RecommendationLog.query.filter_by(id=rec_id).first()
+    genre = recommendation_log.genre_name
+    weight = recommendation_log.init_weight
+
+    return render_template('explore_genre_vis.html',
+                           genre=genre,
+                           weight=weight)
 
 
 @session2_bp.route('/last_step')

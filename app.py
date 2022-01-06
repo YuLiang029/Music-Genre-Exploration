@@ -48,8 +48,8 @@ app.register_blueprint(recommendation_bp)
 
 # Register blueprint for the longitudinal study
 app.register_blueprint(long_bp)
-app.register_blueprint(session1_bp)
-# app.register_blueprint(session2_bp)
+# app.register_blueprint(session1_bp)
+app.register_blueprint(session2_bp)
 
 with app.app_context():
     db.create_all()

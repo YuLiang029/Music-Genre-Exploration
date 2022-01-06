@@ -5,7 +5,9 @@ from database import db
 from genre_exploration.flow import genre_explore_bp
 from dbdw.flow import dbdw_bp
 from nudge.flow import nudge_bp
-from longitudinal.flow import longitudinal_bp
+from longitudinal.flow import long_bp
+from longitudinal.flow_session1 import session1_bp
+from longitudinal.flow_session2 import session2_bp
 import os
 from mail import mail
 
@@ -45,7 +47,9 @@ app.register_blueprint(recommendation_bp)
 # app.register_blueprint(nudge_bp)
 
 # Register blueprint for the longitudinal study
-app.register_blueprint(longitudinal_bp)
+app.register_blueprint(long_bp)
+#app.register_blueprint(session1_bp)
+app.register_blueprint(session2_bp)
 
 with app.app_context():
     db.create_all()

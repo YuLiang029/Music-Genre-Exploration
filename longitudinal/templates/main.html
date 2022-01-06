@@ -31,7 +31,7 @@
     <br>
 
     <div class="text-right">
-        <a class="btn btn-success btn-lg" id="action_continue" href="/redirect_from_index">
+        <a class="btn btn-success btn-lg" id="action_continue" href="/session_register">
             Continue and login with my Spotify account<i class="fas fa-arrow-right"></i>
         </a>
     </div>
@@ -46,7 +46,7 @@
         if (url.includes("?subject_id=")){
             var prolific_pid = url.substring(url.indexOf("=")+1, url.length);
             console.log(prolific_pid);
-            $('#action_continue').attr('href', '/redirect_from_index?subject_id=' + prolific_pid);
+            $('#action_continue').attr('href', '/session_register?subject_id=' + prolific_pid);
         }
 
     });

@@ -3,17 +3,18 @@
 {% block content %}
 
     <div class="row">
-        <h2 id="rec_header" class="col-12 show-on-success">Top recommendations for you – Genre: {{genre}}</h2>
-        <!--<h3 class="col-12 show-on-success">Task:</h3>-->
+        <h2 id="rec_header" class="col-12 show-on-success">
+            Top recommendations for you – Genre: {{genre}}
+        </h2>
         <p class="show-on-success lead col-12">
-            Try to create a good playlist that is
+            Task: try to create a good playlist that is
             helpful for you to explore the genre {{genre}} using the slider.</p>
 
         <p class="show-on-success col-12 lead">
-            Find the position of the slider that gives you a playlist that
-            you want to listen to to explore the new genre. If you are satisfied with the playlist,
-            use the save playlist button to save it to your spotify account.
-            Please go to the (optional) survey to answer a few questions about our tool and your experience with music.
+            The initial slider position is set to your last playlist position.
+            Click continue until you find
+            the position of the slider that gives you a playlist that
+            you want to listen to to explore the new genre in the next week.
         </p>
 
         <p class="show-on-success col-12 lead">
@@ -119,17 +120,31 @@
     let contour_plot;
     let contour_plot2;
 
-    let user_mean_energy;
-    let user_mean_valence;
+    let last_playlist_mean_energy;
+    let last_playlist_mean_valence;
+    let last_playlist_mean_acoustic;
+    let last_playlist_mean_dance;
+
+     const circle = d3.symbol().type(d3.symbolCircle)(),
+         triangleU = d3.symbol().type(d3.symbolTriangle)(),
+         star = d3.symbol().type(d3.symbolStar)();
+
+
+    const circle_big = d3.symbol().size(200).type(d3.symbolCircle),
+        triangleU_big = d3.symbol().size(200).type(d3.symbolTriangle),
+        star_big = d3.symbol().size(200).type(d3.symbolStar)();
+
     let $playlist = $("#playlist");
 
     let sliderVal;
 
     const number_of_tracks = 10;
+
     const colors = {
-        "recommendations": "#007bff",
-        "user_profile": "#d95f02",
-        "genre": "#1b9e77"
+        "user_profile": "#CB4335",
+        "last_playlist_mean": "#8E44AD",
+        "recommendations": "#2471A3",
+        "genre": "#229954",
     };
 
     function fillPlaylist() {
@@ -200,16 +215,18 @@
             }
         }, 500);
 
-        // Highlight point in scatter plot when user hovers over track
+
         $($playlist)
             .on("mouseover", ".track", function() {
-            let track_id = $(this).children(".trackid").attr("value");
-            $(".rec_scatter [data-track-id=" + track_id + "]").addClass("circle--highlighted");
-        })
+                let track_id = $(this).children(".trackid").attr("value");
+                let point = $(".rec_scatter [data-track-id=" + track_id + "]");
+                point.attr("d", triangleU_big);
+            })
             .on("mouseout", ".track", function() {
-            let track_id = $(this).children(".trackid").attr("value");
-            $(".rec_scatter [data-track-id=" + track_id + "]").removeClass("circle--highlighted");
-        });
+                let track_id = $(this).children(".trackid").attr("value");
+                let point = $(".rec_scatter [data-track-id=" + track_id + "]");
+                point.attr("d", triangleU);
+            });
 
         $("#range_slider").on('change', function (e) {slidersChangedNew(e.currentTarget)});
     });
@@ -244,13 +261,16 @@
     }
 
     /* Contour plot visualisation ------------------------------------------------------------------------------------*/
-    function ContourPlot(contour_viz, recommendations, user_top_tracks, genre_top_tracks, feature1, feature2) {
+    function ContourPlot(contour_viz, recommendations, user_top_tracks,
+                         genre_top_tracks, feature1, feature2, mean_feature1, mean_feature2) {
         this.recommendations = recommendations;
         this.user_top_tracks = user_top_tracks;
         this.genre_top_tracks = genre_top_tracks;
         this.contour_viz = contour_viz;
         this.feature1 = feature1;
         this.feature2 = feature2;
+        this.mean_feature1 = mean_feature1;
+        this.mean_feature2 = mean_feature2;
 
         // set the dimensions and margins of the graph
         const margin = {top: 20, right: 120, bottom: 30, left: 120},
@@ -328,15 +348,29 @@
                 .attr("class", classname)
                 .attr("stroke", "white")
                 .attr("fill", color)
-                .selectAll("circle")
+                .selectAll("path")
                 .data(data)
-                    .enter().append("circle")
-                    .attr("cx", d => x(d[feature1]))
-                    .attr("cy", d => y(d[feature2]))
+                    .enter().append("path")
+                    .attr("transform", function(d) { return "translate(" + x(d[feature1]) + "," + y(d[feature2]) + ")"; })
                     .attr("data-track-id", d => d.id)
-                    .attr("r", 5)
+                    .attr("d", triangleU)
                     .on("mouseover", handleMouseOver)
                     .on("mouseout", handleMouseOut);
+        };
+
+        this.add_mean_feature = (color, shape) => {
+            this.svg.append("g")
+                .attr("class", "meanValue")
+                .attr("stroke", "white")
+                .attr("fill", color)
+                .selectAll("path")
+                .data(color)
+                    .enter().append("path")
+                    .attr("transform", function() {
+                        return "translate(" + x(mean_feature1) + "," + y(mean_feature2) + ")";
+                    })
+                    .attr("d", shape)
+
         };
 
         this.remove_group = (selector) => {
@@ -351,6 +385,8 @@
 
         // Add a scatter plot for the recommendations
         this.add_scatter_plot(recommendations, colors.recommendations, "rec_scatter");
+        this.add_mean_feature(colors.last_playlist_mean, star_big);
+
         let x_negative;
         let x_positive;
         let y_negative;
@@ -433,32 +469,39 @@
             .text(y_negative);
 
         // Add legend
-        let ordinal = d3.scaleOrdinal()
-          .domain(["Your taste", "The {{ genre }} genre", "Recommended songs"])
-          .range([colors.user_profile, colors.genre, colors.recommendations]);
+        let symbolScale =  d3.scaleOrdinal()
+            .domain(["Your taste", "The {{ genre }} genre", "Recommended songs", "Your last position"])
+            .range([circle, circle, triangleU, star] );
+
+        let colorScale =  d3.scaleOrdinal()
+            .domain(["Your taste", "The {{ genre }} genre", "Recommended songs", "Your last position"])
+            .range([colors.user_profile, colors.genre, colors.recommendations, colors.last_playlist_mean] );
+
         this.svg.append("g")
-          .attr("class", "legendOrdinal")
+          .attr("class", "legendSymbol")
           .attr("transform", "translate(-75,0)");
 
-        let legendOrdinal = d3.legendColor()
-          .shape("circle")
-          .shapePadding(16)
-          .shapeRadius(5)
-          //use cellFilter to hide the "e" cell
-          .cellFilter(function(d){ return d.label !== "e" })
-          .scale(ordinal);
+        let legendPath = d3.legendSymbol()
+            .scale(symbolScale)
+            .shapePadding(16);
 
-        this.svg.select(".legendOrdinal")
-          .call(legendOrdinal);
+        this.svg.select(".legendSymbol")
+            .call(legendPath);
+
+        this.svg.selectAll(".cell path").each(function(d) {
+            d3.select(this).style("fill", colorScale(d))
+        })
 
 
         // Allow interaction with the graph
         function handleMouseOver(d) {
             $(".trackid[value=" + d.id + "]").parent().addClass("track--highlighted1");
+            d3.select(this).attr('d', triangleU_big);
         }
 
         function handleMouseOut(d, i) {
             $(".trackid[value=" + d.id + "]").parent().removeClass("track--highlighted1");
+            d3.select(this).attr('d', triangleU);
         }
     }
 
@@ -494,8 +537,11 @@
         // Set global variables based on data
         all_recommendations = recommendations;
         visible_recommendations = recommendations.slice(track_index, track_index+number_of_tracks);
-        user_mean_energy = mean(user_top_tracks, "energy");
-        user_mean_valence = mean(user_top_tracks, "valence");
+
+        last_playlist_mean_energy = mean(visible_recommendations, "energy")
+        last_playlist_mean_valence = mean(visible_recommendations, "valence")
+        last_playlist_mean_acoustic = mean(visible_recommendations, "acousticness")
+        last_playlist_mean_dance = mean(visible_recommendations, "danceability")
 
         for (let i = 0; i < all_recommendations.length; i++) {
             all_recommendations[i]['yu_ranking'] = i;
@@ -512,8 +558,25 @@
         // Initialise playlist, sliders, and visualisation
         fillPlaylist();
         //setSliders();
-        contour_plot = new ContourPlot("#contour_viz", visible_recommendations, user_top_tracks, genre_top_tracks, "valence", "energy");
-        contour_plot2 = new ContourPlot("#contour_viz2", visible_recommendations, user_top_tracks, genre_top_tracks, "acousticness", "danceability");
+        contour_plot = new ContourPlot(
+            "#contour_viz",
+            visible_recommendations,
+            user_top_tracks,
+            genre_top_tracks,
+            "valence",
+            "energy",
+            last_playlist_mean_valence,
+            last_playlist_mean_energy);
+
+        contour_plot2 = new ContourPlot(
+            "#contour_viz2",
+            visible_recommendations,
+            user_top_tracks,
+            genre_top_tracks,
+            "acousticness",
+            "danceability",
+            last_playlist_mean_acoustic,
+            last_playlist_mean_dance);
 
         // Hide loading indicator and show results
         $('.hide-on-success').hide();

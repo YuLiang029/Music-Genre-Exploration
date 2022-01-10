@@ -25,13 +25,16 @@ def session_register():
     if request.args.get("subject_id"):
         session["subject_id"] = request.args.get("subject_id")
 
-        # First check if user_condition exists already
-        user_condition = UserCondition.query.filter_by(user_id=session["subject_id"]).first()
-        if not user_condition:
-            return redirect(url_for("long_bp.error_session_missing"))
+        # Check if the playlist has already been generated
+        user_playlist_session = UserPlaylistSession.query.filter_by(
+            user_id=session["subject_id"], session_num=session["session_num"]).first()
 
-        return redirect(url_for('spotify_basic_bp.login',
-                                next_url='session2_bp.pre_survey'))
+        if not user_playlist_session:
+            return redirect(url_for('spotify_basic_bp.login',
+                                    next_url='session2_bp.pre_survey'))
+
+        return redirect(url_for("long_bp.error_repeat_answer"))
+
     return redirect(url_for("long_bp.error_page"))
 
 

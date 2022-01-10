@@ -1,11 +1,7 @@
 from flask import render_template, redirect, Blueprint, request, session, url_for
-from recommendation import RecommendationLog
-import re
 import time
-from recommendation import SurveyResponse
 from database import db
 from general import UserCondition, Playlist
-import random
 from general.basic import is_token_expired, get_refresh_token, generate_playlist, save_tracks_to_playlist
 import uuid
 from longitudinal import UserPlaylistSession
@@ -63,9 +59,13 @@ def generate_longitudinal_playlist(genre):
 
 @long_bp.route('/error_page')
 def error_page():
-    return render_template("Error_non_prolificid.html")
+    return render_template('Error_long.html',
+                           shown_message="Oops, we could not get your Prolific ID. "
+                                         "Please try the survey again with the link with your Prolific ID")
 
 
-@long_bp.route('/error_session_missing')
-def error_session_missing():
-    return render_template("Error_session_missing.html")
+@long_bp.route('/error_repeat_answer')
+def error_repeat_answer():
+    return render_template('Error_long.html',
+                           shown_message="Oops, you cannot partcipate this session twice. "
+                                         "You have already finished this session. ")

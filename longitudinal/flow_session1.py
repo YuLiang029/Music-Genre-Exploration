@@ -3,7 +3,7 @@ import time
 from database import db
 from general import UserCondition
 import random
-
+from longitudinal import UserPlaylistSession
 """
 Blueprint for session 1
 """
@@ -22,7 +22,16 @@ def session_register():
     if request.args.get("subject_id"):
         session["subject_id"] = request.args.get("subject_id")
         print(session["subject_id"])
-        return redirect(url_for("session1_bp.inform_consent"))
+
+        # Check if the playlist has already been generated
+        user_playlist_session = UserPlaylistSession.query.filter_by(
+            user_id=session["subject_id"], session_num=session["session_num"]).first()
+
+        if not user_playlist_session:
+            return redirect(url_for("session1_bp.inform_consent"))
+
+        return redirect(url_for("long_bp.error_repeat_answer"))
+
     return redirect(url_for("long_bp.error_page"))
 
 

@@ -105,9 +105,3 @@ def explore_genre():
     return render_template('explore_genre.html',
                            genre=request.args.get('genre'),
                            weight=weight)
-
-
-@session1_bp.route('/last_step')
-def last_step():
-    # return redirect("https://app.prolific.co/submissions/complete?cc=47904236")
-    return render_template("general_last_page.html")

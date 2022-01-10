@@ -54,6 +54,7 @@ def generate_longitudinal_playlist(genre):
     db.session.add(spotify_playlist)
     db.session.add(user_playlist_session)
     db.session.commit()
+    session["playlist_url"] = playlist_url
     return "done"
 
 
@@ -69,3 +70,9 @@ def error_repeat_answer():
     return render_template('Error_long.html',
                            shown_message="Oops, you cannot partcipate this session twice. "
                                          "You have already finished this session. ")
+
+
+@long_bp.route('/last_step')
+def last_step():
+    # return redirect("https://app.prolific.co/submissions/complete?cc=47904236")
+    return render_template("last_page_long.html", playlist_url = session["playlist_url"])

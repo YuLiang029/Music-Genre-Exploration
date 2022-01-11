@@ -189,6 +189,7 @@ def import_tracks_from_csv():
                "pop-rock", "rap", "reggae",
                "rnb"]
     folder = "genre_baseline_1_2_four_features"
+    print(folder)
 
     for genre in l_genre:
         df = pd.read_csv(folder + "/" + genre + ".csv", encoding='utf8')
@@ -221,3 +222,4 @@ def import_tracks_from_csv():
                 db.session.add(new_genre_track)
                 db.session.add(new_track_obj)
             db.session.commit()
+

@@ -11,6 +11,17 @@ from longitudinal.flow_session2 import session2_bp
 import os
 from mail import mail
 
+from Utility.utility import scrape_genre_artist, scrape_genre_artist_next_level, \
+    get_artist_top_tracks, import_tracks_from_csv
+
+# pacakge for development run
+# from flask_debugtoolbar import DebugToolbarExtension
+from rq import Queue
+from worker import conn
+
+# Debug tool
+# toolbar = DebugToolbarExtension(app)
+
 
 # Force HTTPS connection on server
 class ReverseProxied(object):
@@ -31,28 +42,31 @@ app.wsgi_app = ReverseProxied(app.wsgi_app)
 db.init_app(app)
 mail.init_app(app)
 
-# Register blueprint for spotify login
-app.register_blueprint(spotify_basic_bp)
-
-# Register blueprint for recommendation module
-app.register_blueprint(recommendation_bp)
-
-# Register blueprint for Basic Genre Exploration app
-# app.register_blueprint(genre_explore_bp)
-
-# Register blueprint for the DBDW app
-# app.register_blueprint(dbdw_bp)
-
-# Register blueprint for the nudge study
-# app.register_blueprint(nudge_bp)
-
-# Register blueprint for the longitudinal study
-app.register_blueprint(long_bp)
-app.register_blueprint(session1_bp)
-# app.register_blueprint(session2_bp)
 
 with app.app_context():
     db.create_all()
+    # Register blueprint for spotify login
+    app.register_blueprint(spotify_basic_bp)
+
+    # Register blueprint for recommendation module
+    app.register_blueprint(recommendation_bp)
+
+    # Register blueprint for Basic Genre Exploration app
+    # app.register_blueprint(genre_explore_bp)
+
+    # Register blueprint for the DBDW app
+    # app.register_blueprint(dbdw_bp)
+
+    # Register blueprint for the nudge study
+    # app.register_blueprint(nudge_bp)
+
+    # Register blueprint for the longitudinal study
+    app.register_blueprint(long_bp)
+    # app.register_blueprint(session1_bp)
+    app.register_blueprint(session2_bp)
+
+# Initialize queue for worker
+q = Queue(connection=conn, default_timeout=6000)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5001)), debug=True)
@@ -76,32 +90,18 @@ def shutdown_session(exception=None):
 def page_not_found(error):
     return render_template('404NotFound.html', title='404'), 404
 
-# pacakge for development run
-# from flask_debugtoolbar import DebugToolbarExtension
-# from rq import Queue
-# from worker import conn
-
-# Debug tool
-# toolbar = DebugToolbarExtension(app)
-
-# Initialize queue for worker
-# q = Queue(connection=conn, default_timeout=6000)
-
-
-# from Utility.utility import scrape_genre_artist, scrape_genre_artist_next_level, \
-#     get_artist_top_tracks, import_tracks_from_csv
 
 # Function that can run in the background
-# @app.route('/run_background')
-# def run_background():
-#     q.enqueue(spotify_scrape)
-#     return render_template("test.html")
-#
-#
-# # scrape from Spotify
-# def spotify_scrape():
-#     with app.app_context():
-#         # scrape_genre_artist_next_level(2)
-#         # scrape_genre_artist()
-#         # get_artist_top_tracks()
-#         import_tracks_from_csv()
+@app.route('/run_background')
+def run_background():
+    q.enqueue(spotify_scrape)
+    return render_template("test.html")
+
+
+# scrape from Spotify
+def spotify_scrape():
+    with app.app_context():
+        # scrape_genre_artist_next_level(2)
+        # scrape_genre_artist()
+        # get_artist_top_tracks()
+        import_tracks_from_csv()

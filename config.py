@@ -12,7 +12,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 
 # Database configuration for local sqlite database
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'test.db').replace("mysql://", "mysql+pymysql://")
+# SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'test.db').replace("mysql://", "mysql+pymysql://")
 
 # Database configuration for upgraded HEROKU database
 # SQLALCHEMY_DATABASE_URI = os.environ.get('HEROKU_POSTGRESQL_MAROON_URL').replace("://", "ql://", 1)
@@ -22,6 +22,10 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'test.db').repla
 # SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL',
 #                                          'postgresql://localhost/dbdw').replace(
 #                                          "mysql://", "mysql+pymysql://")
+
+SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL',
+                                         'postgresql://localhost/long_copy').replace(
+                                         "mysql://", "mysql+pymysql://")
 
 DATABASE_CONNECT_OPTIONS = {}
 
@@ -57,3 +61,9 @@ MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
 MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
 MAIL_USE_TLS = True
 MAIL_USE_SSL = False
+
+SPOTIFY_CLIENT_ID = os.environ.get('SPOTIFY_CLIENT_ID')
+SPOTIFY_CLIENT_SECRET = os.environ.get('SPOTIFY_CLIENT_SECRET')
+
+SPOTIFY_SCRAPE_CLIENT_ID = os.environ.get('SPOTIFY_SCRAPE_CLIENT_ID')
+SPOTIFY_SCRAPE_CLIENT_SECRET = os.environ.get('SPOTIFY_SCRAPE_CLIENT_SECRET')

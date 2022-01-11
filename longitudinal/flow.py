@@ -41,6 +41,8 @@ def generate_longitudinal_playlist(genre):
         timestamp=timestamp,
         user_id=session["userid"],
         session_id=session["id"])
+    db.session.add(spotify_playlist)
+    db.session.commit()
 
     user_playlist_session = UserPlaylistSession(
         id=str(uuid.uuid4()),
@@ -51,7 +53,6 @@ def generate_longitudinal_playlist(genre):
         session_num=session["session_num"]
     )
 
-    db.session.add(spotify_playlist)
     db.session.add(user_playlist_session)
     db.session.commit()
     session["playlist_url"] = playlist_url
@@ -68,7 +69,7 @@ def error_page():
 @long_bp.route('/error_repeat_answer')
 def error_repeat_answer():
     return render_template('Error_long.html',
-                           shown_message="Oops, you cannot partcipate this session twice. "
+                           shown_message="Oops, you cannot participate this session twice. "
                                          "You have already finished this session. ")
 
 

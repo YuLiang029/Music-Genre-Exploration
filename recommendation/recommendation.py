@@ -14,6 +14,7 @@ from functools import reduce
 from sklearn.feature_extraction.text import CountVectorizer
 import networkx as nx
 import pickle
+from sqlalchemy import inspect
 
 recommendation_bp = Blueprint('recommendation_bp', __name__,
                               template_folder='templates')
@@ -314,6 +315,11 @@ def genre_recommendation_exp():
     return jsonify(top_tracks_list)
 
 
+def object_as_dict(obj):
+    return {c.key: getattr(obj, c.key)
+            for c in inspect(obj).mapper.column_attrs}
+
+
 # Get top-10 recommended tracks from a requested music genre with a list of weight values
 # (0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0) for balancing representativeness and personalization
 @recommendation_bp.route('/genre_recommendation_exp_multiple')
@@ -326,12 +332,36 @@ def genre_recommendation_exp_multiple():
 
     print('selected genre is {}'.format(genre_name))
 
-    recommendation_log = RecommendationLog(user_id=session["userid"], genre_name=genre_name,
+    recommendation_log = RecommendationLog(user_id=session["userid"],
+                                           genre_name=genre_name,
                                            init_weight=weight,
-                                           start_ts=ts, session_id=session['id'], id=session['rec_id'])
+                                           start_ts=ts,
+                                           session_id=session['id'],
+                                           id=session['rec_id'])
 
-    db.session.add(recommendation_log)
-    db.session.commit()
+    # Check if recommendations exist
+    prev_recommendation_log = RecommendationLog.query.filter_by(
+        user_id=session["userid"], genre_name=genre_name, flag="first").first()
+
+    if prev_recommendation_log:
+        db.session.add(recommendation_log)
+        db.session.commit()
+
+        l_tracks = []
+        prev_rec_id = prev_recommendation_log.id
+        rec_tracks = RecTracks.query.filter_by(rec_id=prev_rec_id,
+                                               ).order_by(RecTracks.weight, RecTracks.rank).all()
+        for rec_track in rec_tracks:
+            track = rec_track.track
+            rec_info = object_as_dict(rec_track)
+            track_info = object_as_dict(track)
+
+            track_info["rank"] = rec_info["rank"]
+            track_info["weight"] = rec_info["weight"]
+            l_tracks.append(track_info)
+
+        print(l_tracks)
+        return jsonify(l_tracks)
 
     def get_mix_multiple_top(l_weight: list):
         genre_df = get_genre_recommendation_by_preference(genre_name, by_preference=False)
@@ -364,24 +394,28 @@ def genre_recommendation_exp_multiple():
 
     if not isinstance(genre_df1, pd.DataFrame):
         return jsonify("error")
-    else:
-        top_tracks = genre_df1
 
-        l_rec_trakcs = []
-        for index, row in top_tracks.iterrows():
-            # rec_tracks = RecTracks(rec_id=session['rec_id'], track_id=row["id"], rank=row["index"])
-            rec_tracks = RecTracks(rec_id=session['rec_id'], track_id=row["id"],
-                                   rank=row["index"],
-                                   baseline_ranking=row['baseline_ranking'],
-                                   personalized_ranking=row['sum_rank_ranking'],
-                                   score=row['ranking_score'], weight=row['weight'])
-            l_rec_trakcs.append(rec_tracks)
+    db.session.add(recommendation_log)
+    recommendation_log.flag = "first"
 
-        db.session.add_all(l_rec_trakcs)
-        db.session.commit()
+    db.session.commit()
 
-        top_tracks_list = top_tracks.to_dict('records')
-        return jsonify(top_tracks_list)
+    l_rec_tracks = []
+    for index, row in genre_df1.iterrows():
+        # rec_tracks = RecTracks(rec_id=session['rec_id'], track_id=row["id"], rank=row["index"])
+        rec_tracks = RecTracks(rec_id=session['rec_id'], track_id=row["id"],
+                               rank=row["index"],
+                               baseline_ranking=row['baseline_ranking'],
+                               personalized_ranking=row['sum_rank_ranking'],
+                               score=row['ranking_score'], weight=row['weight'])
+        l_rec_tracks.append(rec_tracks)
+
+    db.session.add_all(l_rec_tracks)
+    db.session.commit()
+
+    top_tracks_list = genre_df1.to_dict('records')
+    print(top_tracks_list)
+    return jsonify(top_tracks_list)
 
 
 # Personalized approaches: get the most personalized tracks of the genre based on users'

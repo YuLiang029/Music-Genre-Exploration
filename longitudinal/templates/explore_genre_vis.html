@@ -188,7 +188,7 @@
                 trackString = trackString + "," + visible_recommendations[i].id;
             }
             $.ajax({
-                url: "/generate_longitudinal_playlist/{{ genre }}?weight=" + sliderVal + "&tracks=" + trackString.substring(1,) + "",
+                url: "/generate_longitudinal_playlist/{{ genre }}?weight=" + $("#range_slider").val() + "&tracks=" + trackString.substring(1,) + "",
                 global: false
             }).done(function (data){
                 if (data === "done"){

@@ -5,6 +5,7 @@ from general import UserCondition, Playlist
 from general.basic import is_token_expired, get_refresh_token, generate_playlist, save_tracks_to_playlist
 import uuid
 from longitudinal import UserPlaylistSession
+from recommendation import RecommendationLog
 
 long_bp = Blueprint('long_bp', __name__, template_folder='templates')
 
@@ -12,6 +13,10 @@ long_bp = Blueprint('long_bp', __name__, template_folder='templates')
 @long_bp.route('/generate_longitudinal_playlist/<genre>')
 def generate_longitudinal_playlist(genre):
     rec_id = session['rec_id']
+
+    recommendation_log = RecommendationLog.query.filter_by(id=session["rec_id"]).first()
+    recommendation_log.stop_ts = time.time()
+    db.session.commit()
 
     tracks = request.args.get('tracks')
     weight = request.args.get('weight')
@@ -79,4 +84,4 @@ def error_repeat_answer():
 @long_bp.route('/last_step')
 def last_step():
     # return redirect("https://app.prolific.co/submissions/complete?cc=47904236")
-    return render_template("last_page_long.html", playlist_url = session["playlist_url"])
+    return render_template("last_page_long.html", playlist_url=session["playlist_url"])

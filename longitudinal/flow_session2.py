@@ -16,7 +16,9 @@ session2_bp = Blueprint('session2_bp', __name__, template_folder='templates')
 
 @session2_bp.route('/')
 def index():
-    session["session_num"] = 4
+    session["session_num"] = 3
+    # session["session_num"] = 3
+    # session["session_num"] = 4
     return render_template('main.html')
 
 
@@ -27,7 +29,8 @@ def session_register():
 
         # Check if the playlist has already been generated
         user_playlist_session = UserPlaylistSession.query.filter_by(
-            user_id=session["subject_id"], session_num=session["session_num"]).first()
+            user_id=session["subject_id"],
+            session_num=session["session_num"]).first()
 
         if not user_playlist_session:
             return redirect(url_for('spotify_basic_bp.login',
@@ -127,7 +130,8 @@ def pre_survey():
                            session_id=session["id"],
                            rec_id=rec_id,
                            item_id=item,
-                           value=request.form[item]) for item in
+                           value=request.form[item],
+                           stop_ts=time.time()) for item in
             request.form]
         db.session.commit()
         return "done"
@@ -135,14 +139,14 @@ def pre_survey():
 
 @session2_bp.route('/explore_genre')
 def explore_genre():
-    prev_playlist_session = UserPlaylistSession.query.filter_by(user_id=session["userid"],
-                                                                ).order_by(UserPlaylistSession.session_num.desc()).first()
+    prev_playlist_session = UserPlaylistSession.query.filter_by(
+        user_id=session["userid"],
+    ).order_by(UserPlaylistSession.session_num.desc()).first()
 
-    rec_id = prev_playlist_session.rec_id
-    weight = prev_playlist_session.weight
-
-    recommendation_log = RecommendationLog.query.filter_by(id=rec_id).first()
-    genre = recommendation_log.genre_name
+    # retrieve the previous playlist weight and the corresponding genre
+    prev_rec_id = prev_playlist_session.rec_id
+    prev_weight = prev_playlist_session.weight
+    genre = RecommendationLog.query.filter_by(id=prev_rec_id).first().genre_name
 
     user_condition = UserCondition.query.filter_by(user_id=session["userid"]).first()
     if user_condition:
@@ -150,5 +154,5 @@ def explore_genre():
         return render_template('explore_genre_vis.html',
                                condition=condition,
                                genre=genre,
-                               weight=weight)
+                               weight=prev_weight)
 

@@ -320,10 +320,8 @@ def object_as_dict(obj):
             for c in inspect(obj).mapper.column_attrs}
 
 
-# Get top-10 recommended tracks from a requested music genre with a list of weight values
-# (0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0) for balancing representativeness and personalization
-@recommendation_bp.route('/genre_recommendation_exp_multiple')
-def genre_recommendation_exp_multiple():
+@recommendation_bp.route('/retrieve_genre_recommendation_multiple')
+def retrieve_genre_recommendation_multiple():
     ts = time.time()
     session['rec_id'] = str(uuid.uuid4())
     genre_name = request.args.get('genre')
@@ -337,11 +335,14 @@ def genre_recommendation_exp_multiple():
                                            init_weight=weight,
                                            start_ts=ts,
                                            session_id=session['id'],
+                                           current_phase=session["session_num"],
                                            id=session['rec_id'])
 
     # Check if recommendations exist
     prev_recommendation_log = RecommendationLog.query.filter_by(
-        user_id=session["userid"], genre_name=genre_name, flag="first").first()
+        user_id=session["userid"],
+        genre_name=genre_name,
+        current_phase=1).first()
 
     if prev_recommendation_log:
         db.session.add(recommendation_log)
@@ -362,6 +363,26 @@ def genre_recommendation_exp_multiple():
 
         print(l_tracks)
         return jsonify(l_tracks)
+
+
+# Get top-10 recommended tracks from a requested music genre with a list of weight values
+# (0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0) for balancing representativeness and personalization
+@recommendation_bp.route('/genre_recommendation_exp_multiple')
+def genre_recommendation_exp_multiple():
+    ts = time.time()
+    session['rec_id'] = str(uuid.uuid4())
+    genre_name = request.args.get('genre')
+    weight = float(request.args.get('weight'))
+    print(weight)
+
+    print('selected genre is {}'.format(genre_name))
+
+    recommendation_log = RecommendationLog(user_id=session["userid"],
+                                           genre_name=genre_name,
+                                           init_weight=weight,
+                                           start_ts=ts,
+                                           session_id=session['id'],
+                                           id=session['rec_id'])
 
     def get_mix_multiple_top(l_weight: list):
         genre_df = get_genre_recommendation_by_preference(genre_name, by_preference=False)
@@ -396,7 +417,7 @@ def genre_recommendation_exp_multiple():
         return jsonify("error")
 
     db.session.add(recommendation_log)
-    recommendation_log.flag = "first"
+    recommendation_log.current_phase = 1
 
     db.session.commit()
 

@@ -105,3 +105,4 @@ def explore_genre():
     return render_template('explore_genre.html',
                            genre=request.args.get('genre'),
                            weight=weight)
+

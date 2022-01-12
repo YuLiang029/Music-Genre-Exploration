@@ -13,7 +13,6 @@ class RecommendationLog(db.Model):
     genre_name = db.Column(db.VARCHAR)
     type = db.Column(db.VARCHAR)
     init_weight = db.Column(db.FLOAT)
-    flag = db.Column(db.VARCHAR)
 
     survey_response = db.relationship('SurveyResponse',
                                       cascade='all, delete-orphan',

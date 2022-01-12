@@ -101,7 +101,10 @@
 
     <div class="row">
         <div class="col-sm text-right">
-            <button class="show-on-success btn btn-success btn-lg" id="save_playlist">
+            <button class="show-on-success btn btn-success btn-lg" id="save_playlist"
+                    data-intro="After finding the playlist you would like to listen to in the next week.
+                    Click this button to continue and save the playlist to your Spotify account"
+                    data-step='5'>
                 Continue and save the playlist to my Spotify
                 <i class="fas fa-arrow-right"></i>
             </button>
@@ -119,11 +122,6 @@
     let visible_recommendations = []; // Subset of recommendations actually shown to the user
     let contour_plot;
     let contour_plot2;
-
-    let last_playlist_mean_energy;
-    let last_playlist_mean_valence;
-    let last_playlist_mean_acoustic;
-    let last_playlist_mean_dance;
 
     const condition = {{ condition }}
 
@@ -148,6 +146,13 @@
         "recommendations": "#2471A3",
         "genre": "#229954",
     };
+
+    let basicLegend = ["Your taste", "The {{ genre }} genre", "Recommended songs"];
+    let basicSymbol = [circle, circle, triangleU] ;
+    let basicColor = [colors.user_profile, colors.genre, colors.recommendations];
+    let extendLegend = basicLegend.push("Your last position");
+    let extendSymbol = basicSymbol.push(star_big);
+    let extendColor = basicColor.push(colors.last_playlist_mean);
 
     function fillPlaylist() {
         // Check if the number of tracks equals 10
@@ -388,10 +393,6 @@
         // Add a scatter plot for the recommendations
         this.add_scatter_plot(recommendations, colors.recommendations, "rec_scatter");
 
-        if (condition === 1 || condition === 0) {
-            this.add_mean_feature(colors.last_playlist_mean, star_big);
-        }
-
         let x_negative;
         let x_positive;
         let y_negative;
@@ -414,10 +415,6 @@
                 x_negative = "Less acoustic";
                 x_positive = "More acoustic";
                 break;
-            case "speechiness":
-                x_negative = "Less speech";
-                x_positive = "More speech";
-                break;
         }
 
         switch (feature2) {
@@ -436,10 +433,6 @@
             case "acousticness":
                 y_negative = "Less acoustic";
                 y_positive = "More acoustic";
-                break;
-            case "speechiness":
-                y_negative = "Less speech";
-                y_positive = "More speech";
                 break;
         }
 
@@ -476,23 +469,26 @@
         let symbolScale = d3.scaleOrdinal()
         let colorScale =  d3.scaleOrdinal()
 
+
         // Add legend
-        if (condition === 1 || condition === 0) {
+        if (condition === 0 || condition === 1) {
+            this.add_mean_feature(colors.last_playlist_mean, star_big);
             symbolScale
-                .domain(["Your taste", "The {{ genre }} genre", "Recommended songs", "Your last position"])
-                .range([circle, circle, triangleU, star] );
+                .domain(extendLegend)
+                .range(extendSymbol);
 
             colorScale
-                .domain(["Your taste", "The {{ genre }} genre", "Recommended songs", "Your last position"])
-                .range([colors.user_profile, colors.genre, colors.recommendations, colors.last_playlist_mean] );
+                .domain(extendLegend)
+                .range(extendColor);
+
         }else{
             symbolScale
-                .domain(["Your taste", "The {{ genre }} genre", "Recommended songs"])
-                .range([circle, circle, triangleU] );
+                .domain(basicLegend)
+                .range(basicSymbol);
 
             colorScale
-                .domain(["Your taste", "The {{ genre }} genre", "Recommended songs"])
-                .range([colors.user_profile, colors.genre, colors.recommendations] );
+                .domain(basicLegend)
+                .range(basicColor);
         }
 
 
@@ -558,11 +554,6 @@
         all_recommendations = recommendations;
         visible_recommendations = recommendations.slice(track_index, track_index+number_of_tracks);
 
-        last_playlist_mean_energy = mean(visible_recommendations, "energy")
-        last_playlist_mean_valence = mean(visible_recommendations, "valence")
-        last_playlist_mean_acoustic = mean(visible_recommendations, "acousticness")
-        last_playlist_mean_dance = mean(visible_recommendations, "danceability")
-
         for (let i = 0; i < all_recommendations.length; i++) {
             all_recommendations[i]['yu_ranking'] = i;
         }
@@ -585,8 +576,8 @@
             genre_top_tracks,
             "valence",
             "energy",
-            last_playlist_mean_valence,
-            last_playlist_mean_energy);
+            mean(visible_recommendations, "valence"),
+            mean(visible_recommendations, "energy"));
 
         contour_plot2 = new ContourPlot(
             "#contour_viz2",
@@ -595,8 +586,8 @@
             genre_top_tracks,
             "acousticness",
             "danceability",
-            last_playlist_mean_acoustic,
-            last_playlist_mean_dance);
+            mean(visible_recommendations, "acousticness"),
+            mean(visible_recommendations, "danceability"));
 
         // Hide loading indicator and show results
         $('.hide-on-success').hide();

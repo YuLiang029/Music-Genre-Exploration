@@ -16,8 +16,8 @@ session2_bp = Blueprint('session2_bp', __name__, template_folder='templates')
 
 @session2_bp.route('/')
 def index():
+    # session["session_num"] = 2
     session["session_num"] = 3
-    # session["session_num"] = 3
     # session["session_num"] = 4
     return render_template('main.html')
 

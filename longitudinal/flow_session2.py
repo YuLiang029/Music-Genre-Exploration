@@ -137,13 +137,18 @@ def pre_survey():
 def explore_genre():
     prev_playlist_session = UserPlaylistSession.query.filter_by(user_id=session["userid"],
                                                                 session_num=session["session_num"]-1).first()
+
     rec_id = prev_playlist_session.rec_id
     weight = prev_playlist_session.weight
 
     recommendation_log = RecommendationLog.query.filter_by(id=rec_id).first()
     genre = recommendation_log.genre_name
 
-    return render_template('explore_genre_vis.html',
-                           genre=genre,
-                           weight=weight)
+    user_condition = UserCondition.query.filter_by(user_id=session["userid"]).first()
+    if user_condition:
+        condition = user_condition.condition
+        return render_template('explore_genre_vis.html',
+                               condition=condition,
+                               genre=genre,
+                               weight=weight)
 

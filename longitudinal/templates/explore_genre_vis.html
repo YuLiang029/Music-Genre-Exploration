@@ -125,9 +125,11 @@
     let last_playlist_mean_acoustic;
     let last_playlist_mean_dance;
 
-     const circle = d3.symbol().type(d3.symbolCircle)(),
-         triangleU = d3.symbol().type(d3.symbolTriangle)(),
-         star = d3.symbol().type(d3.symbolStar)();
+    const condition = {{ condition }}
+
+    const circle = d3.symbol().type(d3.symbolCircle)(),
+        triangleU = d3.symbol().type(d3.symbolTriangle)(),
+        star = d3.symbol().type(d3.symbolStar)();
 
 
     const circle_big = d3.symbol().size(200).type(d3.symbolCircle),
@@ -385,7 +387,10 @@
 
         // Add a scatter plot for the recommendations
         this.add_scatter_plot(recommendations, colors.recommendations, "rec_scatter");
-        this.add_mean_feature(colors.last_playlist_mean, star_big);
+
+        if (condition === 1 || condition === 0) {
+            this.add_mean_feature(colors.last_playlist_mean, star_big);
+        }
 
         let x_negative;
         let x_positive;
@@ -468,14 +473,29 @@
             .attr("y", height+1)
             .text(y_negative);
 
-        // Add legend
-        let symbolScale =  d3.scaleOrdinal()
-            .domain(["Your taste", "The {{ genre }} genre", "Recommended songs", "Your last position"])
-            .range([circle, circle, triangleU, star] );
-
+        let symbolScale = d3.scaleOrdinal()
         let colorScale =  d3.scaleOrdinal()
-            .domain(["Your taste", "The {{ genre }} genre", "Recommended songs", "Your last position"])
-            .range([colors.user_profile, colors.genre, colors.recommendations, colors.last_playlist_mean] );
+
+        // Add legend
+        if (condition === 1 || condition === 0) {
+            symbolScale
+                .domain(["Your taste", "The {{ genre }} genre", "Recommended songs", "Your last position"])
+                .range([circle, circle, triangleU, star] );
+
+            colorScale
+                .domain(["Your taste", "The {{ genre }} genre", "Recommended songs", "Your last position"])
+                .range([colors.user_profile, colors.genre, colors.recommendations, colors.last_playlist_mean] );
+        }else{
+            symbolScale
+                .domain(["Your taste", "The {{ genre }} genre", "Recommended songs"])
+                .range([circle, circle, triangleU] );
+
+            colorScale
+                .domain(["Your taste", "The {{ genre }} genre", "Recommended songs"])
+                .range([colors.user_profile, colors.genre, colors.recommendations] );
+        }
+
+
 
         this.svg.append("g")
           .attr("class", "legendSymbol")

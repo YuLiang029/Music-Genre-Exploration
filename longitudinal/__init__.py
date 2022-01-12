@@ -9,6 +9,7 @@ class UserPlaylistSession (db.Model):
     rec_id = db.Column(db.VARCHAR, db.ForeignKey('recommendation_log.id'))
     timestamp = db.Column(db.FLOAT)
     session_num = db.Column(db.Integer)
+    weight = db.Column(db.FLOAT)
 
     def __repr__(self):
         return '<SessionPlaylist %r>' % self.id

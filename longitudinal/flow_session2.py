@@ -16,7 +16,7 @@ session2_bp = Blueprint('session2_bp', __name__, template_folder='templates')
 
 @session2_bp.route('/')
 def index():
-    session["session_num"] = 2
+    session["session_num"] = 3
     return render_template('main.html')
 
 
@@ -40,7 +40,8 @@ def session_register():
 
 @session2_bp.route('/pre_survey', methods=["GET", "POST"])
 def pre_survey():
-    rec_id = UserPlaylistSession.query.filter_by(user_id=session["userid"]).first().rec_id
+    rec_id = UserPlaylistSession.query.filter_by(user_id=session["userid"],
+                                                 session_num=session["session_num"]-1).first().rec_id
     if request.method == "GET":
         recommendation_log = RecommendationLog.query.filter_by(id=rec_id).first()
         responses = recommendation_log.survey_response
@@ -134,11 +135,15 @@ def pre_survey():
 
 @session2_bp.route('/explore_genre')
 def explore_genre():
-    rec_id = UserPlaylistSession.query.filter_by(user_id=session["userid"]).first().rec_id
+    prev_playlist_session = UserPlaylistSession.query.filter_by(user_id=session["userid"],
+                                                                session_num=session["session_num"]-1).first()
+    rec_id = prev_playlist_session.rec_id
+    weight = prev_playlist_session.weight
+
     recommendation_log = RecommendationLog.query.filter_by(id=rec_id).first()
     genre = recommendation_log.genre_name
-    weight = recommendation_log.init_weight
 
     return render_template('explore_genre_vis.html',
                            genre=genre,
                            weight=weight)
+

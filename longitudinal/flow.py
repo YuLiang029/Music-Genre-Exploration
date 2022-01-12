@@ -14,6 +14,8 @@ def generate_longitudinal_playlist(genre):
     rec_id = session['rec_id']
 
     tracks = request.args.get('tracks')
+    weight = request.args.get('weight')
+
     track_list = tracks.split(',')
 
     description = "Recommendations for music genre exploration for " + genre + " in Session " + str(
@@ -50,7 +52,8 @@ def generate_longitudinal_playlist(genre):
         rec_id=rec_id,
         user_id=session["userid"],
         timestamp=timestamp,
-        session_num=session["session_num"]
+        session_num=session["session_num"],
+        weight=weight
     )
 
     db.session.add(user_playlist_session)

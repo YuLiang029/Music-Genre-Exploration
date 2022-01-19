@@ -148,11 +148,11 @@
     };
 
     let basicLegend = ["Your taste", "The {{ genre }} genre", "Recommended songs"];
-    let basicSymbol = [circle, circle, triangleU] ;
+    let basicSymbol = [circle, circle, triangleU];
     let basicColor = [colors.user_profile, colors.genre, colors.recommendations];
-    let extendLegend = basicLegend.push("Your last position");
-    let extendSymbol = basicSymbol.push(star_big);
-    let extendColor = basicColor.push(colors.last_playlist_mean);
+    let extendLegend = ["Your taste", "The {{ genre }} genre", "Recommended songs", "Your last position"];
+    let extendSymbol = [circle, circle, triangleU, star];
+    let extendColor = [colors.user_profile, colors.genre, colors.recommendations, colors.last_playlist_mean];
 
     function fillPlaylist() {
         // Check if the number of tracks equals 10
@@ -371,7 +371,7 @@
                 .attr("stroke", "white")
                 .attr("fill", color)
                 .selectAll("path")
-                .data(color)
+                .data("meanFeature")
                     .enter().append("path")
                     .attr("transform", function() {
                         return "translate(" + x(mean_feature1) + "," + y(mean_feature2) + ")";

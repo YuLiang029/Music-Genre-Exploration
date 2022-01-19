@@ -60,7 +60,25 @@
                     </div>
                     <input type="range" class="slider_new" min="0" max="1" value={{ weight }} step="0.1" id="range_slider" name="weight">
                 </div>
-
+                {% if track_history %}
+                    <div class="row">
+                        <div class="col-sm show-on-success text-right"
+                             {% if track_history %}
+                             data-intro="Switch to see your exploration history"
+                             data-step='5'
+                             {% endif %}>
+                                <input type="checkbox"
+                                       id="show-history"
+                                       data-on="Show exploration history"
+                                       data-off="Hide exploration history"
+                                       data-toggle="toggle"
+                                       data-width="300"
+                                       data-height="30"
+                                       data-onstyle="success" data-offstyle="secondary">
+                        </div>
+                    </div>
+                    <br>
+                {% endif %}
                 <div id="contour_viz" class="show-on-success" data-intro="In this graph, you can see how the
                     recommendations (blue dots)
                     relate to your taste (orange outline) and the typical songs of the {{ genre }} genre
@@ -104,7 +122,11 @@
             <button class="show-on-success btn btn-success btn-lg" id="save_playlist"
                     data-intro="After finding the playlist you would like to listen to in the next week.
                     Click this button to continue and save the playlist to your Spotify account"
-                    data-step='5'>
+                    {% if track_history %}
+                    data-step='6'
+                    {% else %}
+                    data-step='5'
+                    {% endif %}>
                 Continue and save the playlist to my Spotify
                 <i class="fas fa-arrow-right"></i>
             </button>
@@ -123,16 +145,20 @@
     let contour_plot;
     let contour_plot2;
 
-    const condition = {{ condition }}
+    const history = {{l_weight|tojson}};
+    const condition = {{ condition }};
 
     const circle = d3.symbol().type(d3.symbolCircle)(),
         triangleU = d3.symbol().type(d3.symbolTriangle)(),
+        cross = d3.symbol().type(d3.symbolCross)(),
+        diamond = d3.symbol().type(d3.symbolDiamond)(),
         star = d3.symbol().type(d3.symbolStar)();
-
 
     const circle_big = d3.symbol().size(200).type(d3.symbolCircle),
         triangleU_big = d3.symbol().size(200).type(d3.symbolTriangle),
-        star_big = d3.symbol().size(200).type(d3.symbolStar)();
+        cross_big = d3.symbol().size(200).type(d3.symbolCross),
+        diamond_big = d3.symbol().size(200).type(d3.symbolDiamond),
+        star_big = d3.symbol().size(200).type(d3.symbolStar)
 
     let $playlist = $("#playlist");
 
@@ -143,6 +169,8 @@
     const colors = {
         "user_profile": "#CB4335",
         "last_playlist_mean": "#8E44AD",
+        "last_playlist_mean_2": "#9153A2",
+        "last_playlist_mean_3": "#936197",
         "recommendations": "#2471A3",
         "genre": "#229954",
     };
@@ -150,7 +178,7 @@
     let basicLegend = ["Your taste", "The {{ genre }} genre", "Recommended songs"];
     let basicSymbol = [circle, circle, triangleU];
     let basicColor = [colors.user_profile, colors.genre, colors.recommendations];
-    let extendLegend = ["Your taste", "The {{ genre }} genre", "Recommended songs", "Your last position"];
+    let extendLegend = ["Your taste", "The {{ genre }} genre", "Recommended songs", "Last playlist"];
     let extendSymbol = [circle, circle, triangleU, star];
     let extendColor = [colors.user_profile, colors.genre, colors.recommendations, colors.last_playlist_mean];
 
@@ -236,6 +264,18 @@
             });
 
         $("#range_slider").on('change', function (e) {slidersChangedNew(e.currentTarget)});
+
+        {% if track_history %}
+            $('#show-history').change(function() {
+                if ($('#show-history').is(':checked')){
+                    contour_plot.show_history_change();
+                    contour_plot2.show_history_change();
+                }else{
+                    contour_plot.hide_history_change();
+                    contour_plot2.hide_history_change();
+                }
+            })
+        {% endif %}
     });
 
     /* Slider functions ----------------------------------------------------------------------------------------------*/
@@ -269,15 +309,19 @@
 
     /* Contour plot visualisation ------------------------------------------------------------------------------------*/
     function ContourPlot(contour_viz, recommendations, user_top_tracks,
-                         genre_top_tracks, feature1, feature2, mean_feature1, mean_feature2) {
+                         genre_top_tracks,
+                         feature1, feature2,
+                         session_name,
+                         mean_feature1_history, mean_feature2_history) {
         this.recommendations = recommendations;
         this.user_top_tracks = user_top_tracks;
         this.genre_top_tracks = genre_top_tracks;
         this.contour_viz = contour_viz;
         this.feature1 = feature1;
         this.feature2 = feature2;
-        this.mean_feature1 = mean_feature1;
-        this.mean_feature2 = mean_feature2;
+        this.mean_feature1_history = mean_feature1_history;
+        this.mean_feature2_history = mean_feature2_history;
+        this.session_name = session_name;
 
         // set the dimensions and margins of the graph
         const margin = {top: 20, right: 120, bottom: 30, left: 120},
@@ -365,7 +409,7 @@
                     .on("mouseout", handleMouseOut);
         };
 
-        this.add_mean_feature = (color, shape) => {
+        this.add_mean_feature = (color, shape, mean_feature1, mean_feature2) => {
             this.svg.append("g")
                 .attr("class", "meanValue")
                 .attr("stroke", "white")
@@ -388,6 +432,61 @@
             this.remove_group(".rec_scatter");
             this.recommendations = recommendations;
             this.add_scatter_plot(recommendations, colors.recommendations, "rec_scatter");
+        }
+
+        this.show_history_change = () => {
+            this.remove_group(".meanValue");
+            let extendLegend2 = [];
+            let extendSymbol2 = [];
+
+            for (let i = 0; i < session_name.length; i++)
+            {
+                if (i === 0){
+                    this.add_mean_feature(colors.last_playlist_mean, star_big,
+                        mean_feature1_history[i], mean_feature2_history[i]);
+                }
+
+
+               if (i === 1){
+                   this.add_mean_feature(colors.last_playlist_mean, diamond_big,
+                        mean_feature1_history[i], mean_feature2_history[i]);
+
+                   extendLegend2.push(session_name[i]);
+                   extendSymbol2.push(diamond);
+               }
+
+               if (i === 2){
+                   this.add_mean_feature(colors.last_playlist_mean, cross_big,
+                        mean_feature1_history[i], mean_feature2_history[i]);
+
+                   extendLegend2.push(session_name[i]);
+                   extendSymbol2.push(cross);
+               }
+            }
+
+            let symbolScaleNew = d3.scaleOrdinal();
+
+            symbolScaleNew
+                .domain(extendLegend2)
+                .range(extendSymbol2);
+
+            this.svg.append("g")
+                .attr("class", "legendSymbolHistory")
+                .attr("transform", "translate(300, 0)");
+
+            let legendPathHistory = d3.legendSymbol()
+                .scale(symbolScaleNew)
+                .shapePadding(16);
+
+            this.svg.select(".legendSymbolHistory")
+                .call(legendPathHistory);
+        }
+
+        this.hide_history_change = () => {
+            this.remove_group(".meanValue");
+            this.add_mean_feature(colors.last_playlist_mean, star_big,
+                mean_feature1_history[0], mean_feature2_history[0]);
+            this.remove_group(".legendSymbolHistory")
         }
 
         // Add a scatter plot for the recommendations
@@ -469,10 +568,10 @@
         let symbolScale = d3.scaleOrdinal()
         let colorScale =  d3.scaleOrdinal()
 
-
         // Add legend
         if (condition === 0 || condition === 1) {
-            this.add_mean_feature(colors.last_playlist_mean, star_big);
+            this.add_mean_feature(colors.last_playlist_mean, star_big, mean_feature1_history[0], mean_feature2_history[0]);
+
             symbolScale
                 .domain(extendLegend)
                 .range(extendSymbol);
@@ -490,8 +589,6 @@
                 .domain(basicLegend)
                 .range(basicColor);
         }
-
-
 
         this.svg.append("g")
           .attr("class", "legendSymbol")
@@ -566,6 +663,23 @@
             return sum/tracks.length;
         }
 
+        let mean_feature_valence = [];
+        let mean_feature_energy = [];
+        let mean_feature_acoustic = [];
+        let mean_feature_dance = [];
+        let session_name = [];
+
+        for (let i = 0; i < history.length; i++)
+        {
+            let tmp_track_index = history[i]["weight"]* 100;
+            session_name.push(history[i]["Session"]);
+            mean_feature_valence.push(mean(recommendations.slice(tmp_track_index, tmp_track_index+number_of_tracks), "valence"));
+            mean_feature_energy.push(mean(recommendations.slice(tmp_track_index, tmp_track_index+number_of_tracks), "energy"));
+            mean_feature_acoustic.push(mean(recommendations.slice(tmp_track_index, tmp_track_index+number_of_tracks), "acousticness"));
+            mean_feature_dance.push(mean(recommendations.slice(tmp_track_index, tmp_track_index+number_of_tracks), "danceability"));
+
+        }
+
         // Initialise playlist, sliders, and visualisation
         fillPlaylist();
         //setSliders();
@@ -576,8 +690,9 @@
             genre_top_tracks,
             "valence",
             "energy",
-            mean(visible_recommendations, "valence"),
-            mean(visible_recommendations, "energy"));
+            session_name,
+            mean_feature_valence,
+            mean_feature_energy);
 
         contour_plot2 = new ContourPlot(
             "#contour_viz2",
@@ -586,8 +701,9 @@
             genre_top_tracks,
             "acousticness",
             "danceability",
-            mean(visible_recommendations, "acousticness"),
-            mean(visible_recommendations, "danceability"));
+            session_name,
+            mean_feature_acoustic,
+            mean_feature_dance);
 
         // Hide loading indicator and show results
         $('.hide-on-success').hide();

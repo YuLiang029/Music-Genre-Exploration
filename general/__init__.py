@@ -30,9 +30,10 @@ class UserCondition(db.Model):
 class TopArtists(db.Model):
     __tablename__ = 'top_artists'
     user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'), primary_key=True)
-    artist_id = db.Column(db.VARCHAR, db.ForeignKey('artist.id'), primary_key=True,)
+    artist_id = db.Column(db.VARCHAR, db.ForeignKey('artist.id'), primary_key=True)
     time_period = db.Column(db.VARCHAR, primary_key=True)
     timestamp = db.Column(db.FLOAT)
+    position = db.Column(db.Integer)
     session_num = db.Column(db.Integer, primary_key=True)
     artist = db.relationship('Artist', cascade='save-update, merge')
 
@@ -111,7 +112,8 @@ class TopTracks(db.Model):
     user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'), primary_key=True)
     track_id = db.Column(db.VARCHAR, db.ForeignKey('track.id'), primary_key=True)
     time_period = db.Column(db.VARCHAR, primary_key=True)
-    timestamp = db.Column(db.VARCHAR)
+    timestamp = db.Column(db.FLOAT)
+    position = db.Column(db.Integer)
     session_num = db.Column(db.Integer, primary_key=True)
     track = db.relationship('Track', cascade='save-update, merge')
 
@@ -165,3 +167,50 @@ class Playlist(db.Model):
 
     def __repr__(self):
         return '<Playlist %r>' % self.id
+
+
+class SavedTracks(db.Model):
+    __tablename__ = 'saved_tracks'
+    user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'), primary_key=True)
+    track_id = db.Column(db.VARCHAR, primary_key=True)
+    timestamp = db.Column(db.FLOAT)
+    session_num = db.Column(db.Integer, primary_key=True)
+    added_at = db.Column(db.VARCHAR)
+    track_name = db.Column(db.VARCHAR)
+    preview_url = db.Column(db.VARCHAR)
+    popularity = db.Column(db.Integer)
+    artist_id = db.Column(db.VARCHAR)
+    artist_name = db.Column(db.VARCHAR)
+
+    def __repr__(self):
+        return '<SavedTracks %r-%r>' % (self.user_id, self.track_id)
+
+
+class FollowedArtist(db.Model):
+    __tablename__ = 'followed_artist'
+    user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'), primary_key=True)
+    artist_id = db.Column(db.VARCHAR, db.ForeignKey('artist.id'), primary_key=True)
+    timestamp = db.Column(db.FLOAT)
+    session_num = db.Column(db.Integer, primary_key=True)
+    position = db.Column(db.Integer)
+    artist = db.relationship('Artist', cascade='save-update, merge')
+
+    def __repr__(self):
+        return '<FollowedArtist %r-%r>' % (self.user_id, self.artist_id)
+
+
+class RecentTracks(db.Model):
+    __tablename__ = 'recent_tracks'
+    user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'), primary_key=True)
+    track_id = db.Column(db.VARCHAR, primary_key=True)
+    timestamp = db.Column(db.FLOAT)
+    session_num = db.Column(db.Integer, primary_key=True)
+    played_at = db.Column(db.VARCHAR, primary_key=True)
+    track_name = db.Column(db.VARCHAR)
+    preview_url = db.Column(db.VARCHAR)
+    popularity = db.Column(db.Integer)
+    artist_id = db.Column(db.VARCHAR)
+    artist_name = db.Column(db.VARCHAR)
+
+    def __repr__(self):
+        return '<RecentTracks %r-%r>' % (self.user_id, self.track_id)

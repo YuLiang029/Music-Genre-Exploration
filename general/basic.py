@@ -1,6 +1,6 @@
 from flask import url_for, redirect, flash, \
     render_template, request, Blueprint, session, jsonify
-from general import Artist, TopArtists, User, Track, TopTracks, SessionLog, ArtistTracks, MsiResponse, Playlist
+from general import Artist, TopArtists, User, Track, TopTracks, SessionLog, ArtistTracks, MsiResponse, Playlist, SavedTracks, FollowedArtist, RecentTracks
 from database import db
 import uuid
 
@@ -63,7 +63,7 @@ def login(next_url):
         )
         print(callback)
         #   define authorization scope
-        scope = "user-top-read playlist-modify-private"
+        scope = "user-top-read playlist-modify-private user-follow-read user-library-read user-read-recently-played"
         return spotify.authorize(callback=callback, scope=scope, show_dialog=True)
     else:
         print("TOKEN IN SESSION: REDIRECTING")
@@ -116,7 +116,13 @@ def authorized():
                 db.session.commit()
 
             session["userid"] = user.id
-            scrape(limit=50, scrape_type="tracks_artists")
+            scrape(limit=50, offset=0, scrape_type="tracks_artists")
+            scrape(limit=50, offset=49, scrape_type="tracks_artists")
+            get_saved_tracks(limit=50, offset=0)
+            get_followed_artists(limit=50, offset=0)
+            get_recently_played_tracks(limit=50, offset=0)
+            # get_saved_tracks(limit=50, offset=49)
+            # get_followed_artists(limit=50, offset=49)
             print(next_url)
 
             ts = time.time()
@@ -135,6 +141,7 @@ def authorized():
 
 
 def scrape(limit=50,
+           offset=0,
            scrape_type="tracks"):
     """
     Scrape user top artists
@@ -142,26 +149,27 @@ def scrape(limit=50,
     authorization scopes: user-top-read
     :param limit:
     :param scrape_type: scraping type; scraping tracks by default
+    :param offset
     :return:
     """
 
     if scrape_type == "tracks":
-        track_scrape(limit=limit)
+        track_scrape(limit=limit, offset=offset)
     elif scrape_type == "artists":
-        artist_scrape(limit=limit)
+        artist_scrape(limit=limit, offset=offset)
     elif scrape_type == "tracks_artists":
-        track_scrape(limit=limit)
-        artist_scrape(limit=limit)
+        track_scrape(limit=limit, offset=offset)
+        artist_scrape(limit=limit, offset=offset)
     return "done"
 
 
-def artist_scrape(limit=50):
+def artist_scrape(limit=50, offset=0):
     ts = time.time()
     terms = ['short', 'medium', 'long']
 
     for term in terms:
         check_token()
-        url = '/v1/me/top/artists?limit=' + str(limit) + '&time_range=' + term + '_term'
+        url = '/v1/me/top/artists?limit=' + str(limit) + '&time_range=' + term + '_term' + "&offset=" + str(offset)
         print("url: " + url)
         try:
             top_artists_request = spotify.request(url)
@@ -171,6 +179,7 @@ def artist_scrape(limit=50):
             else:
                 top_artists = top_artists_request.data["items"]
                 l_top_artist = []
+                artist_index = 0
                 for x in top_artists:
                     artist = Artist.query.filter_by(id=x["id"]).first()
                     if artist:
@@ -185,6 +194,7 @@ def artist_scrape(limit=50):
                                                             artist_id=x["id"],
                                                             time_period=term,
                                                             session_num=session["session_num"],
+                                                            position=offset+artist_index,
                                                             timestamp=ts
                                                             )
                             l_top_artist.append(new_top_artist_obj)
@@ -207,23 +217,25 @@ def artist_scrape(limit=50):
                                                         artist_id=x["id"],
                                                         time_period=term,
                                                         timestamp=ts,
+                                                        position=offset+artist_index,
                                                         session_num=session["session_num"],
                                                         artist=new_artist_obj)
                         l_top_artist.append(new_top_artist_obj)
                         # db.session.add(new_top_artist_obj)
+                    artist_index = artist_index + 1
                 db.session.add_all(l_top_artist)
                 db.session.commit()
         except Exception as e:
             print(e.args)
 
 
-def track_scrape(limit=50):
+def track_scrape(limit=50, offset=0):
     ts = time.time()
     terms = ['short', 'medium', 'long']
 
     for term in terms:
         check_token()
-        url = '/v1/me/top/tracks?limit=' + str(limit) + '&time_range=' + term + '_term'
+        url = '/v1/me/top/tracks?limit=' + str(limit) + '&time_range=' + term + '_term' + "&offset=" + str(offset)
         print("url: " + url)
         try:
             top_track_request = spotify.request(url)
@@ -238,19 +250,22 @@ def track_scrape(limit=50):
                 track_list = combine_track_features(top_tracks, audio_feature_data)
                 library_objects = tracklist2object(track_list)
                 l_top_tracks = []
+                track_index = 0
                 for x in library_objects:
                     track = Track.query.filter_by(id=x.id).first()
                     if track:
                         entry = TopTracks.query.filter_by(user_id=session["userid"],
                                                           track_id=x.id,
-                                                          time_period=term, session_num=session["session_num"]).first()
+                                                          time_period=term,
+                                                          session_num=session["session_num"]).first()
                         if entry:
                             pass
                         else:
                             new_toptrack_obj = TopTracks(user_id=session["userid"],
                                                          track_id=x.id,
                                                          time_period=term,
-                                                         timestamp=str(ts),
+                                                         timestamp=ts,
+                                                         position=offset+track_index,
                                                          session_num=session["session_num"],
                                                          track=track)
                             l_top_tracks.append(new_toptrack_obj)
@@ -266,10 +281,13 @@ def track_scrape(limit=50):
                         )
                         new_toptrack_obj = TopTracks(user_id=session["userid"],
                                                      track_id=x.id, time_period=term,
-                                                     timestamp=str(ts),
+                                                     timestamp=ts,
+                                                     position=offset+track_index,
                                                      session_num=session["session_num"],
                                                      track=new_track_obj)
                         l_top_tracks.append(new_toptrack_obj)
+                    track_index = track_index + 1
+
                 db.session.add_all(l_top_tracks)
                 db.session.commit()
         except Exception as e:
@@ -285,6 +303,173 @@ def check_token():
     if is_token_expired():
         refresh_token = session["oauth_token"]["refresh_token"]
         get_refresh_token(refresh_token)
+
+
+def get_saved_tracks(limit=50, offset=0):
+    ts = time.time()
+    check_token()
+
+    url = '/v1/me/tracks?offset=' + str(offset) + '&limit=' + str(limit)
+    print("url: " + url)
+
+    try:
+        rq_saved_tracks = spotify.request(url)
+
+        if rq_saved_tracks.status != 200:
+            return "get saved tracks status: " + str(rq_saved_tracks.status), 400
+        else:
+            saved_tracks = rq_saved_tracks.data["items"]
+            l_saved_tracks = []
+            for x in saved_tracks:
+                added_at = x['added_at']
+                saved_track = x['track']
+                artists = saved_track['artists']
+
+                track_id = saved_track['id']
+                track_name = saved_track['name']
+                preview_url = saved_track['preview_url']
+                popularity = saved_track['popularity']
+
+                first_artist_name = artists[0]["name"],
+                first_artist_id = artists[0]["id"],
+
+                entry = SavedTracks.query.filter_by(
+                    user_id=session["userid"],
+                    track_id=track_id,
+                    session_num=session["session_num"]).first()
+                if entry:
+                    pass
+                else:
+                    saved_tracks_obj = SavedTracks(user_id=session["userid"],
+                                                   track_id=track_id,
+                                                   timestamp=ts,
+                                                   session_num=session["session_num"],
+                                                   added_at=added_at,
+                                                   track_name=track_name,
+                                                   preview_url=preview_url,
+                                                   popularity=popularity,
+                                                   artist_id=first_artist_id,
+                                                   artist_name=first_artist_name)
+                    l_saved_tracks.append(saved_tracks_obj)
+
+            db.session.add_all(l_saved_tracks)
+            db.session.commit()
+    except Exception as e:
+        print(e.args)
+
+
+def get_followed_artists(limit=50, offset=0):
+    ts = time.time()
+    check_token()
+
+    url = '/v1/me/following?type=artist&limit=' + str(limit) + '&offset=' + str(offset)
+    print("url: " + url)
+
+    try:
+        rq_followed_artists = spotify.request(url)
+
+        if rq_followed_artists.status != 200:
+            return "get followed artists status: " + str(rq_followed_artists.status), 400
+        else:
+            followed_artists = rq_followed_artists.data["artists"]["items"]
+            l_followed_artists = []
+            artist_index = 0
+            for x in followed_artists:
+                artist = Artist.query.filter_by(id=x["id"]).first()
+
+                if artist:
+                    entry = FollowedArtist.query.filter_by(user_id=session["userid"],
+                                                           artist_id=x["id"],
+                                                           session_num=session["session_num"]).first()
+                    if entry:
+                        pass
+                    else:
+                        followed_artist_obj = FollowedArtist(user_id=session["userid"],
+                                                             artist_id=x["id"],
+                                                             session_num=session["session_num"],
+                                                             position=artist_index+offset,
+                                                             timestamp=ts
+                                                        )
+                        l_followed_artists.append(followed_artist_obj)
+
+                else:
+                    artist_obj = Artist(
+                        id=x["id"],
+                        followers=x["followers"]["total"],
+                        genres=",".join(x["genres"]),
+                        image_middle=None if len(x["images"]) == 0 else x["images"][1]["url"],
+                        name=x["name"],
+                        popularity=x["popularity"],
+                        external_urls=x["external_urls"]["spotify"],
+                        href=x["href"],
+                        uri=x["uri"]
+
+                    )
+                    followed_artist_obj = FollowedArtist(user_id=session["userid"],
+                                                         artist_id=x["id"],
+                                                         timestamp=ts,
+                                                         session_num=session["session_num"],
+                                                         position=artist_index+offset,
+                                                         artist=artist_obj)
+                    l_followed_artists.append(followed_artist_obj)
+                artist_index = artist_index + 1
+            db.session.add_all(l_followed_artists)
+            db.session.commit()
+    except Exception as e:
+        print(e.args)
+
+
+def get_recently_played_tracks(limit=50, offset=0):
+    ts = time.time()
+    check_token()
+
+    url = '/v1/me/player/recently-played?limit=' + str(limit) + '&offset=' + str(offset)
+    print("url: " + url)
+
+    try:
+        rq_recently_played = spotify.request(url)
+
+        if rq_recently_played.status != 200:
+            return "get recently played tracks status: " + str(rq_recently_played.status), 400
+        else:
+            recent_tracks = rq_recently_played.data["items"]
+            l_recent_tracks = []
+            for x in recent_tracks:
+                played_at = x['played_at']
+                saved_track = x['track']
+                artists = saved_track['artists']
+                track_id = saved_track['id']
+                track_name = saved_track['name']
+                preview_url = saved_track['preview_url']
+                popularity = saved_track['popularity']
+
+                first_artist_name = artists[0]["name"],
+                first_artist_id = artists[0]["id"],
+
+                entry = RecentTracks.query.filter_by(
+                    user_id=session["userid"],
+                    played_at=played_at,
+                    track_id=track_id,
+                    session_num=session["session_num"]).first()
+                if entry:
+                    pass
+                else:
+                    saved_tracks_obj = RecentTracks(user_id=session["userid"],
+                                                    track_id=track_id,
+                                                    timestamp=ts,
+                                                    session_num=session["session_num"],
+                                                    played_at=played_at,
+                                                    track_name=track_name,
+                                                    preview_url=preview_url,
+                                                    popularity=popularity,
+                                                    artist_id=first_artist_id,
+                                                    artist_name=first_artist_name)
+                    l_recent_tracks.append(saved_tracks_obj)
+
+            db.session.add_all(l_recent_tracks)
+            db.session.commit()
+    except Exception as e:
+        print(e.args)
 
 
 @spotify_basic_bp.route('/user_top_tracks')

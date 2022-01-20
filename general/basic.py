@@ -176,13 +176,15 @@ def artist_scrape(limit=50):
                     if artist:
                         entry = TopArtists.query.filter_by(user_id=session["userid"],
                                                            artist_id=x["id"],
-                                                           time_period=term).first()
+                                                           time_period=term,
+                                                           session_num=session["session_num"]).first()
                         if entry:
                             pass
                         else:
                             new_top_artist_obj = TopArtists(user_id=session["userid"],
                                                             artist_id=x["id"],
                                                             time_period=term,
+                                                            session_num=session["session_num"],
                                                             timestamp=ts
                                                             )
                             l_top_artist.append(new_top_artist_obj)
@@ -205,6 +207,7 @@ def artist_scrape(limit=50):
                                                         artist_id=x["id"],
                                                         time_period=term,
                                                         timestamp=ts,
+                                                        session_num=session["session_num"],
                                                         artist=new_artist_obj)
                         l_top_artist.append(new_top_artist_obj)
                         # db.session.add(new_top_artist_obj)
@@ -240,7 +243,7 @@ def track_scrape(limit=50):
                     if track:
                         entry = TopTracks.query.filter_by(user_id=session["userid"],
                                                           track_id=x.id,
-                                                          time_period=term).first()
+                                                          time_period=term, session_num=session["session_num"]).first()
                         if entry:
                             pass
                         else:
@@ -248,6 +251,7 @@ def track_scrape(limit=50):
                                                          track_id=x.id,
                                                          time_period=term,
                                                          timestamp=str(ts),
+                                                         session_num=session["session_num"],
                                                          track=track)
                             l_top_tracks.append(new_toptrack_obj)
                     else:
@@ -262,7 +266,9 @@ def track_scrape(limit=50):
                         )
                         new_toptrack_obj = TopTracks(user_id=session["userid"],
                                                      track_id=x.id, time_period=term,
-                                                     timestamp=str(ts), track=new_track_obj)
+                                                     timestamp=str(ts),
+                                                     session_num=session["session_num"],
+                                                     track=new_track_obj)
                         l_top_tracks.append(new_toptrack_obj)
                 db.session.add_all(l_top_tracks)
                 db.session.commit()

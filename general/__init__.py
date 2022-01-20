@@ -33,6 +33,7 @@ class TopArtists(db.Model):
     artist_id = db.Column(db.VARCHAR, db.ForeignKey('artist.id'), primary_key=True,)
     time_period = db.Column(db.VARCHAR, primary_key=True)
     timestamp = db.Column(db.FLOAT)
+    session_num = db.Column(db.Integer, primary_key=True)
     artist = db.relationship('Artist', cascade='save-update, merge')
 
     def __repr__(self):
@@ -111,6 +112,7 @@ class TopTracks(db.Model):
     track_id = db.Column(db.VARCHAR, db.ForeignKey('track.id'), primary_key=True)
     time_period = db.Column(db.VARCHAR, primary_key=True)
     timestamp = db.Column(db.VARCHAR)
+    session_num = db.Column(db.Integer, primary_key=True)
     track = db.relationship('Track', cascade='save-update, merge')
 
     def __repr__(self):

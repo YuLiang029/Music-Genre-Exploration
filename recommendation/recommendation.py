@@ -1,7 +1,7 @@
 from flask import session, jsonify, Blueprint, request, render_template
 import time
 import uuid
-from general import TopTracks, TopArtists, User
+from general import TopTracks, TopArtists, User, FollowedArtist
 from database import db
 import pandas as pd
 import os
@@ -55,6 +55,8 @@ def genre_suggestion_new():
 
     # get a user's top artists
     top_artists = TopArtists.query.filter_by(user_id=session["userid"]).all()
+    # get a user's saved artists
+    followed_artists = FollowedArtist.query.filter_by(user_id=session["userid"]).all()
 
     # return error if non top artists exist
     if not top_artists:
@@ -65,6 +67,11 @@ def genre_suggestion_new():
     user_corpus = []
     for item in top_artists:
         user_corpus.append(item.artist.genres)
+
+    if len(followed_artists) != 0:
+        for item in followed_artists:
+            user_corpus.append(item.artist.genres)
+
     if len(user_corpus) == 0:
         return jsonify("error")
 

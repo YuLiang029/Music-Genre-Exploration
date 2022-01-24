@@ -62,8 +62,8 @@ with app.app_context():
 
     # Register blueprint for the longitudinal study
     app.register_blueprint(long_bp)
-    # app.register_blueprint(session1_bp)
-    app.register_blueprint(session2_bp)
+    app.register_blueprint(session1_bp)
+    # app.register_blueprint(session2_bp)
 
 # Initialize queue for worker
 q = Queue(connection=conn, default_timeout=6000)

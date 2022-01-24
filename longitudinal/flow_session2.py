@@ -19,7 +19,7 @@ def index():
     session["session_num"] = 2
     # session["session_num"] = 3
     # session["session_num"] = 4
-    return render_template('main.html')
+    return render_template('main2.html')
 
 
 @session2_bp.route('/session_register')
@@ -69,7 +69,7 @@ def pre_survey():
                 {"questions": [
                     {
                         "type": "matrix",
-                        "name": "help",
+                        "name": "pers",
                         "title": "Please indicate to what extent you agree or disagree with each statement about "
                                  "the playlist you just created",
                         "isAllRowRequired": "true",
@@ -83,10 +83,29 @@ def pre_survey():
                             {"value": 7, "text": "Completely Agree"}
                         ],
                         "rows": [
+                            {"value": "1", "text": "The playlist is personalized to my music tastes"},
+                            {"value": "2", "text": "The playlist has songs with styles I like to listen to"},
+                            {"value": "3", "text": "I find the songs from the playlist to fit my preferences"}
+                        ]
+                    },
+                    {
+                        "type": "matrix",
+                        "name": "help",
+                        "title": "Please indicate to what extent you agree or disagree with each statement",
+                        "isAllRowRequired": "true",
+                        "columns": [
+                            {"value": 1, "text": "Completely Disagree"},
+                            {"value": 2, "text": "Strongly Disagree"},
+                            {"value": 3, "text": "Disagree"},
+                            {"value": 4, "text": "Neither Agree nor Disagree"},
+                            {"value": 5, "text": "Agree"},
+                            {"value": 6, "text": "Strongly Agree"},
+                            {"value": 7, "text": "Completely Agree"}
+                        ],
+                        "rows": [
                             {"value": "1", "text": "The playlist supports me in getting to know the genre"},
                             {"value": "2", "text": "The playlist is useful in exploring the genre"},
-                            {"value": "4", "text": "The songs in the playlist did not help me to explore the genre"},
-                            {"value": "5", "text": "I feel supported by the playlist to explore the genre"}
+                            {"value": "3", "text": "The songs in the playlist did not help me to explore the genre"}
                         ]
                     },
                     {
@@ -104,20 +123,87 @@ def pre_survey():
                             {"value": 7, "text": "Completely Agree"}
                         ],
                         "rows": [
-                            {"value": "1", "text": "I would use this genre exploration tool again."},
-                            {"value": "2", "text": "I did not like the genre exploration tool"},
-                            {"value": "3", "text": "I would recommend the genre exploration tool to others"},
-                            {"value": "4", "text": "I enjoyed using the genre exploration tool"}
+                            {"value": "1", "text": "I enjoyed listening to the playlist"},
+                            {"value": "2", "text": "I would listen to the playlist again "},
+                            {"value": "3", "text": "I did not like the playlist"},
+                            {"value": "4", "text": "I find the songs from the playlist appealing"}
                         ]
                     }
                 ]
-                }],
+                },
+                {
+                    "elements": [
+                        {
+                            "type": "radiogroup",
+                            "name": "listening_times",
+                            "title": "How many times did you listen to (part of) the playlist in the last week?",
+                            "isRequired": "true",
+                            "colCount": 4,
+                            "choices": [
+                                "0-1 times",
+                                "2-3 times",
+                                "4 times or more",
+                            ]
+                        }
+                        ,
+                        {
+                            "type": "radiogroup",
+                            "name": "finding",
+                            "title": "Did you use the playlist to find new artists or songs of the selected genre?",
+                            "isRequired": "true",
+                            "colCount": 4,
+                            "choices": [
+                                "Yes",
+                                "No"
+                            ]
+                        },
+                        {
+                            "type": "checkbox",
+                            "name": "willingness",
+                            "isRequired": "true",
+                            "title": "How did you use the playlist to find other artists "
+                                     "or songs of the selected genre?",
+                            "visibleIf": "{finding}='Yes'",
+                            "choices": [
+                                "By searching for related artists",
+                                "By searching for songs in the same album",
+                                "By going to song radio",
+                                "Other"
+                            ]
+
+                        },
+                        {
+                            "type": "radiogroup",
+                            "name": "favor",
+                            "title": "Did you favor some songs from the playlist?",
+                            "isRequired": "true",
+                            "colCount": 4,
+                            "choices": [
+                                "No",
+                                "Yes, one song",
+                                "Yes, more than one song"
+                            ]
+                        }, {
+                            "type": "radiogroup",
+                            "name": "deletion",
+                            "title": "Did you delete some songs from the playlist?",
+                            "isRequired": "true",
+                            "colCount": 4,
+                            "choices": [
+                                "No",
+                                "Yes, one song",
+                                "Yes, more than one song"
+                            ]
+                        }
+                    ]
+                },
+            ],
             "completedHtml": "Redirecting to the next page..."
         }
 
         survey_config = {
-            'title': 'Survey about your experience with the recommendations and interface',
-            'description': 'Please fill in this survey about your experience with the recommendations and interface',
+            'title': 'Your experience with the last playlist',
+            'description': 'Please fill in this survey about your experience with the last playlist',
             'next_url': url_for("session2_bp.explore_genre_history")
         }
 

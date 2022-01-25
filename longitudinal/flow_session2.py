@@ -24,8 +24,8 @@ def index():
 
 @session2_bp.route('/session_register')
 def session_register():
-    if request.args.get("subject_id"):
-        session["subject_id"] = request.args.get("subject_id")
+    if request.args.get("PROLIFIC_PID"):
+        session["subject_id"] = request.args.get("PROLIFIC_PID")
 
         # Check if the playlist has already been generated
         user_playlist_session = UserPlaylistSession.query.filter_by(

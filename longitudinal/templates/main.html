@@ -47,10 +47,10 @@
     $(function () {
         var url = window.location.href;
 
-        if (url.includes("?subject_id=")){
+        if (url.includes("?PROLIFIC_PID=")){
             var prolific_pid = url.substring(url.indexOf("=")+1, url.length);
             console.log(prolific_pid);
-            $('#action_continue').attr('href', '/session_register?subject_id=' + prolific_pid);
+            $('#action_continue').attr('href', '/session_register?PROLIFIC_PID=' + prolific_pid);
         }
 
     });

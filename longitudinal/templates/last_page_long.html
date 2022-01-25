@@ -6,27 +6,36 @@
     </h2>
 
     <p class="lead">
-        The generated playlist is now available in your Spotify playlist: {{ playlist_url }}
+        The generated playlist is now available in your Spotify account.
+        <span class="font-weight-bold">Please take time listening to the generated playlist in your Spotify account (see instructions below)
+            and explore genre in the next week. After around one week, we will send you an invitation to Session 2.</span>
+        <!--<span class="font-weight-bold">After around one week, we will send you an invitation to Session 3.</span>-->
+        <!--<span class="font-weight-bold">After around one week, we will send you an invitation to Session 4.</span>-->
+        <!--<span class="font-weight-bold">After around two weeks, you will get an invite for a short (about 1 min) final survey in
+        which we ask about your listening behavior. Finishing this short survey will pay your bonus of £1.</span>-->
     </p>
+    <div class="row">
+        <div class="col-sm-9">
+            <p class="lead">To complete this session,
+                please <span class="font-weight-bold">click the button to return to Prolific</span>.
+            </p>
+        </div>
+        <div class="col-sm text-right">
+            <a class="btn btn-success btn-lg" id="action_continue"
+               href="https://app.prolific.co/submissions/complete?cc=47904236">
+                Return to Prolific <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
 
-    <p class="lead">
-        Please take time listening the generated playlist (see your Spotify playlist)
-        and explore genre in the next week.
-        After around one week, we will send you an invitation to Session 2.
-        <!--After around one week, we will send you an invitation to Session 3.-->
-        <!--After around one week, we will send you an invitation to Session 4.-->
-        <!--After around two weeks, you will get an invite for a short (about 1 min) final survey in
-        which we ask about your listening behavior. Finishing this short survey will pay your bonus of £1.-->
-    </p>
+    </div>
 
-    <p class="lead">You can always contact us for any questions you have.</p>
-    <p class="lead">To complete this session, you need to click the button below to redirect to Prolific.</p>
+    <h3>
+        Instructions to the generated playlist:
+    </h3>
 
-    <div class="text-right">
-        <a class="btn btn-success btn-lg" id="action_continue"
-           href="https://app.prolific.co/submissions/complete?cc=47904236">
-            Return to Prolific<i class="fas fa-arrow-right"></i>
-        </a>
+    <div>
+        <img src="{{ url_for('static', filename='imgs/playlist.png') }}"
+                 alt="playlist instruction" class="img-fluid" />
     </div>
 
 {% endblock %}

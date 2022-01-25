@@ -62,10 +62,8 @@
                 {% if track_history %}
                     <div class="row">
                         <div class="col-sm show-on-success text-right"
-                             {% if track_history %}
                              data-intro="Switch to see your exploration history"
-                             data-step='5'
-                             {% endif %}>
+                             data-step='5'>
                                 <input type="checkbox"
                                        id="show-history"
                                        data-on="Show exploration history"
@@ -94,9 +92,8 @@
                     </span>
                 </div>
                 <br>
-                 <div id="contour_viz2" class="show-on-success" data-intro="
-                 This graphs shows two features of the songs: danceability (how danceable a song is)
-                 and acousticness (how acoustic a song is)" data-step='4'>
+                <div id="contour_viz2" class="show-on-success" data-intro="This graphs shows two features of the songs:
+                danceability (how danceable a song is) and acousticness (how acoustic a song is)" data-step='4'>
                     <span class="help" data-toggle="tooltip" data-placement="top"
                           style="position:absolute;right:20px;top:10px;"
                           title="This graph shows two features of the songs: danceability (how danceable a song is)
@@ -168,8 +165,6 @@
     const colors = {
         "user_profile": "#CB4335",
         "last_playlist_mean": "#8E44AD",
-        "last_playlist_mean_2": "#9153A2",
-        "last_playlist_mean_3": "#936197",
         "recommendations": "#2471A3",
         "genre": "#229954",
     };
@@ -177,7 +172,7 @@
     let basicLegend = ["Your taste", "The {{ genre }} genre", "Recommended songs"];
     let basicSymbol = [circle, circle, triangleU];
     let basicColor = [colors.user_profile, colors.genre, colors.recommendations];
-    let extendLegend = ["Your taste", "The {{ genre }} genre", "Recommended songs", "Last playlist"];
+    let extendLegend = ["Your taste", "The {{ genre }} genre", "Recommended songs", "Playlist of the last session"];
     let extendSymbol = [circle, circle, triangleU, star];
     let extendColor = [colors.user_profile, colors.genre, colors.recommendations, colors.last_playlist_mean];
 
@@ -435,6 +430,22 @@
 
         };
 
+        this.add_mean_feature_new = (color, shape, mean_feature1, mean_feature2) => {
+            this.svg.append("g")
+                .attr("class", "meanValue")
+                .attr("stroke", "red")
+                .attr("fill", "none")
+                .attr("stroke-width", "2px")
+                .selectAll("path")
+                .data("meanFeature")
+                    .enter().append("path")
+                    .attr("transform", function() {
+                        return "translate(" + x(mean_feature1) + "," + y(mean_feature2) + ")";
+                    })
+                    .attr("d", shape)
+
+        };
+
         this.remove_group = (selector) => {
             this.svg.selectAll(selector).remove();
          };
@@ -461,16 +472,14 @@
                if (i === 1){
                    this.add_mean_feature(colors.last_playlist_mean, diamond_big,
                         mean_feature1_history[i], mean_feature2_history[i]);
-
-                   extendLegend2.push(session_name[i]);
+                   extendLegend2.push("Playlist of " + session_name[i]);
                    extendSymbol2.push(diamond);
                }
 
                if (i === 2){
                    this.add_mean_feature(colors.last_playlist_mean, cross_big,
                         mean_feature1_history[i], mean_feature2_history[i]);
-
-                   extendLegend2.push(session_name[i]);
+                   extendLegend2.push("Playlist of " + session_name[i]);
                    extendSymbol2.push(cross);
                }
             }
@@ -483,7 +492,7 @@
 
             this.svg.append("g")
                 .attr("class", "legendSymbolHistory")
-                .attr("transform", "translate(300, 0)");
+                .attr("transform", "translate(255, 0)");
 
             let legendPathHistory = d3.legendSymbol()
                 .scale(symbolScaleNew)

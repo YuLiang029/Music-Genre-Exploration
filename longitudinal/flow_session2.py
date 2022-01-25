@@ -70,8 +70,8 @@ def pre_survey():
                     {
                         "type": "matrix",
                         "name": "pers",
-                        "title": "Please indicate to what extent you agree or disagree with each statement about "
-                                 "the playlist you just created",
+                        "title": "Please indicate to what extent you agree or disagree with each statement "
+                                 "about the playlist from the last session",
                         "isAllRowRequired": "true",
                         "columns": [
                             {"value": 1, "text": "Completely Disagree"},
@@ -91,7 +91,8 @@ def pre_survey():
                     {
                         "type": "matrix",
                         "name": "help",
-                        "title": "Please indicate to what extent you agree or disagree with each statement",
+                        "title": "Please indicate to what extent you agree or disagree with each statement "
+                                 "about the playlist from the last session",
                         "isAllRowRequired": "true",
                         "columns": [
                             {"value": 1, "text": "Completely Disagree"},
@@ -111,7 +112,8 @@ def pre_survey():
                     {
                         "type": "matrix",
                         "name": "satisfaction",
-                        "title": "Please indicate to what extent you agree or disagree with each statement",
+                        "title": "Please indicate to what extent you agree or disagree with each statement "
+                                 "about the playlist from the last session",
                         "isAllRowRequired": "true",
                         "columns": [
                             {"value": 1, "text": "Completely Disagree"},
@@ -202,8 +204,8 @@ def pre_survey():
         }
 
         survey_config = {
-            'title': 'Your experience with the last playlist',
-            'description': 'Please fill in this survey about your experience with the last playlist',
+            'title': 'Your experience with the playlist from the last session',
+            'description': 'Please fill in this survey about your experience with the playlist from the last session',
             'next_url': url_for("session2_bp.explore_genre_history")
         }
 

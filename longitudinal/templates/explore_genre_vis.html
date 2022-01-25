@@ -274,6 +274,8 @@
                     contour_plot2.hide_history_change();
                 }
             })
+
+            $("#show-history").on('change', function (e) {logShowHistory(e.currentTarget)});
         {% endif %}
     });
 
@@ -289,6 +291,16 @@
             url: "/log_slider_interact",
             data: {
                 'slider_val': slider.value
+            }
+        });
+    }
+
+    function logShowHistory(checkbox_show) {
+        $.ajax({
+            type: "POST",
+            url: "/log_show_history",
+            data: {
+                'checkbox_val': checkbox_show.checked
             }
         });
     }

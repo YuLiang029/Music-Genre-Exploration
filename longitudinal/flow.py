@@ -4,7 +4,7 @@ from database import db
 from general import UserCondition, Playlist
 from general.basic import is_token_expired, get_refresh_token, generate_playlist, save_tracks_to_playlist
 import uuid
-from longitudinal import UserPlaylistSession
+from longitudinal import UserPlaylistSession, ShowHistoryLog
 from recommendation import RecommendationLog
 
 long_bp = Blueprint('long_bp', __name__, template_folder='templates')
@@ -85,3 +85,27 @@ def error_repeat_answer():
 def last_step():
     # return redirect("https://app.prolific.co/submissions/complete?cc=47904236")
     return render_template("last_page_long.html", playlist_url=session["playlist_url"])
+
+
+# Log functionality for showing history or not
+@long_bp.route('/log_show_history', methods=['POST'])
+def log_show_history():
+    request_value = False
+    if request.form["checkbox_val"] == 'true':
+        request_value = True
+
+    print(request_value)
+    if request.method == 'POST':
+        show_history_log = ShowHistoryLog(
+            user_id=session["userid"],
+            rec_id=session["rec_id"],
+            timestamp=time.time(),
+            session_id=session["id"],
+            value=request_value
+        )
+        db.session.add(show_history_log)
+        db.session.commit()
+        return "done"
+
+
+

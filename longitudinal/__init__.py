@@ -13,3 +13,13 @@ class UserPlaylistSession (db.Model):
 
     def __repr__(self):
         return '<SessionPlaylist %r>' % self.id
+
+
+class ShowHistoryLog (db.Model):
+    __tablename__ = 'show_history_log'
+    id = db.Column(db.INTEGER, autoincrement=True, primary_key=True)
+    user_id = db.Column(db.VARCHAR, db.ForeignKey('user.id'))
+    rec_id = db.Column(db.VARCHAR, db.ForeignKey('recommendation_log.id'))
+    session_id = db.Column(db.VARCHAR, db.ForeignKey('session_log.id'))
+    timestamp = db.Column(db.FLOAT)
+    value = db.Column(db.Boolean)

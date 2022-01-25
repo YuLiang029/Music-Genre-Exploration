@@ -117,7 +117,7 @@ def authorized():
 
             session["userid"] = user.id
             scrape(limit=50, offset=0, scrape_type="tracks_artists")
-            scrape(limit=50, offset=49, scrape_type="tracks_artists")
+            # scrape(limit=50, offset=49, scrape_type="tracks_artists")
             get_saved_tracks(limit=50, offset=0)
             get_followed_artists(limit=50, offset=0)
             get_recently_played_tracks(limit=50, offset=0)

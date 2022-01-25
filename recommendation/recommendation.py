@@ -401,6 +401,7 @@ def genre_recommendation_exp_multiple():
         genre_df = genre_df.assign(sum_rank_ranking=genre_df['sum_rank'].rank(ascending=False))
 
         weight_df = pd.DataFrame(columns=rec_track_features1)
+        l_previous_track = []
 
         for w in l_weight:
             ranking_score = get_ranking_score(genre_df['sum_rank_ranking'].values,
@@ -410,7 +411,11 @@ def genre_recommendation_exp_multiple():
 
             genre_df = genre_df.sort_values(
                 by=['ranking_score_' + str(w), 'trackname'], ascending=[False, True]).reset_index(drop=True)
-            top = genre_df[:10]
+
+            # only keep tracks that not appear in the previous list
+            genre_df_new = genre_df[~genre_df.id.isin(l_previous_track)].reset_index(drop=True)
+            top = genre_df_new[:10]
+            l_previous_track.extend(top['id'].tolist())
             top["weight"] = w
             top = top.rename(columns={'ranking_score_' + str(w): 'ranking_score'})[rec_track_features2]
             weight_df = weight_df.append(top, ignore_index=False)

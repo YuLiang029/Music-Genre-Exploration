@@ -150,10 +150,10 @@
         diamond = d3.symbol().type(d3.symbolDiamond)(),
         star = d3.symbol().type(d3.symbolStar)();
 
-    const circle_big = d3.symbol().size(750).type(d3.symbolCircle),
+    const circle_big = d3.symbol().size(200).type(d3.symbolCircle),
         triangleU_big = d3.symbol().size(200).type(d3.symbolTriangle),
-        cross_big = d3.symbol().size(100).type(d3.symbolCross),
-        diamond_big = d3.symbol().size(100).type(d3.symbolDiamond),
+        cross_big = d3.symbol().size(200).type(d3.symbolCross),
+        diamond_big = d3.symbol().size(200).type(d3.symbolDiamond),
         star_big = d3.symbol().size(200).type(d3.symbolStar)
 
     let $playlist = $("#playlist");
@@ -164,9 +164,7 @@
 
     const colors = {
         "user_profile": "#CB4335",
-        "last_playlist_mean": "#2471A3",
-        "last_playlist_mean_2": "#3a0ca3",
-        "last_playlist_mean_3": "#b5179e",
+        "last_playlist_mean": "#8E44AD",
         "recommendations": "#2471A3",
         "genre": "#229954",
     };
@@ -175,7 +173,7 @@
     let basicSymbol = [circle, circle, triangleU];
     let basicColor = [colors.user_profile, colors.genre, colors.recommendations];
     let extendLegend = ["Your taste", "The {{ genre }} genre", "Recommended songs", "Playlist of the last session"];
-    let extendSymbol = [circle, circle, triangleU, circle];
+    let extendSymbol = [circle, circle, triangleU, star];
     let extendColor = [colors.user_profile, colors.genre, colors.recommendations, colors.last_playlist_mean];
 
     function fillPlaylist() {
@@ -420,11 +418,8 @@
         this.add_mean_feature = (color, shape, mean_feature1, mean_feature2) => {
             this.svg.append("g")
                 .attr("class", "meanValue")
-                //.attr("stroke", "white")
-                //.attr("fill", color)
-                .attr("stroke", color)
-                .attr("fill", "none")
-                .attr("stroke-width", "2px")
+                .attr("stroke", "white")
+                .attr("fill", color)
                 .selectAll("path")
                 .data("meanFeature")
                     .enter().append("path")
@@ -449,57 +444,53 @@
             this.remove_group(".meanValue");
             let extendLegend2 = [];
             let extendSymbol2 = [];
-            let extendColor2 = [];
 
             for (let i = session_name.length-1; i >= 0; i--)
             {
                 if (i === 0){
-                    this.add_mean_feature(colors.last_playlist_mean, circle_big,
+                    this.add_mean_feature(colors.last_playlist_mean, star_big,
                         mean_feature1_history[i], mean_feature2_history[i]);
                 }
 
 
                if (i === 1){
-                   this.add_mean_feature(colors.last_playlist_mean_2, circle_big,
+                   this.add_mean_feature(colors.last_playlist_mean, diamond_big,
                         mean_feature1_history[i], mean_feature2_history[i]);
                    extendLegend2.push("Playlist of " + session_name[i]);
-                   extendSymbol2.push(circle);
-                   extendColor2.push(colors.last_playlist_mean_2);
+                   extendSymbol2.push(diamond);
                }
 
                if (i === 2){
-                   this.add_mean_feature(colors.last_playlist_mean_3, circle_big,
+                   this.add_mean_feature(colors.last_playlist_mean, cross_big,
                         mean_feature1_history[i], mean_feature2_history[i]);
                    extendLegend2.push("Playlist of " + session_name[i]);
-                   extendSymbol2.push(circle);
-                   extendColor2.push(colors.last_playlist_mean_3);
+                   extendSymbol2.push(cross);
                }
             }
 
-            let ordinal = d3.scaleOrdinal()
-                .domain(extendLegend2)
-                .range(extendColor2);
+            let symbolScaleNew = d3.scaleOrdinal();
 
-            let legendOrdinal = d3.legendColor()
-                .shape("circle")
-                .shapePadding(15)
-                .shapeRadius(6)
-                .cellFilter(function(d){ return d.label !== "e" })
-                .scale(ordinal);
+            symbolScaleNew
+                .domain(extendLegend2)
+                .range(extendSymbol2);
 
             this.svg.append("g")
-                .attr("class", "legendOrdinal")
-                .attr("transform", "translate(255,0)");
+                .attr("class", "legendSymbolHistory")
+                .attr("transform", "translate(255, 0)");
 
-            this.svg.select(".legendOrdinal")
-                .call(legendOrdinal);
+            let legendPathHistory = d3.legendSymbol()
+                .scale(symbolScaleNew)
+                .shapePadding(16);
+
+            this.svg.select(".legendSymbolHistory")
+                .call(legendPathHistory);
         }
 
         this.hide_history_change = () => {
             this.remove_group(".meanValue");
-            this.add_mean_feature(colors.last_playlist_mean, circle_big,
+            this.add_mean_feature(colors.last_playlist_mean, star_big,
                 mean_feature1_history[0], mean_feature2_history[0]);
-            this.remove_group(".legendOrdinal")
+            this.remove_group(".legendSymbolHistory")
         }
 
         // Add a scatter plot for the recommendations
@@ -583,7 +574,7 @@
 
         // Add legend
         if (condition === 0 || condition === 1) {
-            this.add_mean_feature(colors.last_playlist_mean, circle_big, mean_feature1_history[0], mean_feature2_history[0]);
+            this.add_mean_feature(colors.last_playlist_mean, star_big, mean_feature1_history[0], mean_feature2_history[0]);
 
             symbolScale
                 .domain(extendLegend)

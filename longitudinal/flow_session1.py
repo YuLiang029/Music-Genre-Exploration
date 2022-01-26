@@ -80,7 +80,7 @@ def assign_condition():
         db.session.add(user_condition_new)
         db.session.commit()
 
-    return redirect(url_for("spotify_basic_bp.msi_survey", redirect_path="session1_bp.select_genre"))
+    return redirect(url_for("spotify_basic_bp.msi_survey"))
 
 
 @session1_bp.route('/select_genre')

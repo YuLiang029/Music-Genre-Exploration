@@ -447,7 +447,6 @@ def genre_recommendation_exp_multiple():
     db.session.commit()
 
     top_tracks_list = genre_df1.to_dict('records')
-    print(top_tracks_list)
     return jsonify(top_tracks_list)
 
 

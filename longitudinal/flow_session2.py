@@ -137,7 +137,7 @@ def pre_survey():
                     "elements": [
                         {
                             "type": "radiogroup",
-                            "name": "listening_times",
+                            "name": "q1",
                             "title": "How many times did you listen to (part of) the playlist in the last week?",
                             "isRequired": "true",
                             "colCount": 4,
@@ -150,7 +150,7 @@ def pre_survey():
                         ,
                         {
                             "type": "radiogroup",
-                            "name": "finding",
+                            "name": "q2",
                             "title": "Did you use the playlist to find new artists or songs of the selected genre?",
                             "isRequired": "true",
                             "colCount": 4,
@@ -161,22 +161,31 @@ def pre_survey():
                         },
                         {
                             "type": "checkbox",
-                            "name": "willingness",
+                            "name": "q3",
                             "isRequired": "true",
                             "title": "How did you use the playlist to find other artists "
                                      "or songs of the selected genre?",
-                            "visibleIf": "{finding}='Yes'",
+                            "visibleIf": "{q2}='Yes'",
                             "choices": [
-                                "By searching for related artists",
-                                "By searching for songs in the same album",
+                                "Through related artists",
+                                "Through songs of the same album",
+                                "Through Spotify recommendations based on what's in the playlist",
                                 "By going to song radio",
                                 "Other"
                             ]
 
                         },
                         {
+                            "type": "text",
+                            "name": "q4",
+                            "isRequired": "true",
+                            "title": "If other, please specify how did "
+                                     "you use the playlist to find other artists or songs of the selected genre",
+                            "visibleIf": "{q2}='Yes' and {q3} contains 'Other'"
+                        },
+                        {
                             "type": "radiogroup",
-                            "name": "favor",
+                            "name": "q5",
                             "title": "Did you favor some songs from the playlist?",
                             "isRequired": "true",
                             "colCount": 4,
@@ -187,7 +196,7 @@ def pre_survey():
                             ]
                         }, {
                             "type": "radiogroup",
-                            "name": "deletion",
+                            "name": "q6",
                             "title": "Did you delete some songs from the playlist?",
                             "isRequired": "true",
                             "colCount": 4,

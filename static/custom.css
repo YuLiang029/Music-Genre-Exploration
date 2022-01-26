@@ -94,6 +94,16 @@ table.sv_q_matrix th {
     text-align: left;
 }
 
+.track-history {
+    display: none;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    box-shadow: 0px 5px 10px 0px rgba(0,0,0,0.10);
+    margin-bottom: 20px;
+    position: relative;
+}
+
 /* START CONTROL STYLING */
 
 .sliders {

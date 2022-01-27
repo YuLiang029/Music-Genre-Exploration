@@ -832,8 +832,8 @@ def msi_survey():
                             {"value": "14",
                              "text": "I am able to talk about the emotions that a piece of music evokes for me."},
                             {"value": "15", "text": "Music can evoke my memories of past people and places."},
-                            # {"value": "16", "text": "It is important that you pay attention to this study. "
-                            #                         "Please tick 'Completely Agree'"}
+                            {"value": "16", "text": "It is important that you pay attention to this study. "
+                                                    "Please tick 'Completely Agree'"}
                         ]
                     }]
                 },

@@ -128,7 +128,9 @@ def pre_survey():
                             {"value": "1", "text": "I enjoyed listening to the playlist"},
                             {"value": "2", "text": "I would listen to the playlist again "},
                             {"value": "3", "text": "I did not like the playlist"},
-                            {"value": "4", "text": "I find the songs from the playlist appealing"}
+                            {"value": "4", "text": "I find the songs from the playlist appealing"},
+                            {"value": "5", "text": "It is important that you pay attention to this study. "
+                                                   "Please tick 'Completely Disagree'"}
                         ]
                     }
                 ]

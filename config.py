@@ -15,8 +15,8 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 # SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'test.db').replace("mysql://", "mysql+pymysql://")
 
 # Database configuration for upgraded HEROKU database
-SQLALCHEMY_DATABASE_URI = os.environ.get('HEROKU_POSTGRESQL_MAROON_URL').replace("://", "ql://", 1)
-# SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace("://", "ql://", 1)
+# SQLALCHEMY_DATABASE_URI = os.environ.get('HEROKU_POSTGRESQL_MAROON_URL').replace("://", "ql://", 1)
+SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace("://", "ql://", 1)
 
 # Database for postgresql
 # SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL',

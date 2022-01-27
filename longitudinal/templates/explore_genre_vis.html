@@ -84,31 +84,31 @@
                 {% endif %}
                 <div id="contour_viz" class="show-on-success"
                      {% if condition > 1 %}
-                     data-intro="In this graph, you can see how the recommendations (blue dots)
+                     data-intro="In this graph, you can see how the recommendations (blue triangles)
                      relate to your taste (orange outline) and the typical songs of the {{ genre }} genre
                      (green outline). The graph shows two features of the songs: energy (the excitement of the song),
                      valence (the positiveness of the song)."
                      {% else %}
-                        data-intro="In this graph, you can see how the recommendations (blue dots)
+                        data-intro="In this graph, you can see how the recommendations (blue triangles)
                         relate to your taste (orange outline) and the typical songs of the {{ genre }} genre
                         (green outline). The graph shows two features of the songs: energy (the excitement of the song),
                         valence (the positiveness of the song).
-                        The average position of the last session's playlist is visualized with purple star."
+                        The average position of the last session's playlist is visualized with blue circle."
                      {% endif %}
                      data-step='3'>
                     <span class="help" data-toggle="tooltip" data-placement="top"
                           style="position:absolute;right:20px;top:10px;"
                             {% if condition > 1 %}
-                                title="In the below two graphs, you can see how the recommendations (blue dots)
+                                title="In the below two graphs, you can see how the recommendations (blue triangles)
                                 relate to your taste (orange outline) and the typical songs of the {{ genre }} genre
                                 (green outline). This graph shows two features of the songs: energy (the excitement of the song),
                                 valence (the positiveness of the song)."
                             {% else %}
-                                title="In the below two graphs, you can see how the recommendations (blue dots)
+                                title="In the below two graphs, you can see how the recommendations (blue triangles)
                                 relate to your taste (orange outline) and the typical songs of the {{ genre }} genre
                                 (green outline). The graph shows two features of the songs: energy (the excitement of the song),
                                 valence (the positiveness of the song).
-                                The average position of the last session's playlist is visualized with purple star."
+                                The average position of the last session's playlist is visualized with blue circle."
                             {% endif %}>
                         <i class="fas fa-question-circle text-info"></i>
                     </span>
@@ -176,7 +176,8 @@
         triangleU_big = d3.symbol().size(200).type(d3.symbolTriangle),
         cross_big = d3.symbol().size(200).type(d3.symbolCross),
         diamond_big = d3.symbol().size(200).type(d3.symbolDiamond),
-        star_big = d3.symbol().size(200).type(d3.symbolStar)
+        star_big = d3.symbol().size(200).type(d3.symbolStar),
+        circle_big_plus = d3.symbol().size(2000).type(d3.symbolCircle)
 
     let $playlist = $("#playlist");
 
@@ -185,18 +186,20 @@
     const number_of_tracks = 10;
 
     const colors = {
-        "user_profile": "#CB4335",
-        "last_playlist_mean": "#8E44AD",
-        "recommendations": "#2471A3",
-        "genre": "#229954",
+        "user_profile": "#d95f02",
+        "last_playlist_mean": "#007bff",
+        "last_playlist_mean_2": "#7570b3",
+        "last_playlist_mean_3": "#8E44AD",
+        "recommendations": "#007bff",
+        "genre": "#1b9e77",
     };
 
     let basicLegend = ["Your taste", "The {{ genre }} genre", "Recommended songs"];
     let basicSymbol = [circle, circle, triangleU];
     let basicColor = [colors.user_profile, colors.genre, colors.recommendations];
-    let extendLegend = ["Your taste", "The {{ genre }} genre", "Recommended songs", "Playlist of the last session"];
-    let extendSymbol = [circle, circle, triangleU, star];
-    let extendColor = [colors.user_profile, colors.genre, colors.recommendations, colors.last_playlist_mean];
+
+    let extendLegend = ["Playlist of the last session"];
+    let extendColor = [colors.last_playlist_mean];
 
     function fillPlaylist() {
         // Check if the number of tracks equals 10
@@ -440,8 +443,9 @@
         this.add_mean_feature = (color, shape, mean_feature1, mean_feature2) => {
             this.svg.append("g")
                 .attr("class", "meanValue")
-                .attr("stroke", "white")
-                .attr("fill", color)
+                .attr("stroke", color)
+                .attr("fill", "none")
+                .attr("stroke-width", "3px")
                 .selectAll("path")
                 .data("meanFeature")
                     .enter().append("path")
@@ -464,55 +468,54 @@
 
         this.show_history_change = () => {
             this.remove_group(".meanValue");
-            let extendLegend2 = [];
-            let extendSymbol2 = [];
 
-            for (let i = session_name.length-1; i >= 0; i--)
+            for (let i = 0; i < session_name.length; i++)
             {
                 if (i === 0){
-                    this.add_mean_feature(colors.last_playlist_mean, star_big,
+                    this.add_mean_feature(colors.last_playlist_mean, circle_big_plus,
                         mean_feature1_history[i], mean_feature2_history[i]);
                 }
 
 
                if (i === 1){
-                   this.add_mean_feature(colors.last_playlist_mean, diamond_big,
+                   this.add_mean_feature(colors.last_playlist_mean_2, circle_big_plus,
                         mean_feature1_history[i], mean_feature2_history[i]);
-                   extendLegend2.push("Playlist of " + session_name[i]);
-                   extendSymbol2.push(diamond);
+                   extendLegend.push("Playlist of " + session_name[i]);
+                   extendColor.push(colors.last_playlist_mean_2);
                }
 
                if (i === 2){
-                   this.add_mean_feature(colors.last_playlist_mean, cross_big,
+                   this.add_mean_feature(colors.last_playlist_mean_3, circle_big_plus,
                         mean_feature1_history[i], mean_feature2_history[i]);
-                   extendLegend2.push("Playlist of " + session_name[i]);
-                   extendSymbol2.push(cross);
+                   extendLegend.push("Playlist of " + session_name[i]);
+                   extendColor.push(colors.last_playlist_mean_3);
                }
             }
 
-            let symbolScaleNew = d3.scaleOrdinal();
+            let ordinal_new = d3.scaleOrdinal()
+                 .domain(extendLegend)
+                 .range(extendColor);
 
-            symbolScaleNew
-                .domain(extendLegend2)
-                .range(extendSymbol2);
+            let legendOrdinal = d3.legendColor()
+                .shape("circle")
+                .shapePadding(15)
+                .shapeRadius(6)
+                .cellFilter(function(d){ return d.label !== "e" })
+                .scale(ordinal_new);
 
             this.svg.append("g")
-                .attr("class", "legendSymbolHistory")
-                .attr("transform", "translate(255, 0)");
+                .attr("class", "legendOrdinal")
+                .attr("transform", "translate(225,0)");
 
-            let legendPathHistory = d3.legendSymbol()
-                .scale(symbolScaleNew)
-                .shapePadding(16);
-
-            this.svg.select(".legendSymbolHistory")
-                .call(legendPathHistory);
+            this.svg.select(".legendOrdinal")
+                .call(legendOrdinal);
         }
 
         this.hide_history_change = () => {
             this.remove_group(".meanValue");
-            this.add_mean_feature(colors.last_playlist_mean, star_big,
+            this.add_mean_feature(colors.last_playlist_mean, circle_big_plus,
                 mean_feature1_history[0], mean_feature2_history[0]);
-            this.remove_group(".legendSymbolHistory")
+            this.remove_group(".legendOrdinal")
         }
 
         // Add a scatter plot for the recommendations
@@ -595,26 +598,13 @@
         let colorScale =  d3.scaleOrdinal()
 
         // Add legend
-        if (condition < 2) {
-            this.add_mean_feature(colors.last_playlist_mean, star_big, mean_feature1_history[0], mean_feature2_history[0]);
+        symbolScale
+            .domain(basicLegend)
+            .range(basicSymbol);
 
-            symbolScale
-                .domain(extendLegend)
-                .range(extendSymbol);
-
-            colorScale
-                .domain(extendLegend)
-                .range(extendColor);
-
-        }else{
-            symbolScale
-                .domain(basicLegend)
-                .range(basicSymbol);
-
-            colorScale
-                .domain(basicLegend)
-                .range(basicColor);
-        }
+        colorScale
+            .domain(basicLegend)
+            .range(basicColor);
 
         this.svg.append("g")
           .attr("class", "legendSymbol")
@@ -631,6 +621,27 @@
             d3.select(this).style("fill", colorScale(d))
         })
 
+        if (condition < 2) {
+            this.add_mean_feature(colors.last_playlist_mean, circle_big_plus, mean_feature1_history[0], mean_feature2_history[0]);
+
+            let ordinal = d3.scaleOrdinal()
+                 .domain(extendLegend)
+                 .range(extendColor);
+
+            let legendOrdinal = d3.legendColor()
+                .shape("circle")
+                .shapePadding(15)
+                .shapeRadius(6)
+                .cellFilter(function(d){ return d.label !== "e" })
+                .scale(ordinal);
+
+            this.svg.append("g")
+                .attr("class", "legendOrdinal")
+                .attr("transform", "translate(225,0)");
+
+            this.svg.select(".legendOrdinal")
+                .call(legendOrdinal);
+        }
 
         // Allow interaction with the graph
         function handleMouseOver(d) {

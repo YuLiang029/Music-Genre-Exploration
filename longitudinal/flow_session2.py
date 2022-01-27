@@ -16,9 +16,9 @@ session2_bp = Blueprint('session2_bp', __name__, template_folder='templates')
 
 @session2_bp.route('/')
 def index():
-    session["session_num"] = 2
+    # session["session_num"] = 2
     # session["session_num"] = 3
-    # session["session_num"] = 4
+    session["session_num"] = 4
     return render_template('main2.html')
 
 
@@ -236,37 +236,45 @@ def pre_survey():
 
 @session2_bp.route('/explore_genre_history')
 def explore_genre_history():
-    prev_playlist_session = UserPlaylistSession.query.filter_by(
-        user_id=session["userid"],
-    ).order_by(UserPlaylistSession.session_num.desc()).all()
+    # Check if the playlist has already been generated
+    user_playlist_session = UserPlaylistSession.query.filter_by(
+        user_id=session["subject_id"],
+        session_num=session["session_num"]).first()
 
-    # retrieve the previous playlist weight and the corresponding genre
-    l_rec_id = []
-    l_weight = []
+    if not user_playlist_session:
+        prev_playlist_session = UserPlaylistSession.query.filter_by(
+            user_id=session["userid"],
+        ).order_by(UserPlaylistSession.session_num.desc()).all()
 
-    for playlist_session in prev_playlist_session:
-        l_rec_id.append(playlist_session.rec_id)
-        dict_tmp = {"Session": "Session " + str(playlist_session.session_num), "weight": playlist_session.weight}
-        l_weight.append(dict_tmp)
+        # retrieve the previous playlist weight and the corresponding genre
+        l_rec_id = []
+        l_weight = []
 
-    genre = RecommendationLog.query.filter_by(id=l_rec_id[0]).first().genre_name
-    user_condition = UserCondition.query.filter_by(user_id=session["userid"]).first()
-    print(l_weight)
+        for playlist_session in prev_playlist_session:
+            l_rec_id.append(playlist_session.rec_id)
+            dict_tmp = {"Session": "Session " + str(playlist_session.session_num), "weight": playlist_session.weight}
+            l_weight.append(dict_tmp)
 
-    if user_condition:
-        condition = user_condition.condition
-        track_history = False
+        genre = RecommendationLog.query.filter_by(id=l_rec_id[0]).first().genre_name
+        user_condition = UserCondition.query.filter_by(user_id=session["userid"]).first()
+        print(l_weight)
 
-        if condition == 0 or condition == 1:
-            if len(l_weight) > 1:
-                track_history = True
+        if user_condition:
+            condition = user_condition.condition
+            track_history = False
 
-        return render_template('explore_genre_vis.html',
-                               condition=condition,
-                               l_weight=l_weight,
-                               track_history=track_history,
-                               genre=genre,
-                               weight=l_weight[0]["weight"])
+            if condition == 0 or condition == 1:
+                if len(l_weight) > 1:
+                    track_history = True
+
+            return render_template('explore_genre_vis.html',
+                                   condition=condition,
+                                   l_weight=l_weight,
+                                   track_history=track_history,
+                                   genre=genre,
+                                   weight=l_weight[0]["weight"])
+
+    return redirect(url_for("long_bp.error_repeat_answer"))
 
 
 @session2_bp.route('/explore_genre')

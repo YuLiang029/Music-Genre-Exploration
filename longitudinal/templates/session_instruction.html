@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block title %}Session instruction{% endblock %}
+{% block content %}
+    <h2>Session 2 instruction</h2>
+
+    <p class="text-justify">
+        In this Session, you will login with your Spotify account again. After login, you will need to answer a
+        few questions about the playlist you listened to in the previous session.
+        After that, you will be able to adapt the songs as you like using our genre exploration tool
+        and you will get a new playlist to listen to in the coming days.
+    </p>
+
+    <p class="text-justify">
+        By pressing <span class="font-weight-bold">Continue</span>, we proceed you to the Spotify login.
+    </p>
+
+
+    <div class="text-right">
+       <a class="btn btn-success btn-lg" id="action_continue" href="/session_register">
+            Continue to session instruction<i class="fas fa-arrow-right"></i>
+       </a>
+    </div>
+{% endblock %}

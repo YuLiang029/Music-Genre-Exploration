@@ -22,11 +22,23 @@ def index():
     return render_template('main2.html')
 
 
-@session2_bp.route('/session_register')
-def session_register():
+@session2_bp.route('/session_login')
+def session_login():
     if request.args.get("PROLIFIC_PID"):
         session["subject_id"] = request.args.get("PROLIFIC_PID")
+        return redirect(url_for("session2_bp.session_instruction"))
 
+    return redirect(url_for("long_bp.error_page"))
+
+
+@session2_bp.route('/session_instruction')
+def session_instruction():
+    return render_template("session_instruction.html")
+
+
+@session2_bp.route('/session_register')
+def session_register():
+    if session.get('subject_id'):
         # Check if the playlist has already been generated
         user_playlist_session = UserPlaylistSession.query.filter_by(
             user_id=session["subject_id"],

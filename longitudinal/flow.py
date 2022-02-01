@@ -83,8 +83,12 @@ def error_repeat_answer():
 
 @long_bp.route('/last_step')
 def last_step():
-    # return redirect("https://app.prolific.co/submissions/complete?cc=47904236")
-    return render_template("last_page_long.html", playlist_url=session["playlist_url"])
+    return render_template("last_page_long.html")
+
+
+@long_bp.route('/prolific_return_genre_exploration')
+def prolific_return_genre_exploration():
+    return redirect("https://app.prolific.co/submissions/complete?cc=7721D818")
 
 
 # Log functionality for showing history or not

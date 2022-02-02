@@ -24,7 +24,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 #                                          "mysql://", "mysql+pymysql://")
 
 SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL',
-                                         'postgresql://localhost/long_copy').replace(
+                                         'postgresql://localhost/long_dump_copy').replace(
                                          "mysql://", "mysql+pymysql://")
 
 DATABASE_CONNECT_OPTIONS = {}

@@ -95,7 +95,7 @@
                         relate to your taste (orange outline) and the typical songs of the {{ genre }} genre
                         (green outline). The graph shows two features of the songs: energy (the excitement of the song),
                         valence (the positiveness of the song).
-                        The average position of the last session's playlist is visualized with blue circle."
+                        The average position of the last session's playlist is visualized with purple circle."
                      {% endif %}
                      data-step='3'>
                     <span class="help" data-toggle="tooltip" data-placement="top"
@@ -112,7 +112,7 @@
                                 relate to your taste (orange outline) and the typical songs of the {{ genre }} genre
                                 (green outline). The graph shows two features of the songs: energy (the excitement of the song),
                                 valence (the positiveness of the song).
-                                The average position of the last session's playlist is visualized with blue circle."
+                                The average position of the last session's playlist is visualized with purple circle."
                             {% endif %}>
                         <i class="fas fa-question-circle text-info"></i>
                     </span>
@@ -133,7 +133,16 @@
         <div class="col-sm-5 order-sm-1">
 
             <div id="playlist" class="show-on-success text-justify"
-                 data-intro="In the previous session we gave you this playlist to explore the new genre." data-step='1'>
+                 {% if session_participated == 1 %}
+                    data-intro="In the previous session we gave you this playlist to explore the new genre.
+                    This playlist consists of songs representative from the new genre but that are also somewhat
+                    personalized to your preferences. Now you will use our genre exploration tool.
+                    It will allow you to change the balance between more genre representative songs and songs
+                    that are more personalized to your preference, using a slider."
+                 {% else %}
+                    data-intro="In the previous session we gave you this playlist to explore the new genre."
+                 {% endif %}
+                 data-step='1'>
             </div>
 
         </div>
@@ -170,6 +179,7 @@
 
     const history = {{l_weight|tojson}};
     const condition = {{ condition }};
+    const session_participated = {{ session_participated }};
 
     const circle = d3.symbol().type(d3.symbolCircle)(),
         triangleU = d3.symbol().type(d3.symbolTriangle)(),

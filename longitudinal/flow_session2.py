@@ -275,6 +275,7 @@ def explore_genre_history():
         if user_condition:
             condition = user_condition.condition
             track_history = False
+            session_participated = len(l_weight)
 
             if condition == 0 or condition == 1:
                 if len(l_weight) > 1:
@@ -283,6 +284,7 @@ def explore_genre_history():
             return render_template('explore_genre_vis.html',
                                    condition=condition,
                                    l_weight=l_weight,
+                                   session_participated=session_participated,
                                    track_history=track_history,
                                    genre=genre,
                                    weight=l_weight[0]["weight"])

@@ -16,8 +16,8 @@ session2_bp = Blueprint('session2_bp', __name__, template_folder='templates')
 
 @session2_bp.route('/')
 def index():
-    session["session_num"] = 2
-    # session["session_num"] = 3
+    # session["session_num"] = 2
+    session["session_num"] = 3
     # session["session_num"] = 4
     return render_template('main2.html')
 
@@ -140,9 +140,8 @@ def pre_survey():
                             {"value": "1", "text": "I enjoyed listening to the playlist"},
                             {"value": "2", "text": "I would listen to the playlist again "},
                             {"value": "3", "text": "I did not like the playlist"},
-                            {"value": "4", "text": "I find the songs from the playlist appealing"},
-                            {"value": "5", "text": "It is important that you pay attention to this study. "
-                                                   "Please tick 'Completely Disagree'"}
+                            {"value": "5", "text": "Please tick 'Completely Disagree' to show that you pay attention"},
+                            {"value": "4", "text": "I find the songs from the playlist appealing"}
                         ]
                     }
                 ]
@@ -200,7 +199,7 @@ def pre_survey():
                         {
                             "type": "radiogroup",
                             "name": "q5",
-                            "title": "Did you favor some songs from the playlist?",
+                            "title": "Did you favor ❤️ some songs from the playlist?",
                             "isRequired": "true",
                             "colCount": 4,
                             "choices": [

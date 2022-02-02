@@ -16,16 +16,16 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 # Database configuration for upgraded HEROKU database
 # SQLALCHEMY_DATABASE_URI = os.environ.get('HEROKU_POSTGRESQL_MAROON_URL').replace("://", "ql://", 1)
-SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace("://", "ql://", 1)
+# SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace("://", "ql://", 1)
 
 # Database for postgresql
 # SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL',
 #                                          'postgresql://localhost/dbdw').replace(
 #                                          "mysql://", "mysql+pymysql://")
 
-# SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL',
-#                                          'postgresql://localhost/long_copy').replace(
-#                                          "mysql://", "mysql+pymysql://")
+SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL',
+                                         'postgresql://localhost/long_copy').replace(
+                                         "mysql://", "mysql+pymysql://")
 
 DATABASE_CONNECT_OPTIONS = {}
 

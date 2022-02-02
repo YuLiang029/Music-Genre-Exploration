@@ -15,8 +15,7 @@
         </p>
         <p class="show-on-success col-12 lead text-justify">
             Click <span class="font-weight-bold">"Continue and save the playlist to my Spotify"</span>
-            (at the bottom of the page) until you find a playlist that
-            you want to listen to in the coming days.</p>
+            (at the bottom of the page) once you have found a playlist that you want to listen to in the coming days.</p>
 
         <p class="show-on-success col-12">
             Tips: Hover over the <i class="fas fa-question-circle text-muted"></i> icons to get an explanation on the user interface.</p>
@@ -39,15 +38,15 @@
                 <div class="sliders show-on-success" id="moodControl"
                      data-intro="Use the slider to balance how much your preferences are weighted in for the
                      recommendations from this genre. You can vary between the most
-                     representative songs from the genre (left: weight=0) and songs
-                     from that genre that are very close to your preference (right: weight=1).
+                     representative songs from the genre (left) and songs
+                     from that genre that are very close to your preference (right).
                      The initial slider position is set to your last session's playlist position." data-step='2'>
                     <span class="help text-justify" data-toggle="tooltip" data-placement="top"
                           style="position:absolute;right:20px;top:10px;"
                           title="Use the slider to balance how much your preferences are weighted in for the
                           recommendations from this genre. You can vary between the most
-                          representative songs from the genre (left: weight=0) and songs
-                          from that genre that are very close to your preference (right: weight=1).">
+                          representative songs from the genre (left) and songs
+                          from that genre that are very close to your preference (right).">
                         <i class="fas fa-question-circle text-info"></i>
                     </span>
                     <br>
@@ -85,12 +84,14 @@
                 {% endif %}
                 <div id="contour_viz" class="show-on-success text-justify"
                      {% if condition > 1 %}
-                     data-intro="In this graph, you can see how the recommendations (blue triangles)
+                     data-intro="This graph allows you to see how the slider changes your recommendation.
+                     It shows you how the recommendations (blue triangles)
                      relate to your taste (orange outline) and the typical songs of the {{ genre }} genre
                      (green outline). The graph shows two features of the songs: energy (the excitement of the song),
                      valence (the positiveness of the song)."
                      {% else %}
-                        data-intro="In this graph, you can see how the recommendations (blue triangles)
+                        data-intro="This graph allows you to see how the slider changes your recommendation.
+                        It shows you how the recommendations (blue triangles)
                         relate to your taste (orange outline) and the typical songs of the {{ genre }} genre
                         (green outline). The graph shows two features of the songs: energy (the excitement of the song),
                         valence (the positiveness of the song).
@@ -100,12 +101,14 @@
                     <span class="help" data-toggle="tooltip" data-placement="top"
                           style="position:absolute;right:20px;top:10px;"
                             {% if condition > 1 %}
-                                title="In the below two graphs, you can see how the recommendations (blue triangles)
+                                title="This graph allows you to see how the slider changes your recommendation.
+                                It shows you how the recommendations (blue triangles)
                                 relate to your taste (orange outline) and the typical songs of the {{ genre }} genre
                                 (green outline). This graph shows two features of the songs: energy (the excitement of the song),
                                 valence (the positiveness of the song)."
                             {% else %}
-                                title="In the below two graphs, you can see how the recommendations (blue triangles)
+                                title="This graph allows you to see how the slider changes your recommendation.
+                                It shows you how the recommendations (blue triangles)
                                 relate to your taste (orange outline) and the typical songs of the {{ genre }} genre
                                 (green outline). The graph shows two features of the songs: energy (the excitement of the song),
                                 valence (the positiveness of the song).
@@ -115,11 +118,11 @@
                     </span>
                 </div>
                 <br>
-                <div id="contour_viz2" class="show-on-success text-justify" data-intro="This graphs shows two features of the songs:
+                <div id="contour_viz2" class="show-on-success text-justify" data-intro="This graphs shows two OTHER features of the songs:
                 danceability (how danceable a song is) and acousticness (how acoustic a song is)." data-step='4'>
                     <span class="help" data-toggle="tooltip" data-placement="top"
                           style="position:absolute;right:20px;top:10px;"
-                          title="This graph shows two features of the songs: danceability (how danceable a song is)
+                          title="This graphs shows two OTHER features of the songs: danceability (how danceable a song is)
                           and acousticness (how acoustic a song is)">
                         <i class="fas fa-question-circle text-info"></i>
                     </span>
@@ -129,8 +132,8 @@
 
         <div class="col-sm-5 order-sm-1">
 
-            <div id="playlist" class="show-on-success text-justify" data-intro="These are the songs recommended to you.
-            The initial recommendation list is set to your last session playlist." data-step='1'>
+            <div id="playlist" class="show-on-success text-justify"
+                 data-intro="In the previous session we gave you this playlist to explore the new genre." data-step='1'>
             </div>
 
         </div>
@@ -139,7 +142,9 @@
     <div class="row">
         <div class="col-sm text-right">
             <button class="show-on-success btn btn-success btn-lg" id="save_playlist"
-                    data-intro="Click this button to continue and save the playlist to your Spotify account after finding a playlist you would like to listen to in the coming days"
+                    data-intro="Once you are satisfied with the new playlist,
+                    click this button to continue and save the playlist to your spotify account.
+                    This concludes the session and you can enjoy listening to the playlist again in the coming days."
                     {% if track_history %}
                     data-step='6'
                     {% else %}

@@ -250,14 +250,13 @@
         });
     }
 
-    $(function () {
-        // Save playlist to Spotify
-        $('#save_playlist').on('click', function()  {
-            let trackString = "";
-            for (let i = 0; i < visible_recommendations.length; i++) {
-                trackString = trackString + "," + visible_recommendations[i].id;
-            }
-            $.ajax({
+    function savePlaylist (){
+        let trackString = "";
+        for (let i = 0; i < visible_recommendations.length; i++) {
+            trackString = trackString + "," + visible_recommendations[i].id;
+        }
+
+        $.ajax({
                 url: "/generate_longitudinal_playlist/{{ genre }}?weight=" + $("#range_slider").val() + "&tracks=" + trackString.substring(1,) + "",
                 global: false
             }).done(function (data){
@@ -267,6 +266,24 @@
                     alert("Please try again");
                 }
             });
+
+    }
+
+    $(function () {
+        // Save playlist to Spotify
+        $('#save_playlist').on('click', function()  {
+            if (parseFloat($("#range_slider").val()) === parseFloat({{ weight }})){
+                let confirmAction = confirm("This playlist is the same as your previous playlist. " +
+                    "Are you sure to listen to the same playlist again?");
+                if (confirmAction) {
+                    savePlaylist();
+                } else {
+                    alert("Please use slider to generate a different playlist");
+                }
+            }else{
+                savePlaylist();
+            }
+
         });
 
         // logging function for iframe @TODO: update to a correct function

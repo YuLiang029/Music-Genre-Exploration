@@ -68,7 +68,7 @@
                          data-step='5'>
                         <span class="help" data-toggle="tooltip" data-placement="top"
                               style="position:absolute;right:20px;top:10px;"
-                              title="By switching Hide or show exploration history,
+                              title="By switching on Show exploration history,
                               you can also see the playlist position of all past sessions">
                             <i class="fas fa-question-circle text-info"></i>
                         </span>
@@ -192,9 +192,9 @@
 
     const colors = {
         "user_profile": "#d95f02",
-        "last_playlist_mean": "#007bff",
-        "last_playlist_mean_2": "#7570b3",
-        "last_playlist_mean_3": "#8E44AD",
+        "last_playlist_mean": "#8E44AD",
+        "last_playlist_mean_2": "#c77dff",
+        "last_playlist_mean_3": "#7570b3",
         "recommendations": "#007bff",
         "genre": "#1b9e77",
     };
@@ -205,6 +205,9 @@
 
     let extendLegend = ["Playlist of the last session"];
     let extendColor = [colors.last_playlist_mean];
+
+    let lastLegend = ["Playlist of the last session"];
+    let lastColor = [colors.last_playlist_mean];
 
     function fillPlaylist() {
         // Check if the number of tracks equals 10
@@ -521,6 +524,26 @@
             this.add_mean_feature(colors.last_playlist_mean, circle_big_plus,
                 mean_feature1_history[0], mean_feature2_history[0]);
             this.remove_group(".legendOrdinal")
+
+            this.add_mean_feature(colors.last_playlist_mean, circle_big_plus, mean_feature1_history[0], mean_feature2_history[0]);
+
+            let ordinal = d3.scaleOrdinal()
+                 .domain(lastLegend)
+                 .range(lastColor);
+
+            let legendOrdinal = d3.legendColor()
+                .shape("circle")
+                .shapePadding(15)
+                .shapeRadius(6)
+                .cellFilter(function(d){ return d.label !== "e" })
+                .scale(ordinal);
+
+            this.svg.append("g")
+                .attr("class", "legendOrdinal")
+                .attr("transform", "translate(225,0)");
+
+            this.svg.select(".legendOrdinal")
+                .call(legendOrdinal);
         }
 
         // Add a scatter plot for the recommendations

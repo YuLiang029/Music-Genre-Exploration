@@ -62,8 +62,8 @@ with app.app_context():
 
     # Register blueprint for the longitudinal study
     app.register_blueprint(long_bp)
-    # app.register_blueprint(session1_bp)
-    app.register_blueprint(session2_bp)
+    app.register_blueprint(session1_bp)
+    # app.register_blueprint(session2_bp)
 
 # Initialize queue for worker
 q = Queue(connection=conn, default_timeout=6000)
@@ -92,17 +92,17 @@ def page_not_found(error):
     return render_template('404NotFound.html', title='404'), 404
 
 
-# Function that can run in the background
-@app.route('/run_background')
-def run_background():
-    q.enqueue(spotify_scrape)
-    return render_template("test.html")
-
-
-# scrape from Spotify
-def spotify_scrape():
-    with app.app_context():
-        # scrape_genre_artist_next_level(2)
-        # scrape_genre_artist()
-        # get_artist_top_tracks()
-        import_tracks_from_csv()
+# # Function that can run in the background
+# @app.route('/run_background')
+# def run_background():
+#     q.enqueue(spotify_scrape)
+#     return render_template("test.html")
+#
+#
+# # scrape from Spotify
+# def spotify_scrape():
+#     with app.app_context():
+#         # scrape_genre_artist_next_level(2)
+#         # scrape_genre_artist()
+#         # get_artist_top_tracks()
+#         import_tracks_from_csv()

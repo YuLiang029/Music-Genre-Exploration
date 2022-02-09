@@ -88,7 +88,7 @@ def last_step():
 
 @long_bp.route('/prolific_return_genre_exploration')
 def prolific_return_genre_exploration():
-    return redirect("https://app.prolific.co/submissions/complete?cc=7721D818")
+    return redirect("https://app.prolific.co/submissions/complete?cc=93746748")
 
 
 # Log functionality for showing history or not

@@ -117,10 +117,10 @@ def authorized():
 
                 db.session.add(user)
                 db.session.commit()
-            else:
-                userhash_stored = user.username
-                if userhash != userhash_stored:
-                    return render_template("InconsistentSpotifyAccount.html")
+            # else:
+            #     userhash_stored = user.username
+            #     if userhash != userhash_stored:
+            #         return render_template("InconsistentSpotifyAccount.html")
 
             session["userid"] = user.id
             scrape(limit=50, offset=0, scrape_type="tracks_artists")

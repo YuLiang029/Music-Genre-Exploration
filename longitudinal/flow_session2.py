@@ -264,9 +264,10 @@ def explore_genre_history():
         l_weight = []
 
         for playlist_session in prev_playlist_session:
-            l_rec_id.append(playlist_session.rec_id)
             dict_tmp = {"Session": "Session " + str(playlist_session.session_num), "weight": playlist_session.weight}
-            l_weight.append(dict_tmp)
+            if dict_tmp not in l_weight:
+                l_weight.append(dict_tmp)
+                l_rec_id.append(playlist_session.rec_id)
 
         genre = RecommendationLog.query.filter_by(id=l_rec_id[0]).first().genre_name
         user_condition = UserCondition.query.filter_by(user_id=session["userid"]).first()

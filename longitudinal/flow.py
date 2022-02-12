@@ -81,8 +81,8 @@ def error_repeat_answer():
                                          "You have already finished this session. ")
 
 
-@long_bp.route('/last_step')
-def last_step():
+@long_bp.route('/last_step_s2')
+def last_step_s2():
     return render_template("last_page_long.html")
 
 

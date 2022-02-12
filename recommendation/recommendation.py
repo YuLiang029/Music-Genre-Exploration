@@ -368,7 +368,7 @@ def retrieve_genre_recommendation_multiple():
             track_info["weight"] = rec_info["weight"]
             l_tracks.append(track_info)
 
-        print(l_tracks)
+        # print(l_tracks)
         return jsonify(l_tracks)
 
 

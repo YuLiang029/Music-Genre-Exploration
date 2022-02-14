@@ -99,13 +99,9 @@ def authorized():
             if 'subject_id' in session:
                 userid = session["subject_id"]
             else:
-                # use Hash function for anonymization
-                userid = hashlib.sha256(session["spotify_id"].encode('utf-8')).hexdigest()
+                return redirect(url_for("long_bp.error_page"))
 
             user = User.query.filter_by(id=userid).first()
-
-            # hash function to ensure users use the same Spotify account
-            userhash = hashlib.sha256(session["spotify_id"].encode('utf-8')).hexdigest()
 
             if user is None:
                 consent_to_share = False
@@ -113,14 +109,10 @@ def authorized():
                     if session["share"] == "True":
                         consent_to_share = True
 
-                user = User(id=userid, username=userhash, consent_to_share=consent_to_share)
+                user = User(id=userid, consent_to_share=consent_to_share)
 
                 db.session.add(user)
                 db.session.commit()
-            # else:
-            #     userhash_stored = user.username
-            #     if userhash != userhash_stored:
-            #         return render_template("InconsistentSpotifyAccount.html")
 
             session["userid"] = user.id
             scrape(limit=50, offset=0, scrape_type="tracks_artists")

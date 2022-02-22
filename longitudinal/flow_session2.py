@@ -97,7 +97,8 @@ def pre_survey():
                         "rows": [
                             {"value": "1", "text": "The playlist is personalized to my music tastes"},
                             {"value": "2", "text": "The playlist has songs with styles I like to listen to"},
-                            {"value": "3", "text": "I find the songs from the playlist to fit my preferences"}
+                            {"value": "3", "text": "I find the songs from the playlist to fit my preferences"},
+                            {"value": "5", "text": "Please tick 'Completely Agree' to show that you pay attention"}
                         ]
                     },
                     {
@@ -140,7 +141,6 @@ def pre_survey():
                             {"value": "1", "text": "I enjoyed listening to the playlist"},
                             {"value": "2", "text": "I would listen to the playlist again "},
                             {"value": "3", "text": "I did not like the playlist"},
-                            {"value": "5", "text": "Please tick 'Completely Disagree' to show that you pay attention"},
                             {"value": "4", "text": "I find the songs from the playlist appealing"}
                         ]
                     }

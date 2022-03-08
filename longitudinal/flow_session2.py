@@ -17,8 +17,8 @@ session2_bp = Blueprint('session2_bp', __name__, template_folder='templates')
 @session2_bp.route('/')
 def index():
     # session["session_num"] = 2
-    session["session_num"] = 3
-    # session["session_num"] = 4
+    # session["session_num"] = 3
+    session["session_num"] = 4
     return render_template('main2.html')
 
 
@@ -98,7 +98,6 @@ def pre_survey():
                             {"value": "1", "text": "The playlist is personalized to my music tastes"},
                             {"value": "2", "text": "The playlist has songs with styles I like to listen to"},
                             {"value": "3", "text": "I find the songs from the playlist to fit my preferences"},
-                            {"value": "5", "text": "Please tick 'Completely Agree' to show that you pay attention"}
                         ]
                     },
                     {
@@ -119,6 +118,8 @@ def pre_survey():
                         "rows": [
                             {"value": "1", "text": "The playlist supports me in getting to know the genre"},
                             {"value": "2", "text": "The playlist is useful in exploring the genre"},
+                            {"value": "5", "text": "Please tick 'Neither Agree nor Disagree' "
+                                                   "to show that you pay attention"},
                             {"value": "3", "text": "The songs in the playlist did not help me to explore the genre"}
                         ]
                     },

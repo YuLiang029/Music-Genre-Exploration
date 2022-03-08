@@ -81,14 +81,14 @@ def error_repeat_answer():
                                          "You have already finished this session. ")
 
 
-@long_bp.route('/last_step_s3')
+@long_bp.route('/last_step_s4')
 def last_step_s3():
     return render_template("last_page_long.html")
 
 
 @long_bp.route('/prolific_return_genre_exploration')
 def prolific_return_genre_exploration():
-    return redirect("https://app.prolific.co/submissions/complete?cc=3B7EBD25")
+    return redirect("https://app.prolific.co/submissions/complete?cc=922BD6D1")
 
 
 # Log functionality for showing history or not

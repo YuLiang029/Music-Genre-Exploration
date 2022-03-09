@@ -3,7 +3,7 @@ import time
 from database import db
 from general import UserCondition
 import random
-from longitudinal import UserPlaylistSession
+from longitudinal import UserPlaylistSession, PostSurvey
 from recommendation import SurveyResponse, RecommendationLog
 import re
 
@@ -312,4 +312,61 @@ def explore_genre():
                                condition=condition,
                                genre=genre,
                                weight=prev_weight)
+
+
+@session2_bp.route('/post_survey', methods=["GET", "POST"])
+def post_survey():
+    if request.method == "GET":
+        surveydata = {}
+
+        survey = {
+            "showProgressBar": "top",
+            "pages": [
+                {
+                    "elements": [
+                        {
+                            "type": "text",
+                            "name": "like",
+                            "title": "What do you like about the music genre exploration tool? (optional)",
+                        },
+
+                        {
+                            "type": "text",
+                            "name": "dislike",
+                            "title": "What do you dislike about the music genre exploration tool? (optional)",
+                        },
+
+                        {
+                            "type": "text",
+                            "name": "new",
+                            "title": "What new features would you like the music genre exploration tool to add? "
+                                     "(optional)",
+                        },
+                    ]
+                },
+            ],
+            "completedHtml": "Redirecting to the next page..."
+        }
+
+        survey_config = {
+            'title': 'Your experience with the genre exploration tool',
+            'description': 'We would like to know a bit more about '
+                           'your experience with the music genre exploration tool',
+            'next_url': url_for("long_bp.last_step_s4")
+        }
+
+        return render_template('survey.html', survey=survey, surveydata=surveydata, survey_config=survey_config)
+
+    if request.method == "POST":
+        responses = []
+        stop_ts = time.time()
+        responses[:] = [
+            PostSurvey(user_id=session["userid"],
+                       item_id=item,
+                       value=request.form[item],
+                       stop_ts=stop_ts) for item in
+            request.form]
+        db.session.add_all(responses)
+        db.session.commit()
+        return "done"
 

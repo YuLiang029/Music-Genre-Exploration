@@ -23,3 +23,16 @@ class ShowHistoryLog (db.Model):
     session_id = db.Column(db.VARCHAR, db.ForeignKey('session_log.id'))
     timestamp = db.Column(db.FLOAT)
     value = db.Column(db.Boolean)
+
+
+class PostSurvey (db.Model):
+    __tablename__ = 'post_survey'
+    id = db.Column(db.INTEGER, autoincrement=True, primary_key=True)
+    user_id = db.Column(db.VARCHAR)
+    item_id = db.Column(db.VARCHAR)
+    value = db.Column(db.VARCHAR)
+    start_ts = db.Column(db.FLOAT)
+    stop_ts = db.Column(db.FLOAT)
+
+    def __repr__(self):
+        return '<PostSurvey %r-%r>' % (self.user_id, self.item_id)

@@ -8,14 +8,15 @@
         </h2>
         <p class="show-on-success col-12 lead text-justify">
             <span class="font-weight-bold">
-                Task: use the slider and try to create a playlist that you would like to listen to in the coming days
-                to explore the genre {{ genre }}.
+                Task: use the slider and try to create the final playlist that you would like to listen
+                to to explore the genre {{ genre }}.
             </span>
             The initial recommendation list is set to your last session playlist (with the corresponding slider position).
         </p>
         <p class="show-on-success col-12 lead text-justify">
             Click <span class="font-weight-bold">"Continue and save the playlist to my Spotify"</span>
-            (at the bottom of the page) once you have found a playlist that you want to listen to in the coming days.</p>
+            (at the bottom of the page) once you have found the final playlist that you want to listen
+            to to explore the genre {{ genre }}</p>
 
         <p class="show-on-success col-12">
             Tips: Hover over the <i class="fas fa-question-circle text-muted"></i> icons to get an explanation on the user interface.</p>
@@ -154,7 +155,8 @@
             <button class="show-on-success btn btn-success btn-lg" id="save_playlist"
                     data-intro="Once you are satisfied with the new playlist,
                     click this button to continue and save the playlist to your spotify account.
-                    This concludes the session and you can enjoy listening to the playlist again in the coming days."
+                    This concludes the session and you can enjoy listening to the
+                    the playlist again to explore the genre."
                     {% if track_history %}
                     data-step='6'
                     {% else %}

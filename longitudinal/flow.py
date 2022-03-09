@@ -82,7 +82,7 @@ def error_repeat_answer():
 
 
 @long_bp.route('/last_step_s4')
-def last_step_s3():
+def last_step_s4():
     return render_template("last_page_long.html")
 
 

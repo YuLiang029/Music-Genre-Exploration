@@ -322,6 +322,76 @@ def post_survey():
         survey = {
             "showProgressBar": "top",
             "pages": [
+                {"questions": [
+                    {
+                        "type": "matrix",
+                        "name": "ctrl",
+                        "title": "Please indicate to what extent you agree or disagree with each statement "
+                                 "about your experience with the genre exploration tool",
+                        "isAllRowRequired": "true",
+                        "columns": [
+                            {"value": 1, "text": "Completely Disagree"},
+                            {"value": 2, "text": "Strongly Disagree"},
+                            {"value": 3, "text": "Disagree"},
+                            {"value": 4, "text": "Neither Agree nor Disagree"},
+                            {"value": 5, "text": "Agree"},
+                            {"value": 6, "text": "Strongly Agree"},
+                            {"value": 7, "text": "Completely Agree"}
+                        ],
+                        "rows": [
+                            {"value": "1", "text": "I felt in control of modifying the recommendations"},
+                            {"value": "2", "text": "I felt I couldn’t really tell the system "
+                                                   "what I wanted in my playlist"},
+                            {"value": "3", "text": "I found it easy to modify the recommendations in the recommender"},
+                            {"value": "4", "text": "I was able to clearly specify my preferences"}
+                        ]
+                    },
+                    {
+                        "type": "matrix",
+                        "name": "help2",
+                        "title": "Please indicate to what extent you agree or disagree with each statement "
+                                 "about your experience with the genre exploration tool",
+                        "isAllRowRequired": "true",
+                        "columns": [
+                            {"value": 1, "text": "Completely Disagree"},
+                            {"value": 2, "text": "Strongly Disagree"},
+                            {"value": 3, "text": "Disagree"},
+                            {"value": 4, "text": "Neither Agree nor Disagree"},
+                            {"value": 5, "text": "Agree"},
+                            {"value": 6, "text": "Strongly Agree"},
+                            {"value": 7, "text": "Completely Agree"}
+                        ],
+                        "rows": [
+                            {"value": "1", "text": "The genre exploration app supports me in getting to know the genre"},
+                            {"value": "2", "text": "The genre exploration app is useful in exploring the genre"},
+                            {"value": "3", "text": "The genre exploration app did not help me to explore the genre"},
+                            {"value": "4", "text": "The genre exploration app motivates me to delve more into the genre"},
+                        ]
+                    },
+                    {
+                        "type": "matrix",
+                        "name": "useful",
+                        "title": "Please indicate to what extent you agree or disagree with each statement "
+                                 "about your experience with the genre exploration tool",
+                        "isAllRowRequired": "true",
+                        "columns": [
+                            {"value": 1, "text": "Completely Disagree"},
+                            {"value": 2, "text": "Strongly Disagree"},
+                            {"value": 3, "text": "Disagree"},
+                            {"value": 4, "text": "Neither Agree nor Disagree"},
+                            {"value": 5, "text": "Agree"},
+                            {"value": 6, "text": "Strongly Agree"},
+                            {"value": 7, "text": "Completely Agree"}
+                        ],
+                        "rows": [
+                            {"value": "1", "text": "The genre exploration app has no real benefit for me"},
+                            {"value": "2", "text": "I would recommend the genre exploration app to others"},
+                            {"value": "3", "text": "The genre exploration app is useful"},
+                            {"value": "4", "text": "I would use the system again to explore other music genres"}
+                        ]
+                    }
+                ]
+                },
                 {
                     "elements": [
                         {
@@ -339,8 +409,8 @@ def post_survey():
                         {
                             "type": "text",
                             "name": "new",
-                            "title": "What new features would you like the music genre exploration tool to add? "
-                                     "(optional)",
+                            "title": "What other features or improvements would you "
+                                     "suggest for the music genre exploration tool?"
                         },
                     ]
                 },

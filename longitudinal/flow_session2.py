@@ -397,13 +397,13 @@ def post_survey():
                         {
                             "type": "text",
                             "name": "like",
-                            "title": "What do you like about the music genre exploration tool? (optional)",
+                            "title": "What do you like about the music genre exploration tool?",
                         },
 
                         {
                             "type": "text",
                             "name": "dislike",
-                            "title": "What do you dislike about the music genre exploration tool? (optional)",
+                            "title": "What do you dislike about the music genre exploration tool?",
                         },
 
                         {

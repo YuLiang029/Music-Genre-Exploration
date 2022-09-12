@@ -13,7 +13,7 @@
         var post_url = "{{ request.url }}";
         var next_url = "{{ survey_config.next_url }}";
 
-
+       Survey.StylesManager.applyTheme();
         window.survey = new Survey.Model({{ survey| tojson | safe }});
 
         survey

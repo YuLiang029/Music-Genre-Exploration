@@ -42,6 +42,8 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 CSRF_SESSION_KEY = "secret"
 
 # Secret key for signing cookies
+# replace with a fixed secret key during stduy
+# SECRET_KEY = "~QLoJ[G7c?Kj!)`lXH+Y00Etdu^EnH"
 SECRET_KEY = os.urandom(16)
 
 # set SQLALCHEMY maximum concurrent thread number

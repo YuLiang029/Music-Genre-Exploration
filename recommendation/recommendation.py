@@ -7,7 +7,7 @@ import pandas as pd
 import os
 import numpy as np
 from sklearn.mixture import GaussianMixture
-from recommendation import RecommendationLog, RecTracks, RecGenres, TrackInteractLog, SliderInteractLog
+from recommendation import RecommendationLog, RecTracks, RecGenres, TrackInteractLog, SliderInteractLog, RecTracksAll
 from collections import Counter
 import operator
 from functools import reduce
@@ -444,6 +444,21 @@ def genre_recommendation_exp_multiple():
         l_rec_tracks.append(rec_tracks)
 
     db.session.add_all(l_rec_tracks)
+
+    # for storing the top 300 recommendations for each parameter settings
+    genre_df2 = get_mix_multiple_top(l_weight=[0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0], top_k=300)
+    l_rec_tracks2 = []
+    for index, row in genre_df2.iterrows():
+        # rec_tracks = RecTracks(rec_id=session['rec_id'], track_id=row["id"], rank=row["index"])
+        rec_tracks = RecTracksAll(rec_id=session['rec_id'], track_id=row["id"],
+                                  rank=row["index"],
+                                  baseline_ranking=row['baseline_ranking'],
+                                  personalized_ranking=row['sum_rank_ranking'],
+                                  score=row['ranking_score'], weight=row['weight'])
+        l_rec_tracks2.append(rec_tracks)
+
+    db.session.add_all(l_rec_tracks2)
+
     db.session.commit()
 
     top_tracks_list = genre_df1.to_dict('records')

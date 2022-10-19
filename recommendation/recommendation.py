@@ -391,7 +391,7 @@ def genre_recommendation_exp_multiple():
                                            session_id=session['id'],
                                            id=session['rec_id'])
 
-    def get_mix_multiple_top(l_weight: list):
+    def get_mix_multiple_top(l_weight: list, top_k=10):
         genre_df = get_genre_recommendation_by_preference(genre_name, by_preference=False)
 
         if not isinstance(genre_df, pd.DataFrame):
@@ -414,7 +414,7 @@ def genre_recommendation_exp_multiple():
 
             # only keep tracks that not appear in the previous list
             genre_df_new = genre_df[~genre_df.id.isin(l_previous_track)].reset_index(drop=True)
-            top = genre_df_new[:10]
+            top = genre_df_new[:top_k]
             l_previous_track.extend(top['id'].tolist())
             top["weight"] = w
             top = top.rename(columns={'ranking_score_' + str(w): 'ranking_score'})[rec_track_features2]

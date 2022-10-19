@@ -39,6 +39,7 @@ def register():
 
 @nudge_bp.route('/register_without_subject_id')
 def register_without_subject_id():
+    session["session_num"] = 1
     return redirect(url_for('spotify_basic_bp.login', next_url='nudge_bp.redirect_from_main'))
 
 
@@ -47,10 +48,10 @@ def redirect_from_main():
     # assign study condition
     user_condition = UserCondition.query.filter_by(user_id=session["userid"]).first()
     if not user_condition:
-        condition = random.randint(0, 5)
+        # condition = random.randint(0, 5)
         # set condition to explore and representative
         condition_text = "explore, representative"
-        # condition = 0
+        condition = 0
 
         if condition == 1:
             condition_text = "explore, mixed"
@@ -69,8 +70,8 @@ def redirect_from_main():
         db.session.add(user_condition_new)
         db.session.commit()
 
-    # return redirect(url_for("spotify_basic_bp.msi_survey", redirect_path="nudge_bp.select_genre"))
-    return redirect(url_for("nudge_bp.select_genre"))
+    return redirect(url_for("spotify_basic_bp.msi_survey", redirect_path="nudge_bp.select_genre"))
+    # return redirect(url_for("nudge_bp.select_genre"))
 
 
 @nudge_bp.route('/select_genre')
@@ -268,8 +269,7 @@ def post_task_survey():
         survey_config = {
             'title': 'Survey about your experience with the recommendations and interface',
             'description': 'Please fill in this survey about your experience with the recommendations and interface',
-            # 'next_url': url_for('nudge_bp.last_step')
-            'next_url': url_for("spotify_basic_bp.msi_survey", redirect_path="nudge_bp.last_step")
+            'next_url': url_for('nudge_bp.last_step')
         }
 
         return render_template('survey.html', survey=survey, surveydata=surveydata, survey_config=survey_config)

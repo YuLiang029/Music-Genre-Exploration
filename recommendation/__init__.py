@@ -40,6 +40,24 @@ class RecTracks(db.Model):
         return '<RecTracks %r-%r>' % (self.rec_id, self.track_id)
 
 
+# table for saving the recommended tracks: top300
+class RecTracksAll(db.Model):
+    __tablename__ = 'rec_tracks_all'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    rec_id = db.Column(db.VARCHAR, db.ForeignKey('recommendation_log.id'))
+    track_id = db.Column(db.VARCHAR, db.ForeignKey('track.id'))
+    rank = db.Column(db.Integer)
+    baseline_ranking = db.Column(db.FLOAT)
+    personalized_ranking = db.Column(db.FLOAT)
+    popularity_ranking = db.Column(db.FLOAT)
+    score = db.Column(db.FLOAT)
+    weight = db.Column(db.FLOAT)
+    track = db.relationship('Track')
+
+    def __repr__(self):
+        return '<RecTracksAll %r-%r>' % (self.rec_id, self.track_id)
+
+
 # table for saving the recommend genres
 class RecGenres(db.Model):
     __tablename__ = 'rec_genres'

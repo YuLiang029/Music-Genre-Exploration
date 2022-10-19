@@ -63,7 +63,8 @@ def login(next_url):
         )
         print(callback)
         #   define authorization scope
-        scope = "user-top-read playlist-modify-private user-follow-read user-library-read user-read-recently-played"
+        # scope = "user-top-read playlist-modify-private user-follow-read user-library-read user-read-recently-played"
+        scope = "user-top-read playlist-modify-private"
         return spotify.authorize(callback=callback, scope=scope, show_dialog=True)
     else:
         print("TOKEN IN SESSION: REDIRECTING")
@@ -95,12 +96,14 @@ def authorized():
         else:
             session["spotify_id"] = me.data['id']
 
-            # TODO: functionality for specifying if prolific_pid is available or not
-            if 'subject_id' in session:
-                userid = session["subject_id"]
-            else:
-                return redirect(url_for("long_bp.error_page"))
+            # To store the unique identifier, we either store the unique subject_id/prolific_pid
+            # or store a hashmap of users' Spotify id
+            # if 'subject_id' in session:
+            #     userid = session["subject_id"]
+            # else:
+            #     return render_template("SpotifyConnectFailed.html")
 
+            userid = hashlib.sha256(session["spotify_id"].encode('utf-8')).hexdigest()
             user = User.query.filter_by(id=userid).first()
 
             if user is None:
@@ -116,12 +119,9 @@ def authorized():
 
             session["userid"] = user.id
             scrape(limit=50, offset=0, scrape_type="tracks_artists")
-            # scrape(limit=50, offset=49, scrape_type="tracks_artists")
-            get_saved_tracks(limit=50, offset=0)
-            get_followed_artists(limit=50, offset=0)
-            get_recently_played_tracks(limit=50, offset=0)
-            # get_saved_tracks(limit=50, offset=49)
-            # get_followed_artists(limit=50, offset=49)
+            # get_saved_tracks(limit=50, offset=0)
+            # get_followed_artists(limit=50, offset=0)
+            # get_recently_played_tracks(limit=50, offset=0)
             print(next_url)
 
             ts = time.time()
@@ -674,9 +674,9 @@ def scrape_artist_tracks(artist_id):
         db.session.commit()
 
 
-# @spotify_basic_bp.route('/msi_survey/<redirect_path>', methods=["GET", "POST"])
-@spotify_basic_bp.route('/msi_survey', methods=["GET", "POST"])
-def msi_survey():
+@spotify_basic_bp.route('/msi_survey/<redirect_path>', methods=["GET", "POST"])
+# @spotify_basic_bp.route('/msi_survey', methods=["GET", "POST"])
+def msi_survey(redirect_path):
     if request.method == "GET":
         responses = User.query.filter_by(id=session["userid"]).first().msi_response
         surveydata = {}
@@ -696,50 +696,50 @@ def msi_survey():
         survey = {
             "showProgressBar": "top",
             "pages": [
-                # {
-                #     "questions": [
-                #         {
-                #             "name": "email",
-                #             "type": "text",
-                #             "inputType": "email",
-                #             "title": "Your contact email:",
-                #             "isRequired": "true",
-                #             "validators": [{
-                #                 "type": "email"
-                #             }]
-                #         },
-                #         {
-                #             "name": "age",
-                #             "type": "text",
-                #             "title": "Your age (years):",
-                #             "isRequired": "true"
-                #         },
-                #         {
-                #             "name": "gender",
-                #             "type": "dropdown",
-                #             "title": "Your gender:",
-                #             "isRequired": "true",
-                #             "colCount": 0,
-                #             "choices": [
-                #                 "male",
-                #                 "female",
-                #                 "other"
-                #             ]
-                #         },
-                #         {
-                #             "name": "ticketnum",
-                #             "type": "dropdown",
-                #             "title": "How many tickets would you like to register?"
-                #                      "(You can register one ticket for your self and one for your accompany)",
-                #             "isRequired": "true",
-                #             "colCount": 0,
-                #             "choices": [
-                #                 1,
-                #                 2
-                #             ]
-                #         }
-                #     ]
-                # },
+                {
+                    "questions": [
+                        {
+                            "name": "email",
+                            "type": "text",
+                            "inputType": "email",
+                            "title": "Your contact email:",
+                            "isRequired": "true",
+                            "validators": [{
+                                "type": "email"
+                            }]
+                        },
+                        # {
+                        #     "name": "age",
+                        #     "type": "text",
+                        #     "title": "Your age (years):",
+                        #     "isRequired": "true"
+                        # },
+                        # {
+                        #     "name": "gender",
+                        #     "type": "dropdown",
+                        #     "title": "Your gender:",
+                        #     "isRequired": "true",
+                        #     "colCount": 0,
+                        #     "choices": [
+                        #         "male",
+                        #         "female",
+                        #         "other"
+                        #     ]
+                        # },
+                        # {
+                        #     "name": "ticketnum",
+                        #     "type": "dropdown",
+                        #     "title": "How many tickets would you like to register?"
+                        #              "(You can register one ticket for your self and one for your accompany)",
+                        #     "isRequired": "true",
+                        #     "colCount": 0,
+                        #     "choices": [
+                        #         1,
+                        #         2
+                        #     ]
+                        # }
+                    ]
+                },
 
                 {
                     "questions": [
@@ -842,9 +842,9 @@ def msi_survey():
 
         survey_config = {
             'title': 'Your experience with music',
-            'description': 'We would like to know more about your experience with music',
-            # 'next_url': url_for(redirect_path)
-            'next_url': url_for("session1_bp.select_genre")
+            'description': 'First, we would like to know more about your experience with music...',
+            'next_url': url_for(redirect_path)
+            # 'next_url': url_for("session1_bp.select_genre")
         }
 
         print(surveydata)

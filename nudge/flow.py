@@ -17,12 +17,14 @@ def index():
 
 @nudge_bp.route('/inform_consent')
 def inform_consent():
-    if request.args.get("subject_id"):
-        session["subject_id"] = request.args.get("subject_id")
-        print(session["subject_id"])
-        return render_template('informed_consent.html')
-
-    return redirect(url_for("nudge_bp.error_page"))
+    # for getting subject id
+    # if request.args.get("subject_id"):
+    #     session["subject_id"] = request.args.get("subject_id")
+    #     print(session["subject_id"])
+    #     return render_template('informed_consent.html')
+    #
+    # return redirect(url_for("nudge_bp.error_page"))
+    return render_template('informed_consent.html')
 
 
 @nudge_bp.route('/register')
@@ -40,6 +42,10 @@ def register():
 @nudge_bp.route('/register_without_subject_id')
 def register_without_subject_id():
     session["session_num"] = 1
+    if request.args.get("consent") == "False":
+        return redirect(url_for("nudge_bp.disagree_informed_consent"))
+
+    session["share"] = request.args.get("share")
     return redirect(url_for('spotify_basic_bp.login', next_url='nudge_bp.redirect_from_main'))
 
 

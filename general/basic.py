@@ -708,12 +708,12 @@ def msi_survey(redirect_path):
                                 "type": "email"
                             }]
                         },
-                        # {
-                        #     "name": "age",
-                        #     "type": "text",
-                        #     "title": "Your age (years):",
-                        #     "isRequired": "true"
-                        # },
+                        {
+                            "name": "group",
+                            "type": "text",
+                            "title": "Your group",
+                            "isRequired": "true"
+                        },
                         # {
                         #     "name": "gender",
                         #     "type": "dropdown",
